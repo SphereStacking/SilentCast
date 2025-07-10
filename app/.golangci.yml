@@ -1,0 +1,123 @@
+run:
+  timeout: 5m
+  tests: true
+  build-tags:
+    - nogohook
+    - notray
+
+linters:
+  enable:
+    - gofmt
+    - goimports
+    - golint
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - gosimple
+    - structcheck
+    - varcheck
+    - ineffassign
+    - deadcode
+    - typecheck
+    - misspell
+    - gosec
+    - godot
+    - whitespace
+    - prealloc
+    - predeclared
+    - nolintlint
+    - dogsled
+    - dupl
+    - funlen
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - godox
+    - gofumpt
+    - goprintffuncname
+    - lll
+    - nakedret
+    - noctx
+    - rowserrcheck
+    - stylecheck
+    - unconvert
+    - unparam
+
+  disable:
+    - gochecknoglobals
+    - gocognit
+    - testpackage
+    - wsl
+    - gomnd
+    - exhaustivestruct
+    - goerr113
+    - wrapcheck
+    - nlreturn
+
+linters-settings:
+  gofmt:
+    simplify: true
+  goimports:
+    local-prefixes: github.com/SphereStacking/spellbook
+  golint:
+    min-confidence: 0.8
+  govet:
+    check-shadowing: true
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+  gocyclo:
+    min-complexity: 15
+  dupl:
+    threshold: 100
+  funlen:
+    lines: 100
+    statements: 50
+  lll:
+    line-length: 120
+    tab-width: 4
+  misspell:
+    locale: US
+  nakedret:
+    max-func-lines: 30
+  prealloc:
+    simple: true
+    range-loops: true
+    for-loops: true
+  unparam:
+    check-exported: true
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gosec
+        - dupl
+        - funlen
+    
+    # Exclude lll in long strings
+    - linters:
+        - lll
+      source: "^(.*`[^`]+`.*|.*\"[^\"]+\".*)$"
+    
+    # Exclude godot in comments with URLs
+    - linters:
+        - godot
+      source: "https?://"
+
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  new: false
