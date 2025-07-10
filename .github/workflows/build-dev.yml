@@ -1,0 +1,59 @@
+name: Build Development
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master, develop ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows-amd64
+            goos: windows
+            goarch: amd64
+          
+          - os: macos-latest
+            name: darwin-amd64
+            goos: darwin
+            goarch: amd64
+            
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+    
+    - name: Install macOS dependencies
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install pkg-config
+    
+    - name: Build with CGO
+      env:
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}
+        CGO_ENABLED: 1
+      run: |
+        cd app
+        go build -o ../silentcast-${{ matrix.name }}${{ matrix.os == 'windows-latest' && '.exe' || '' }} ./cmd/silentcast
+        ls -lah silentcast-*
+        file silentcast-*
+        ldd silentcast-* || true
+    
+    - name: Test binary
+      run: |
+        ./silentcast-${{ matrix.name }}${{ matrix.os == 'windows-latest' && '.exe' || '' }} --version || true
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: silentcast-${{ matrix.name }}
+        path: silentcast-${{ matrix.name }}
+        retention-days: 7
