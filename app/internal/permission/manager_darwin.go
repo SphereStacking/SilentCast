@@ -44,7 +44,7 @@ func (m *macManager) Check(ctx context.Context) ([]Permission, error) {
 			Required:    false,
 		},
 	}
-	
+
 	return permissions, nil
 }
 
@@ -78,14 +78,14 @@ func (m *macManager) GetInstructions(permType PermissionType) string {
 5. Click the lock icon and enter your password
 6. Check the box next to Spellbook
 7. Restart Spellbook`
-	
+
 	case PermissionTypeNotification:
 		return `To enable notifications:
 1. Open System Preferences
 2. Go to Notifications & Focus
 3. Find Spellbook in the list
 4. Turn on "Allow Notifications"`
-	
+
 	case PermissionTypeAutoStart:
 		return `To enable auto-start:
 1. Open System Preferences
@@ -95,7 +95,7 @@ func (m *macManager) GetInstructions(permType PermissionType) string {
 5. Click the + button
 6. Select Spellbook from Applications
 7. Click Add`
-	
+
 	default:
 		return "No instructions available for this permission type"
 	}
@@ -104,7 +104,7 @@ func (m *macManager) GetInstructions(permType PermissionType) string {
 // OpenSettings opens the system settings for the specified permission
 func (m *macManager) OpenSettings(permType PermissionType) error {
 	var url string
-	
+
 	switch permType {
 	case PermissionTypeAccessibility:
 		url = "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
@@ -115,7 +115,7 @@ func (m *macManager) OpenSettings(permType PermissionType) error {
 	default:
 		return fmt.Errorf("no settings URL for permission type: %s", permType)
 	}
-	
+
 	cmd := exec.Command("open", url)
 	return cmd.Run()
 }

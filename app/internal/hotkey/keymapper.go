@@ -4,7 +4,7 @@ package hotkey
 type KeyMapper interface {
 	// GetModifierMap returns the platform-specific modifier key mappings
 	GetModifierMap() map[string]string
-	
+
 	// GetSpecialKeys returns any platform-specific special key codes
 	GetSpecialKeys() map[string]uint16
 }

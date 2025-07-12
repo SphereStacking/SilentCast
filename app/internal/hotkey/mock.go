@@ -7,12 +7,12 @@ import (
 
 // MockManager is a mock implementation of Manager for testing
 type MockManager struct {
-	mu         sync.RWMutex
-	running    bool
-	handler    Handler
-	sequences  map[string]string
-	startErr   error
-	stopErr    error
+	mu        sync.RWMutex
+	running   bool
+	handler   Handler
+	sequences map[string]string
+	startErr  error
+	stopErr   error
 }
 
 // NewMockManager creates a new mock manager
@@ -26,11 +26,11 @@ func NewMockManager() *MockManager {
 func (m *MockManager) Start() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.startErr != nil {
 		return m.startErr
 	}
-	
+
 	m.running = true
 	return nil
 }
@@ -39,29 +39,33 @@ func (m *MockManager) Start() error {
 func (m *MockManager) Stop() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.stopErr != nil {
 		return m.stopErr
 	}
-	
+
 	m.running = false
 	return nil
 }
 
 // Register registers a hotkey sequence with a spell name
-func (m *MockManager) Register(sequence string, spellName string) error {
+//
+//nolint:unparam // Mock always returns nil
+func (m *MockManager) Register(sequence, spellName string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	m.sequences[sequence] = spellName
 	return nil
 }
 
 // Unregister removes a hotkey registration
+//
+//nolint:unparam // Mock always returns nil
 func (m *MockManager) Unregister(sequence string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	delete(m.sequences, sequence)
 	return nil
 }
@@ -86,27 +90,27 @@ func (m *MockManager) SimulateKeyPress(sequence string) error {
 	handler := m.handler
 	spellName, exists := m.sequences[sequence]
 	m.mu.RUnlock()
-	
+
 	if !exists {
 		return nil
 	}
-	
+
 	if handler != nil {
 		parser := NewParser()
 		keySeq, err := parser.Parse(sequence)
 		if err != nil {
 			return err
 		}
-		
+
 		event := Event{
 			Sequence:  keySeq,
 			SpellName: spellName,
 			Timestamp: time.Now(),
 		}
-		
+
 		return handler.Handle(event)
 	}
-	
+
 	return nil
 }
 

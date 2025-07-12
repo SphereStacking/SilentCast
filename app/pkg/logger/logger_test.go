@@ -12,7 +12,7 @@ import (
 
 func TestNew(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	tests := []struct {
 		name    string
 		config  Config
@@ -51,7 +51,7 @@ func TestNew(t *testing.T) {
 			wantErr: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			logger, err := New(tt.config)
@@ -59,9 +59,18 @@ func TestNew(t *testing.T) {
 				t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			
+
 			if logger == nil && !tt.wantErr {
 				t.Error("Expected logger to be created")
+			}
+
+			// Close logger if it was created with a file
+			if logger != nil && tt.config.File != "" {
+				defer func() {
+					if err := logger.Close(); err != nil {
+						t.Errorf("Failed to close logger: %v", err)
+					}
+				}()
 			}
 		})
 	}
@@ -74,20 +83,20 @@ func TestLogger_Levels(t *testing.T) {
 		level:  InfoLevel,
 		logger: log.New(&buf, "", 0), // No flags for easier testing
 	}
-	
+
 	// Test different levels
 	logger.Debug("debug message")
 	logger.Info("info message")
 	logger.Warn("warn message")
 	logger.Error("error message")
-	
+
 	output := buf.String()
-	
+
 	// Debug should not appear (level is Info)
 	if strings.Contains(output, "debug message") {
 		t.Error("Debug message should not appear when level is Info")
 	}
-	
+
 	// Info, Warn, Error should appear
 	if !strings.Contains(output, "info message") {
 		t.Error("Info message should appear")
@@ -106,20 +115,20 @@ func TestLogger_SetLevel(t *testing.T) {
 		level:  ErrorLevel,
 		logger: log.New(&buf, "", 0),
 	}
-	
+
 	// Only error should log
 	logger.Info("info 1")
 	logger.Error("error 1")
-	
+
 	// Change level to Info
 	logger.SetLevel(InfoLevel)
-	
+
 	// Now info should log too
 	logger.Info("info 2")
 	logger.Error("error 2")
-	
+
 	output := buf.String()
-	
+
 	if strings.Contains(output, "info 1") {
 		t.Error("First info message should not appear")
 	}
@@ -140,14 +149,14 @@ func TestLogger_SetPrefix(t *testing.T) {
 		level:  InfoLevel,
 		logger: log.New(&buf, "", 0),
 	}
-	
+
 	logger.Info("without prefix")
-	
+
 	logger.SetPrefix("TEST")
 	logger.Info("with prefix")
-	
+
 	output := buf.String()
-	
+
 	if strings.Contains(output, "[TEST] without prefix") {
 		t.Error("First message should not have prefix")
 	}
@@ -170,7 +179,7 @@ func TestParseLevel(t *testing.T) {
 		{"unknown", InfoLevel}, // default
 		{"", InfoLevel},        // default
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			if got := parseLevel(tt.input); got != tt.expected {
@@ -184,36 +193,41 @@ func TestInitialize(t *testing.T) {
 	// Reset defaultLogger for testing
 	defaultLogger = nil
 	once = sync.Once{}
-	
+
 	tempDir := t.TempDir()
 	cfg := Config{
 		Level:   "debug",
 		File:    filepath.Join(tempDir, "test.log"),
 		Console: false,
 	}
-	
+
 	err := Initialize(cfg)
 	if err != nil {
 		t.Fatalf("Initialize() error = %v", err)
 	}
-	
+
 	// Test that default logger methods work
 	Debug("debug test")
 	Info("info test")
 	Warn("warn test")
 	Error("error test")
-	
+
 	// Check log file was created
-	if _, err := os.Stat(cfg.File); os.IsNotExist(err) {
+	if _, statErr := os.Stat(cfg.File); os.IsNotExist(statErr) {
 		t.Error("Log file was not created")
 	}
-	
+
+	// Close logger before reading to ensure file is flushed on Windows
+	if closeErr := Close(); closeErr != nil {
+		t.Fatalf("Failed to close logger: %v", closeErr)
+	}
+
 	// Read log file
 	content, err := os.ReadFile(cfg.File)
 	if err != nil {
 		t.Fatalf("Failed to read log file: %v", err)
 	}
-	
+
 	// Check content
 	logContent := string(content)
 	if !strings.Contains(logContent, "debug test") {

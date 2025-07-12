@@ -14,21 +14,21 @@ func TestSpellbookError(t *testing.T) {
 	if err.Message != "config error" {
 		t.Errorf("Expected message 'config error', got '%s'", err.Message)
 	}
-	
+
 	// Test Wrap
 	cause := errors.New("underlying error")
 	wrapped := Wrap(ErrorTypeSystem, "system error", cause)
-	if wrapped.Cause != cause {
+	if wrapped.Cause != cause { //nolint:errorlint // Testing exact object reference
 		t.Error("Expected wrapped error to contain cause")
 	}
 	if !errors.Is(wrapped, cause) {
 		t.Error("errors.Is should work with wrapped error")
 	}
-	
+
 	// Test WithContext
 	err = New(ErrorTypeExecution, "exec error")
 	err.WithContext("spell", "test_spell").WithContext("key", "ctrl+a")
-	
+
 	if err.Context["spell"] != "test_spell" {
 		t.Errorf("Expected context spell='test_spell', got '%v'", err.Context["spell"])
 	}
@@ -69,7 +69,7 @@ func TestIsType(t *testing.T) {
 			expected: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := IsType(tt.err, tt.errType); got != tt.expected {
@@ -126,7 +126,7 @@ func TestGetUserMessage(t *testing.T) {
 			want: "An unexpected error occurred",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := GetUserMessage(tt.err); got != tt.want {
@@ -142,7 +142,7 @@ func TestError_Error(t *testing.T) {
 	if err.Error() != "config error" {
 		t.Errorf("Error() = %v, want %v", err.Error(), "config error")
 	}
-	
+
 	// Test with cause
 	cause := errors.New("underlying issue")
 	wrapped := Wrap(ErrorTypeConfig, "config error", cause)

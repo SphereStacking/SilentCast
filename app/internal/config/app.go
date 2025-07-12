@@ -4,19 +4,19 @@ package config
 const (
 	// AppName is the application identifier used for directories
 	AppName = "silentcast"
-	
+
 	// ConfigName is the name used for configuration files
 	ConfigName = "spellbook"
-	
+
 	// AppDisplayName is the user-friendly name shown in UI
 	AppDisplayName = "SilentCast"
-	
+
 	// AppDescription is the application description
 	AppDescription = "Silent Hotkey Task Runner"
-	
+
 	// AppRepo is the GitHub repository (without organization)
 	AppRepo = "silentcast"
-	
+
 	// AppOrg is the GitHub organization
 	AppOrg = "SphereStacking"
 )

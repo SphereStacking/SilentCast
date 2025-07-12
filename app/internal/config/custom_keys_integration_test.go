@@ -19,9 +19,9 @@ func TestLoaderWithCustomKeys(t *testing.T) {
 		KeyShortcuts = origSpells
 		KeyActions = origGrimoire
 	}()
-	
+
 	// Create temp directory for test configs
-	
+
 	tests := []struct {
 		name      string
 		setupKeys func()
@@ -76,7 +76,7 @@ func TestLoaderWithCustomKeys(t *testing.T) {
 				if cfg.Daemon.LogLevel != "debug" {
 					t.Errorf("Expected log_level 'debug', got '%s'", cfg.Daemon.LogLevel)
 				}
-				
+
 				// Check hotkeys config
 				if cfg.Hotkeys.Prefix != "ctrl+alt+space" {
 					t.Errorf("Expected prefix 'ctrl+alt+space', got '%s'", cfg.Hotkeys.Prefix)
@@ -84,7 +84,7 @@ func TestLoaderWithCustomKeys(t *testing.T) {
 				if cfg.Hotkeys.Timeout.ToDuration().Milliseconds() != 2000 {
 					t.Errorf("Expected timeout 2000ms, got %d", cfg.Hotkeys.Timeout.ToDuration().Milliseconds())
 				}
-				
+
 				// Check spells
 				if len(cfg.Shortcuts) != 3 {
 					t.Errorf("Expected 3 spells, got %d", len(cfg.Shortcuts))
@@ -92,7 +92,7 @@ func TestLoaderWithCustomKeys(t *testing.T) {
 				if cfg.Shortcuts["gs"] != "git-status" {
 					t.Error("Expected spell 'gs' to map to 'git-status'")
 				}
-				
+
 				// Check grimoire
 				if len(cfg.Actions) != 3 {
 					t.Errorf("Expected 3 grimoire entries, got %d", len(cfg.Actions))
@@ -144,7 +144,7 @@ commands:
 				if cfg.Hotkeys.Prefix != "win+shift+x" {
 					t.Errorf("Expected prefix 'win+shift+x', got '%s'", cfg.Hotkeys.Prefix)
 				}
-				
+
 				// Check mappings
 				if cfg.Shortcuts["f1"] != "help" {
 					t.Error("Expected mapping 'f1' -> 'help'")
@@ -152,8 +152,8 @@ commands:
 				if cfg.Shortcuts["f2"] != "save" {
 					t.Error("Expected mapping 'f2' -> 'save'")
 				}
-				
-				// Check commands  
+
+				// Check commands
 				if cmd, ok := cfg.Actions["help"]; ok {
 					if cmd.Type != "app" {
 						t.Errorf("Expected type 'app', got '%s'", cmd.Type)
@@ -189,7 +189,7 @@ mappings:
     type: script
     command: echo "Mixed language config works!"
 `,
-			filename: ConfigName + ".yml", 
+			filename: ConfigName + ".yml",
 			validate: func(t *testing.T, cfg *Config) {
 				if !cfg.Daemon.AutoStart {
 					t.Error("Expected auto_start to be true")
@@ -203,7 +203,7 @@ mappings:
 			},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create temp directory for this test
@@ -212,23 +212,23 @@ mappings:
 				t.Fatalf("Failed to create temp dir: %v", err)
 			}
 			defer os.RemoveAll(tmpDir)
-			
+
 			// Setup custom keys
 			tt.setupKeys()
-			
+
 			// Write config file
 			configPath := filepath.Join(tmpDir, tt.filename)
-			if err := os.WriteFile(configPath, []byte(tt.config), 0644); err != nil {
-				t.Fatalf("Failed to write config: %v", err)
+			if writeErr := os.WriteFile(configPath, []byte(tt.config), 0o600); writeErr != nil {
+				t.Fatalf("Failed to write config: %v", writeErr)
 			}
-			
+
 			// Load config
 			loader := NewLoader(tmpDir)
 			cfg, err := loader.Load()
 			if err != nil {
 				t.Fatalf("Failed to load config: %v", err)
 			}
-			
+
 			// Validate
 			tt.validate(t, cfg)
 		})
@@ -241,38 +241,38 @@ func TestPrefixExplicitlySetWithCustomKeys(t *testing.T) {
 	defer func() {
 		KeyHotkeys = origHotkeys
 	}()
-	
+
 	// Use Japanese key
 	KeyHotkeys = "ホットキー"
-	
+
 	tmpDir, err := os.MkdirTemp("", "spellbook-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
 	defer os.RemoveAll(tmpDir)
-	
+
 	// Test with explicitly empty prefix
 	config := `
 ホットキー:
   prefix: ""
 `
-	
+
 	configPath := filepath.Join(tmpDir, ConfigName+".yml")
-	if err := os.WriteFile(configPath, []byte(config), 0644); err != nil {
-		t.Fatalf("Failed to write config: %v", err)
+	if writeErr := os.WriteFile(configPath, []byte(config), 0o600); writeErr != nil {
+		t.Fatalf("Failed to write config: %v", writeErr)
 	}
-	
+
 	loader := NewLoader(tmpDir)
 	cfg, err := loader.Load()
 	if err != nil {
 		t.Fatalf("Failed to load config: %v", err)
 	}
-	
+
 	// Should have empty prefix (not default)
 	if cfg.Hotkeys.Prefix != "" {
 		t.Errorf("Expected empty prefix, got '%s'", cfg.Hotkeys.Prefix)
 	}
-	
+
 	// prefixExplicitlySet should be true
 	if !cfg.prefixExplicitlySet {
 		t.Error("Expected prefixExplicitlySet to be true")

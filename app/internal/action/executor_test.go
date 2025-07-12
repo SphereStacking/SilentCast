@@ -11,23 +11,23 @@ func TestManager_Execute(t *testing.T) {
 	grimoire := map[string]config.ActionConfig{
 		"echo_test": {
 			Type:        "script",
-			Command: "echo 'test'",
+			Command:     "echo 'test'",
 			Description: "Test echo command",
 		},
 		"invalid_app": {
 			Type:        "app",
-			Command: "/non/existent/app",
+			Command:     "/non/existent/app",
 			Description: "Non-existent app",
 		},
 		"unknown_type": {
-			Type:        "unknown",
+			Type:    "unknown",
 			Command: "something",
 		},
 	}
-	
+
 	manager := NewManager(grimoire)
 	ctx := context.Background()
-	
+
 	tests := []struct {
 		name      string
 		spellName string
@@ -58,16 +58,16 @@ func TestManager_Execute(t *testing.T) {
 			errMsg:    "application not found",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := manager.Execute(ctx, tt.spellName)
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Execute() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			
+
 			if err != nil && tt.errMsg != "" {
 				if !contains(err.Error(), tt.errMsg) {
 					t.Errorf("Expected error containing '%s', got '%s'", tt.errMsg, err.Error())
@@ -86,7 +86,7 @@ func TestAppExecutor_Execute(t *testing.T) {
 		{
 			name: "Valid executable in PATH",
 			config: config.ActionConfig{
-				Type:        "app",
+				Type:    "app",
 				Command: "echo", // Should exist in PATH
 			},
 			wantErr: false,
@@ -94,7 +94,7 @@ func TestAppExecutor_Execute(t *testing.T) {
 		{
 			name: "Non-existent application",
 			config: config.ActionConfig{
-				Type:        "app",
+				Type:    "app",
 				Command: "/non/existent/application",
 			},
 			wantErr: true,
@@ -102,16 +102,16 @@ func TestAppExecutor_Execute(t *testing.T) {
 		{
 			name: "With arguments",
 			config: config.ActionConfig{
-				Type:        "app",
+				Type:    "app",
 				Command: "echo",
-				Args:        []string{"hello", "world"},
+				Args:    []string{"hello", "world"},
 			},
 			wantErr: false,
 		},
 		{
 			name: "With environment variables",
 			config: config.ActionConfig{
-				Type:        "app",
+				Type:    "app",
 				Command: "echo",
 				Env: map[string]string{
 					"TEST_VAR": "test_value",
@@ -122,20 +122,20 @@ func TestAppExecutor_Execute(t *testing.T) {
 		{
 			name: "Environment variable expansion",
 			config: config.ActionConfig{
-				Type:        "app",
+				Type:    "app",
 				Command: "$HOME/non_existent", // Will expand but won't exist
 			},
 			wantErr: true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			executor := NewAppExecutor(tt.config)
+			executor := NewAppExecutor(&tt.config)
 			ctx := context.Background()
-			
+
 			err := executor.Execute(ctx)
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Execute() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -144,6 +144,9 @@ func TestAppExecutor_Execute(t *testing.T) {
 }
 
 func TestScriptExecutor_Execute(t *testing.T) {
+	// Create temp directory for working directory test
+	tempDir := t.TempDir()
+
 	tests := []struct {
 		name    string
 		config  config.ActionConfig
@@ -152,7 +155,7 @@ func TestScriptExecutor_Execute(t *testing.T) {
 		{
 			name: "Simple echo command",
 			config: config.ActionConfig{
-				Type:        "script",
+				Type:    "script",
 				Command: "echo test",
 			},
 			wantErr: false,
@@ -160,7 +163,7 @@ func TestScriptExecutor_Execute(t *testing.T) {
 		{
 			name: "Command with exit code 0",
 			config: config.ActionConfig{
-				Type:        "script",
+				Type:    "script",
 				Command: "true",
 			},
 			wantErr: false,
@@ -168,7 +171,7 @@ func TestScriptExecutor_Execute(t *testing.T) {
 		{
 			name: "Command with non-zero exit code",
 			config: config.ActionConfig{
-				Type:        "script",
+				Type:    "script",
 				Command: "false",
 			},
 			wantErr: true,
@@ -176,16 +179,16 @@ func TestScriptExecutor_Execute(t *testing.T) {
 		{
 			name: "With working directory",
 			config: config.ActionConfig{
-				Type:        "script",
-				Command: "pwd",
-				WorkingDir:  "/tmp",
+				Type:       "script",
+				Command:    "pwd",
+				WorkingDir: tempDir,
 			},
 			wantErr: false,
 		},
 		{
 			name: "Environment variable in command",
 			config: config.ActionConfig{
-				Type:        "script",
+				Type:    "script",
 				Command: "echo $HOME",
 			},
 			wantErr: false,
@@ -193,20 +196,20 @@ func TestScriptExecutor_Execute(t *testing.T) {
 		{
 			name: "Empty command",
 			config: config.ActionConfig{
-				Type:        "script",
+				Type:    "script",
 				Command: "",
 			},
 			wantErr: true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			executor := NewScriptExecutor(tt.config)
+			executor := NewScriptExecutor(&tt.config)
 			ctx := context.Background()
-			
+
 			err := executor.Execute(ctx)
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Execute() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -222,40 +225,40 @@ func TestExecutor_String(t *testing.T) {
 	}{
 		{
 			name: "App with description",
-			executor: NewAppExecutor(config.ActionConfig{
+			executor: NewAppExecutor(&config.ActionConfig{
 				Type:        "app",
-				Command: "/usr/bin/app",
+				Command:     "/usr/bin/app",
 				Description: "My cool app",
 			}),
 			want: "My cool app",
 		},
 		{
 			name: "App without description",
-			executor: NewAppExecutor(config.ActionConfig{
-				Type:        "app",
+			executor: NewAppExecutor(&config.ActionConfig{
+				Type:    "app",
 				Command: "/usr/bin/app",
 			}),
 			want: "Launch /usr/bin/app",
 		},
 		{
 			name: "Script with description",
-			executor: NewScriptExecutor(config.ActionConfig{
+			executor: NewScriptExecutor(&config.ActionConfig{
 				Type:        "script",
-				Command: "git status",
+				Command:     "git status",
 				Description: "Show git status",
 			}),
 			want: "Show git status",
 		},
 		{
 			name: "Script without description",
-			executor: NewScriptExecutor(config.ActionConfig{
-				Type:        "script",
+			executor: NewScriptExecutor(&config.ActionConfig{
+				Type:    "script",
 				Command: "git status",
 			}),
 			want: "Run script: git status",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.executor.String(); got != tt.want {

@@ -18,19 +18,19 @@ func NewParser() *Parser {
 		keyMap:      make(map[string]uint16),
 		modifierMap: make(map[string]string),
 	}
-	
+
 	// Initialize common key mappings
 	p.initCommonKeys()
-	
+
 	// Initialize platform-specific mappings
 	keyMapper := GetKeyMapper()
 	p.modifierMap = keyMapper.GetModifierMap()
-	
+
 	// Merge in any platform-specific special keys
 	for key, code := range keyMapper.GetSpecialKeys() {
 		p.keyMap[key] = code
 	}
-	
+
 	return p
 }
 
@@ -39,40 +39,40 @@ func (p *Parser) Parse(sequence string) (KeySequence, error) {
 	if sequence == "" {
 		return KeySequence{}, ParseError{Input: sequence, Message: "empty sequence"}
 	}
-	
+
 	// Split by comma for sequential keys
 	parts := strings.Split(sequence, ",")
 	keys := make([]Key, 0, len(parts))
-	
+
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
 		if part == "" {
 			return KeySequence{}, ParseError{Input: sequence, Message: "empty key in sequence"}
 		}
-		
+
 		key, err := p.parseKey(part)
 		if err != nil {
 			return KeySequence{}, err
 		}
-		
+
 		keys = append(keys, key)
 	}
-	
+
 	return KeySequence{Keys: keys}, nil
 }
 
 // parseKey parses a single key combination (e.g., "ctrl+a" or "a")
 func (p *Parser) parseKey(keyStr string) (Key, error) {
 	parts := strings.Split(strings.ToLower(keyStr), "+")
-	
+
 	if len(parts) == 0 {
 		return Key{}, ParseError{Input: keyStr, Message: "empty key"}
 	}
-	
+
 	// Last part is the main key
 	mainKey := parts[len(parts)-1]
 	modifiers := parts[:len(parts)-1]
-	
+
 	// Normalize modifiers
 	normalizedMods := make([]string, 0, len(modifiers))
 	for _, mod := range modifiers {
@@ -82,7 +82,7 @@ func (p *Parser) parseKey(keyStr string) (Key, error) {
 		}
 		normalizedMods = append(normalizedMods, normalized)
 	}
-	
+
 	// Get key code
 	keyCode, ok := p.keyMap[mainKey]
 	if !ok {
@@ -98,7 +98,7 @@ func (p *Parser) parseKey(keyStr string) (Key, error) {
 			return Key{}, ParseError{Input: keyStr, Message: "unknown key: " + mainKey}
 		}
 	}
-	
+
 	return Key{
 		Code:      keyCode,
 		Modifiers: normalizedMods,
@@ -112,18 +112,18 @@ func (p *Parser) initCommonKeys() {
 	for i := 'a'; i <= 'z'; i++ {
 		p.keyMap[string(i)] = uint16(i)
 	}
-	
+
 	// Numbers
 	for i := '0'; i <= '9'; i++ {
 		p.keyMap[string(i)] = uint16(i)
 	}
-	
+
 	// Function keys
 	for i := 1; i <= 12; i++ {
 		key := fmt.Sprintf("f%d", i)
 		p.keyMap[key] = uint16(0x70 + i - 1) // F1 = 0x70
 	}
-	
+
 	// Special keys
 	p.keyMap["space"] = 0x20
 	p.keyMap["enter"] = 0x0D
@@ -143,4 +143,3 @@ func (p *Parser) initCommonKeys() {
 	p.keyMap["left"] = 0x25
 	p.keyMap["right"] = 0x27
 }
-

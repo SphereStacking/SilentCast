@@ -19,11 +19,11 @@ func NewLoader(basePath string) *Loader {
 	paths := []string{
 		filepath.Join(basePath, ConfigName+".yml"),
 	}
-	
+
 	// Add OS-specific config file using platform resolver
 	platform := GetPlatformResolver()
 	paths = append(paths, filepath.Join(basePath, platform.GetPlatformConfigFile()))
-	
+
 	return &Loader{
 		configPaths: paths,
 	}
@@ -33,12 +33,12 @@ func NewLoader(basePath string) *Loader {
 func (l *Loader) Load() (*Config, error) {
 	// Start with empty config, defaults will be applied after loading
 	cfg := &Config{
-		Shortcuts:   make(map[string]string),
-		Actions: make(map[string]ActionConfig),
+		Shortcuts: make(map[string]string),
+		Actions:   make(map[string]ActionConfig),
 	}
-	
+
 	hasConfig := false
-	
+
 	// Load each config file and merge
 	for _, path := range l.configPaths {
 		if err := l.loadFile(path, cfg); err != nil {
@@ -50,17 +50,17 @@ func (l *Loader) Load() (*Config, error) {
 		}
 		hasConfig = true
 	}
-	
+
 	// Apply defaults only if config was loaded and values are not set
 	if hasConfig {
 		l.applyDefaults(cfg)
 	}
-	
+
 	// Validate the configuration
 	if err := l.validate(cfg); err != nil {
 		return nil, fmt.Errorf("configuration validation failed: %w", err)
 	}
-	
+
 	return cfg, nil
 }
 
@@ -70,7 +70,7 @@ func (l *Loader) applyDefaults(cfg *Config) {
 	if cfg.Daemon.LogLevel == "" {
 		cfg.Daemon.LogLevel = "info"
 	}
-	
+
 	// Hotkey defaults
 	// Only apply default prefix if it wasn't explicitly set (even to empty)
 	if cfg.Hotkeys.Prefix == "" && !cfg.prefixExplicitlySet {
@@ -82,7 +82,7 @@ func (l *Loader) applyDefaults(cfg *Config) {
 	if cfg.Hotkeys.SequenceTimeout == 0 {
 		cfg.Hotkeys.SequenceTimeout = Duration(2000 * time.Millisecond)
 	}
-	
+
 	// Logger defaults
 	if cfg.Logger.Level == "" {
 		cfg.Logger.Level = "info"
@@ -104,27 +104,27 @@ func (l *Loader) loadFile(path string, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	
+
 	// Map custom keys to standard keys if needed
 	mappedData, hasPrefix, err := MapCustomKeys(data)
 	if err != nil {
 		return fmt.Errorf("failed to map custom keys: %w", err)
 	}
-	
+
 	// Create a temporary config to load into
 	temp := &Config{
-		Shortcuts:   make(map[string]string),
-		Actions: make(map[string]ActionConfig),
+		Shortcuts:           make(map[string]string),
+		Actions:             make(map[string]ActionConfig),
 		prefixExplicitlySet: hasPrefix,
 	}
-	
+
 	if err := yaml.Unmarshal(mappedData, temp); err != nil {
 		return fmt.Errorf("failed to parse YAML: %w", err)
 	}
-	
+
 	// Merge the configurations
 	l.merge(cfg, temp)
-	
+
 	return nil
 }
 
@@ -140,7 +140,7 @@ func (l *Loader) merge(dst, src *Config) {
 	if !src.Daemon.ConfigWatch {
 		dst.Daemon.ConfigWatch = src.Daemon.ConfigWatch
 	}
-	
+
 	// Merge hotkey config
 	// For prefix, we need to check if it was explicitly set
 	// If a config has hotkeys section, it means prefix was configured (even if empty)
@@ -157,7 +157,7 @@ func (l *Loader) merge(dst, src *Config) {
 	if src.Hotkeys.SequenceTimeout > 0 {
 		dst.Hotkeys.SequenceTimeout = src.Hotkeys.SequenceTimeout
 	}
-	
+
 	// Merge logger config
 	if src.Logger.Level != "" {
 		dst.Logger.Level = src.Logger.Level
@@ -177,12 +177,12 @@ func (l *Loader) merge(dst, src *Config) {
 	if src.Logger.Compress {
 		dst.Logger.Compress = src.Logger.Compress
 	}
-	
+
 	// Merge spells (overwrite)
 	for k, v := range src.Shortcuts {
 		dst.Shortcuts[k] = v
 	}
-	
+
 	// Merge grimoire (overwrite)
 	for k, v := range src.Actions {
 		dst.Actions[k] = v
@@ -192,22 +192,20 @@ func (l *Loader) merge(dst, src *Config) {
 // validate checks if the configuration is valid
 func (l *Loader) validate(cfg *Config) error {
 	// Check if any configuration was loaded
-	if len(cfg.Shortcuts) == 0 && len(cfg.Actions) == 0 {
-		// Allow empty config for now
-	}
-	
+	// Allow empty config for now
+
 	// Validate prefix key - empty is allowed if explicitly set
 	if cfg.Hotkeys.Prefix == "" && !cfg.prefixExplicitlySet {
 		return fmt.Errorf("hotkeys.prefix is required")
 	}
-	
+
 	// Validate spells reference existing grimoire entries
 	for spell, action := range cfg.Shortcuts {
 		if _, exists := cfg.Actions[action]; !exists {
 			return fmt.Errorf("spell '%s' references non-existent grimoire action '%s'", spell, action)
 		}
 	}
-	
+
 	// Validate grimoire entries
 	for name, action := range cfg.Actions {
 		if action.Type == "" {
@@ -220,7 +218,7 @@ func (l *Loader) validate(cfg *Config) error {
 			return fmt.Errorf("grimoire action '%s' missing command", name)
 		}
 	}
-	
+
 	// Validate log level
 	validLogLevels := map[string]bool{
 		"debug": true,
@@ -231,6 +229,6 @@ func (l *Loader) validate(cfg *Config) error {
 	if !validLogLevels[cfg.Daemon.LogLevel] {
 		return fmt.Errorf("invalid log level '%s'", cfg.Daemon.LogLevel)
 	}
-	
+
 	return nil
 }

@@ -11,7 +11,7 @@ func MapCustomKeys(data []byte) (mappedData []byte, hasPrefix bool, err error) {
 		KeyShortcuts == "spells" && KeyActions == "grimoire" {
 		// Check if prefix is set even with standard keys
 		var raw map[string]interface{}
-		if err := yaml.Unmarshal(data, &raw); err != nil {
+		if unmarshalErr := yaml.Unmarshal(data, &raw); unmarshalErr != nil {
 			return data, false, nil // Return original on error
 		}
 		if hotkeys, ok := raw["hotkeys"].(map[string]interface{}); ok {
@@ -19,22 +19,22 @@ func MapCustomKeys(data []byte) (mappedData []byte, hasPrefix bool, err error) {
 		}
 		return data, hasPrefix, nil
 	}
-	
+
 	// Parse YAML into a generic map
 	var raw map[string]interface{}
-	if err := yaml.Unmarshal(data, &raw); err != nil {
-		return nil, false, err
+	if unmarshalErr := yaml.Unmarshal(data, &raw); unmarshalErr != nil {
+		return nil, false, unmarshalErr
 	}
-	
+
 	// Check if prefix was explicitly set
 	prefixSet := false
 	if hotkeys, ok := raw[KeyHotkeys].(map[string]interface{}); ok {
 		_, prefixSet = hotkeys["prefix"]
 	}
-	
+
 	// Create new map with standard keys
 	mapped := make(map[string]interface{})
-	
+
 	// Map custom keys to standard keys (Config struct YAML tags)
 	keyMap := map[string]string{
 		KeyDaemon:    "daemon",
@@ -44,13 +44,13 @@ func MapCustomKeys(data []byte) (mappedData []byte, hasPrefix bool, err error) {
 		KeyLogger:    "logger",
 		KeyUpdater:   "updater",
 	}
-	
+
 	for customKey, standardKey := range keyMap {
 		if value, exists := raw[customKey]; exists {
 			mapped[standardKey] = value
 		}
 	}
-	
+
 	// Convert back to YAML
 	result, err := yaml.Marshal(mapped)
 	return result, prefixSet, err

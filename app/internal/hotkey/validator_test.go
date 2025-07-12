@@ -88,25 +88,25 @@ func TestValidator_Validate(t *testing.T) {
 			wantErr: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			validator := NewValidator()
-			
+
 			// Pre-register sequences
 			for seq, spell := range tt.registered {
 				if err := validator.Register(seq, spell); err != nil {
 					t.Fatalf("Failed to pre-register sequence: %v", err)
 				}
 			}
-			
+
 			err := validator.Validate(tt.sequence, tt.spellName)
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			
+
 			if err != nil && tt.errMsg != "" {
 				if !contains(err.Error(), tt.errMsg) {
 					t.Errorf("Expected error containing '%s', got '%s'", tt.errMsg, err.Error())
@@ -118,19 +118,19 @@ func TestValidator_Validate(t *testing.T) {
 
 func TestValidator_Register(t *testing.T) {
 	validator := NewValidator()
-	
+
 	// Test successful registration
 	err := validator.Register("ctrl+a", "select_all")
 	if err != nil {
 		t.Errorf("Register() error = %v", err)
 	}
-	
+
 	// Test duplicate registration
 	err = validator.Register("ctrl+a", "different_spell")
 	if err == nil {
 		t.Error("Expected error for duplicate registration")
 	}
-	
+
 	// Test registration after unregister
 	validator.Unregister("ctrl+a")
 	err = validator.Register("ctrl+a", "new_spell")
@@ -141,27 +141,27 @@ func TestValidator_Register(t *testing.T) {
 
 func TestValidator_GetRegistered(t *testing.T) {
 	validator := NewValidator()
-	
+
 	// Register some sequences
 	sequences := map[string]string{
 		"ctrl+a": "select_all",
 		"g,s":    "git_status",
 		"f1":     "help",
 	}
-	
+
 	for seq, spell := range sequences {
 		if err := validator.Register(seq, spell); err != nil {
 			t.Fatalf("Failed to register sequence: %v", err)
 		}
 	}
-	
+
 	// Get registered sequences
 	registered := validator.GetRegistered()
-	
+
 	if len(registered) != len(sequences) {
 		t.Errorf("Expected %d registered sequences, got %d", len(sequences), len(registered))
 	}
-	
+
 	// Verify each sequence is registered correctly
 	for seq, expectedSpell := range sequences {
 		// The validator normalizes sequences, so we need to check the normalized form
@@ -180,20 +180,20 @@ func TestValidator_GetRegistered(t *testing.T) {
 
 func TestValidator_Clear(t *testing.T) {
 	validator := NewValidator()
-	
+
 	// Register some sequences
 	validator.Register("ctrl+a", "select_all")
 	validator.Register("g,s", "git_status")
-	
+
 	// Clear all registrations
 	validator.Clear()
-	
+
 	// Verify all cleared
 	registered := validator.GetRegistered()
 	if len(registered) != 0 {
 		t.Errorf("Expected 0 registered sequences after clear, got %d", len(registered))
 	}
-	
+
 	// Should be able to register previously registered sequences
 	err := validator.Register("ctrl+a", "new_spell")
 	if err != nil {

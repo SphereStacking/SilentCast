@@ -28,7 +28,7 @@ func (d *darwinLauncher) PrepareCommand(ctx context.Context, path string, args [
 		}
 		return exec.CommandContext(ctx, "open", openArgs...)
 	}
-	
+
 	// Regular executable
 	if len(args) > 0 {
 		return exec.CommandContext(ctx, path, args...)

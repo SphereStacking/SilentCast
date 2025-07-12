@@ -1,11 +1,9 @@
-//go:build !darwin && !windows
-// +build !darwin,!windows
+//go:build !darwin && !windows && !linux
+// +build !darwin,!windows,!linux
 
 package permission
 
-import "fmt"
-
 // NewManager creates a new permission manager for unsupported platforms
 func NewManager() (Manager, error) {
-	return nil, fmt.Errorf("unsupported operating system")
+	return newStubManager(), nil
 }

@@ -4,7 +4,7 @@ package config
 type PlatformResolver interface {
 	// GetPlatformConfigFile returns the platform-specific config file name
 	GetPlatformConfigFile() string
-	
+
 	// GetDefaultConfigPath returns the default configuration directory
 	GetDefaultConfigPath() string
 }

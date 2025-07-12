@@ -7,7 +7,7 @@ import (
 
 func TestParser_Parse(t *testing.T) {
 	parser := NewParser()
-	
+
 	tests := []struct {
 		name     string
 		input    string
@@ -141,24 +141,24 @@ func TestParser_Parse(t *testing.T) {
 			},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			seq, err := parser.Parse(tt.input)
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Parse() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			
+
 			if err != nil {
 				return
 			}
-			
+
 			if len(seq.Keys) != tt.wantLen {
 				t.Errorf("Parse() got %d keys, want %d", len(seq.Keys), tt.wantLen)
 			}
-			
+
 			if tt.validate != nil {
 				tt.validate(t, seq)
 			}
@@ -204,7 +204,7 @@ func TestKeySequence_String(t *testing.T) {
 			want: "g,s",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.sequence.String(); got != tt.want {

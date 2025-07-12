@@ -38,10 +38,9 @@ func (k Key) String() string {
 // Event represents a hotkey event
 type Event struct {
 	Sequence  KeySequence
-	SpellName string    // The spell to execute
+	SpellName string // The spell to execute
 	Timestamp time.Time
 }
-
 
 // HandlerFunc is a function adapter for Handler
 type HandlerFunc func(Event) error
@@ -50,7 +49,6 @@ type HandlerFunc func(Event) error
 func (f HandlerFunc) Handle(event Event) error {
 	return f(event)
 }
-
 
 // ParseError represents an error parsing a key sequence
 type ParseError struct {

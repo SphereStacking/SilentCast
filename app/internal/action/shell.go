@@ -9,10 +9,10 @@ import (
 type ShellExecutor interface {
 	// GetShell returns the shell command and flag for the platform
 	GetShell() (shell string, flag string)
-	
+
 	// WrapInTerminal wraps a command to run in a new terminal window
 	WrapInTerminal(ctx context.Context, cmd *exec.Cmd) *exec.Cmd
-	
+
 	// IsInteractiveCommand checks if a command should run in a terminal
 	IsInteractiveCommand(command string) bool
 }

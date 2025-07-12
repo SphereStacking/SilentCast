@@ -2,19 +2,19 @@ package config
 
 import (
 	"time"
-	
+
 	"gopkg.in/yaml.v3"
 )
 
 // Config represents the main configuration structure
 type Config struct {
-	Daemon    DaemonConfig              `yaml:"daemon"`
-	Hotkeys   HotkeyConfig              `yaml:"hotkeys"`
-	Shortcuts map[string]string         `yaml:"spells"`   // YAMLでは"spells"だがコードではShortcuts
-	Actions   map[string]ActionConfig   `yaml:"grimoire"` // YAMLでは"grimoire"だがコードではActions
-	Logger    LoggerConfig              `yaml:"logger"`
-	Updater   UpdaterConfig             `yaml:"updater"`
-	
+	Daemon    DaemonConfig            `yaml:"daemon"`
+	Hotkeys   HotkeyConfig            `yaml:"hotkeys"`
+	Shortcuts map[string]string       `yaml:"spells"`   // YAMLでは"spells"だがコードではShortcuts
+	Actions   map[string]ActionConfig `yaml:"grimoire"` // YAMLでは"grimoire"だがコードではActions
+	Logger    LoggerConfig            `yaml:"logger"`
+	Updater   UpdaterConfig           `yaml:"updater"`
+
 	// Internal fields (not from YAML)
 	prefixExplicitlySet bool `yaml:"-"`
 }
@@ -24,35 +24,35 @@ func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	// Use an alias to avoid infinite recursion
 	type configAlias Config
 	alias := (*configAlias)(c)
-	
+
 	// First unmarshal into a map to check what fields are present
 	var raw map[string]interface{}
 	if err := unmarshal(&raw); err != nil {
 		return err
 	}
-	
+
 	// Check if hotkeys.prefix was explicitly set
 	if hotkeys, ok := raw["hotkeys"].(map[string]interface{}); ok {
 		if _, hasPrefix := hotkeys["prefix"]; hasPrefix {
 			c.prefixExplicitlySet = true
 		}
 	}
-	
+
 	// Now unmarshal the full structure
 	// Re-encode the map to YAML and decode into our struct
 	data, err := yaml.Marshal(raw)
 	if err != nil {
 		return err
 	}
-	
+
 	return yaml.Unmarshal(data, alias)
 }
 
 // DaemonConfig contains daemon-related settings
 type DaemonConfig struct {
-	AutoStart    bool   `yaml:"auto_start"`
-	LogLevel     string `yaml:"log_level"`
-	ConfigWatch  bool   `yaml:"config_watch"`
+	AutoStart   bool   `yaml:"auto_start"`
+	LogLevel    string `yaml:"log_level"`
+	ConfigWatch bool   `yaml:"config_watch"`
 }
 
 // LoggerConfig contains logger-related settings
@@ -100,10 +100,10 @@ func (d Duration) ToDuration() time.Duration {
 
 // ActionConfig represents an action that can be executed
 type ActionConfig struct {
-	Type         string            `yaml:"type"`          // "app" or "script"
-	Command      string            `yaml:"command"`        // Path or command
-	Args         []string          `yaml:"args,omitempty"`
-	Env          map[string]string `yaml:"env,omitempty"`
-	WorkingDir   string            `yaml:"working_dir,omitempty"`
-	Description  string            `yaml:"description,omitempty"`
+	Type        string            `yaml:"type"`    // "app" or "script"
+	Command     string            `yaml:"command"` // Path or command
+	Args        []string          `yaml:"args,omitempty"`
+	Env         map[string]string `yaml:"env,omitempty"`
+	WorkingDir  string            `yaml:"working_dir,omitempty"`
+	Description string            `yaml:"description,omitempty"`
 }

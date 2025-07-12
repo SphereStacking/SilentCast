@@ -45,7 +45,7 @@ func (m *windowsManager) Check(ctx context.Context) ([]Permission, error) {
 			Required:    false,
 		},
 	}
-	
+
 	return permissions, nil
 }
 
@@ -79,7 +79,7 @@ Or to disable UAC prompts for Spellbook:
 1. Open Task Scheduler
 2. Create a new task with highest privileges
 3. Set it to run Spellbook at login`
-	
+
 	case PermissionTypeNotification:
 		return `Notifications are enabled by default on Windows 10 and later.
 If you don't see notifications:
@@ -87,7 +87,7 @@ If you don't see notifications:
 2. Go to System > Notifications & actions
 3. Make sure notifications are turned on
 4. Find Spellbook in the app list and enable it`
-	
+
 	case PermissionTypeAutoStart:
 		return `To enable auto-start:
 1. Press Win+R and type: shell:startup
@@ -97,7 +97,7 @@ Or use Task Manager:
 1. Open Task Manager (Ctrl+Shift+Esc)
 2. Go to the Startup tab
 3. If Spellbook is listed, right-click and Enable`
-	
+
 	default:
 		return "No instructions available for this permission type"
 	}
@@ -106,7 +106,7 @@ Or use Task Manager:
 // OpenSettings opens the system settings for the specified permission
 func (m *windowsManager) OpenSettings(permType PermissionType) error {
 	var args []string
-	
+
 	switch permType {
 	case PermissionTypeAccessibility:
 		// Open UAC settings
@@ -120,7 +120,7 @@ func (m *windowsManager) OpenSettings(permType PermissionType) error {
 	default:
 		return fmt.Errorf("no settings URL for permission type: %s", permType)
 	}
-	
+
 	cmd := exec.Command(args[0], args[1:]...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	return cmd.Run()

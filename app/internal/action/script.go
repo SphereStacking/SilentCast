@@ -16,9 +16,9 @@ type ScriptExecutor struct {
 }
 
 // NewScriptExecutor creates a new script executor
-func NewScriptExecutor(cfg config.ActionConfig) *ScriptExecutor {
+func NewScriptExecutor(cfg *config.ActionConfig) *ScriptExecutor {
 	return &ScriptExecutor{
-		config: cfg,
+		config: *cfg,
 	}
 }
 
@@ -26,31 +26,31 @@ func NewScriptExecutor(cfg config.ActionConfig) *ScriptExecutor {
 func (e *ScriptExecutor) Execute(ctx context.Context) error {
 	// Expand environment variables in command
 	command := os.ExpandEnv(e.config.Command)
-	
+
 	// Check for empty command
 	if strings.TrimSpace(command) == "" {
 		return fmt.Errorf("empty command")
 	}
-	
+
 	// Get platform-specific shell executor
 	shellExec := GetShellExecutor()
 	shell, shellFlag := shellExec.GetShell()
-	
+
 	// Create command
 	var cmd *exec.Cmd
 	if len(e.config.Args) > 0 {
 		// If args are provided, don't use shell, execute directly
 		parts := strings.Fields(command)
 		if len(parts) > 0 {
-			cmd = exec.CommandContext(ctx, parts[0], append(parts[1:], e.config.Args...)...)
+			cmd = exec.CommandContext(ctx, parts[0], append(parts[1:], e.config.Args...)...) // #nosec G204 - Command is from trusted config file
 		} else {
 			return fmt.Errorf("empty command")
 		}
 	} else {
 		// Use shell to execute the command
-		cmd = exec.CommandContext(ctx, shell, shellFlag, command)
+		cmd = exec.CommandContext(ctx, shell, shellFlag, command) // #nosec G204 - Command is from trusted config file
 	}
-	
+
 	// Set working directory if specified
 	if e.config.WorkingDir != "" {
 		cmd.Dir = os.ExpandEnv(e.config.WorkingDir)
@@ -60,7 +60,7 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 			cmd.Dir = home
 		}
 	}
-	
+
 	// Set environment variables
 	cmd.Env = os.Environ()
 	if len(e.config.Env) > 0 {
@@ -68,30 +68,31 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 			cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", k, os.ExpandEnv(v)))
 		}
 	}
-	
+
 	// For scripts, we'll run them in a new terminal window
 	if shellExec.IsInteractiveCommand(command) {
 		cmd = shellExec.WrapInTerminal(ctx, cmd)
 	}
-	
+
 	// Start the script
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("failed to start script: %w", err)
 	}
-	
+
 	// For background scripts, detach from the process
 	if !e.shouldWaitForCompletion(command) {
 		if err := cmd.Process.Release(); err != nil {
 			// Non-fatal error
+			_ = err // Explicitly ignore
 		}
 		return nil
 	}
-	
+
 	// Wait for completion if needed
 	if err := cmd.Wait(); err != nil {
 		return fmt.Errorf("script execution failed: %w", err)
 	}
-	
+
 	return nil
 }
 

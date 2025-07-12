@@ -20,13 +20,13 @@ func NewValidator() *Validator {
 }
 
 // Validate validates a key sequence and checks for conflicts
-func (v *Validator) Validate(sequence string, spellName string) error {
+func (v *Validator) Validate(sequence, spellName string) error {
 	// Parse the sequence
 	keySeq, err := v.parser.Parse(sequence)
 	if err != nil {
 		return err
 	}
-	
+
 	// Check for empty sequence
 	if len(keySeq.Keys) == 0 {
 		return ValidationError{
@@ -34,7 +34,7 @@ func (v *Validator) Validate(sequence string, spellName string) error {
 			Message:  "sequence must contain at least one key",
 		}
 	}
-	
+
 	// Check for exact duplicates
 	normalized := v.normalize(sequence)
 	if existing, exists := v.registered[normalized]; exists {
@@ -45,21 +45,21 @@ func (v *Validator) Validate(sequence string, spellName string) error {
 			}
 		}
 	}
-	
+
 	// Check for prefix conflicts (e.g., "g" conflicts with "g,s")
 	if err := v.checkPrefixConflicts(normalized, spellName); err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
 // Register marks a sequence as registered
-func (v *Validator) Register(sequence string, spellName string) error {
+func (v *Validator) Register(sequence, spellName string) error {
 	if err := v.Validate(sequence, spellName); err != nil {
 		return err
 	}
-	
+
 	normalized := v.normalize(sequence)
 	v.registered[normalized] = spellName
 	return nil
@@ -97,17 +97,17 @@ func (v *Validator) normalize(sequence string) string {
 }
 
 // checkPrefixConflicts checks for prefix conflicts
-func (v *Validator) checkPrefixConflicts(normalized string, spellName string) error {
+func (v *Validator) checkPrefixConflicts(normalized, _ string) error {
 	parts := strings.Split(normalized, ",")
-	
+
 	// Check if this sequence is a prefix of any existing sequence
 	for registered, existingSpell := range v.registered {
 		if registered == normalized {
 			continue // Skip exact match (already checked)
 		}
-		
+
 		registeredParts := strings.Split(registered, ",")
-		
+
 		// Check if normalized is a prefix of registered
 		if len(parts) < len(registeredParts) {
 			isPrefix := true
@@ -124,7 +124,7 @@ func (v *Validator) checkPrefixConflicts(normalized string, spellName string) er
 				}
 			}
 		}
-		
+
 		// Check if registered is a prefix of normalized
 		if len(registeredParts) < len(parts) {
 			isPrefix := true
@@ -142,6 +142,6 @@ func (v *Validator) checkPrefixConflicts(normalized string, spellName string) er
 			}
 		}
 	}
-	
+
 	return nil
 }

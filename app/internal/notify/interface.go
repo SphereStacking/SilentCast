@@ -27,7 +27,7 @@ type Notification struct {
 type Notifier interface {
 	// Notify sends a notification
 	Notify(ctx context.Context, notification Notification) error
-	
+
 	// IsAvailable checks if the notifier is available on this system
 	IsAvailable() bool
 }
@@ -42,13 +42,13 @@ func NewManager() *Manager {
 	manager := &Manager{
 		notifiers: make([]Notifier, 0),
 	}
-	
+
 	// Add available notifiers
 	// Console notifier is always available
 	manager.AddNotifier(NewConsoleNotifier())
-	
+
 	// TODO: Add system notifiers (desktop notifications)
-	
+
 	return manager
 }
 
@@ -62,13 +62,13 @@ func (m *Manager) AddNotifier(notifier Notifier) {
 // Notify sends a notification through all available notifiers
 func (m *Manager) Notify(ctx context.Context, notification Notification) error {
 	var lastError error
-	
+
 	for _, notifier := range m.notifiers {
 		if err := notifier.Notify(ctx, notification); err != nil {
 			lastError = err
 		}
 	}
-	
+
 	return lastError
 }
 

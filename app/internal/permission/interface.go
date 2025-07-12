@@ -40,16 +40,16 @@ type Permission struct {
 type Manager interface {
 	// Check returns the current status of all permissions
 	Check(ctx context.Context) ([]Permission, error)
-	
+
 	// Request attempts to request the specified permission
 	Request(ctx context.Context, permType PermissionType) error
-	
+
 	// GetInstructions returns user-friendly instructions for granting a permission
 	GetInstructions(permType PermissionType) string
-	
+
 	// OpenSettings opens the system settings for the specified permission
 	OpenSettings(permType PermissionType) error
-	
+
 	// IsSupported checks if a permission type is supported on this OS
 	IsSupported(permType PermissionType) bool
 }

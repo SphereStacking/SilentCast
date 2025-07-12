@@ -19,10 +19,10 @@ func NewConsoleNotifier() *ConsoleNotifier {
 func (n *ConsoleNotifier) Notify(ctx context.Context, notification Notification) error {
 	// Format timestamp
 	timestamp := time.Now().Format("15:04:05")
-	
+
 	// Choose prefix and color based on level
 	var prefix, color, reset string
-	
+
 	// Check if we're in a terminal that supports colors
 	if isTerminal() {
 		reset = "\033[0m"
@@ -58,21 +58,22 @@ func (n *ConsoleNotifier) Notify(ctx context.Context, notification Notification)
 			prefix = "[NOTIFY]"
 		}
 	}
-	
+
 	// Format and print the notification
-	if notification.Title != "" && notification.Message != "" {
-		fmt.Fprintf(os.Stderr, "%s[%s] %s%s: %s%s\n", 
+	switch {
+	case notification.Title != "" && notification.Message != "":
+		fmt.Fprintf(os.Stderr, "%s[%s] %s%s: %s%s\n",
 			color, timestamp, prefix, reset, notification.Title, reset)
-		fmt.Fprintf(os.Stderr, "%s        %s%s\n", 
+		fmt.Fprintf(os.Stderr, "%s        %s%s\n",
 			color, notification.Message, reset)
-	} else if notification.Title != "" {
-		fmt.Fprintf(os.Stderr, "%s[%s] %s: %s%s\n", 
+	case notification.Title != "":
+		fmt.Fprintf(os.Stderr, "%s[%s] %s: %s%s\n",
 			color, timestamp, prefix, notification.Title, reset)
-	} else {
-		fmt.Fprintf(os.Stderr, "%s[%s] %s: %s%s\n", 
+	default:
+		fmt.Fprintf(os.Stderr, "%s[%s] %s: %s%s\n",
 			color, timestamp, prefix, notification.Message, reset)
 	}
-	
+
 	return nil
 }
 

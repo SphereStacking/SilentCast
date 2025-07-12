@@ -23,5 +23,5 @@ func (d *darwinPlatformUpdater) ReplaceExecutable(src, dst string) error {
 }
 
 func (d *darwinPlatformUpdater) MakeExecutable(path string) error {
-	return os.Chmod(path, 0755)
+	return os.Chmod(path, 0o755)
 }

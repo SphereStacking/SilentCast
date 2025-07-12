@@ -15,9 +15,9 @@ type AppExecutor struct {
 }
 
 // NewAppExecutor creates a new application executor
-func NewAppExecutor(cfg config.ActionConfig) *AppExecutor {
+func NewAppExecutor(cfg *config.ActionConfig) *AppExecutor {
 	return &AppExecutor{
-		config: cfg,
+		config: *cfg,
 	}
 }
 
@@ -34,7 +34,7 @@ func (e *AppExecutor) Execute(ctx context.Context) error {
 		if _, err := os.Stat(path); err != nil {
 			if os.IsNotExist(err) {
 				// Try to find in PATH
-				if _, err := exec.LookPath(path); err != nil {
+				if _, lookupErr := exec.LookPath(path); lookupErr != nil {
 					return fmt.Errorf("application not found: %s", path)
 				}
 			} else {
@@ -68,6 +68,7 @@ func (e *AppExecutor) Execute(ctx context.Context) error {
 	if err := cmd.Process.Release(); err != nil {
 		// Non-fatal error, log it but don't fail
 		// In production, this would be logged
+		_ = err // Explicitly ignore
 	}
 
 	return nil

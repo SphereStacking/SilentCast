@@ -11,7 +11,7 @@ import (
 func TestConsoleNotifier_Notify(t *testing.T) {
 	notifier := NewConsoleNotifier()
 	ctx := context.Background()
-	
+
 	tests := []struct {
 		name         string
 		notification Notification
@@ -70,28 +70,28 @@ func TestConsoleNotifier_Notify(t *testing.T) {
 			wantContains: []string{"INFO", "Message Only"},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Capture stderr output
 			oldStderr := os.Stderr
 			r, w, _ := os.Pipe()
 			os.Stderr = w
-			
+
 			// Send notification
 			err := notifier.Notify(ctx, tt.notification)
 			if err != nil {
 				t.Errorf("Notify() error = %v", err)
 			}
-			
+
 			// Restore stderr and read output
 			w.Close()
 			os.Stderr = oldStderr
-			
+
 			var buf bytes.Buffer
 			buf.ReadFrom(r)
 			output := buf.String()
-			
+
 			// Check output contains expected strings
 			for _, want := range tt.wantContains {
 				if !strings.Contains(output, want) {
@@ -104,7 +104,7 @@ func TestConsoleNotifier_Notify(t *testing.T) {
 
 func TestConsoleNotifier_IsAvailable(t *testing.T) {
 	notifier := NewConsoleNotifier()
-	
+
 	if !notifier.IsAvailable() {
 		t.Error("ConsoleNotifier should always be available")
 	}
@@ -113,7 +113,7 @@ func TestConsoleNotifier_IsAvailable(t *testing.T) {
 func TestManager_Notify(t *testing.T) {
 	manager := NewManager()
 	ctx := context.Background()
-	
+
 	// Test all convenience methods
 	tests := []struct {
 		name   string
@@ -144,28 +144,28 @@ func TestManager_Notify(t *testing.T) {
 			},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Capture stderr output
 			oldStderr := os.Stderr
 			r, w, _ := os.Pipe()
 			os.Stderr = w
-			
+
 			// Call method
 			err := tt.method()
 			if err != nil {
 				t.Errorf("%s() error = %v", tt.name, err)
 			}
-			
+
 			// Restore stderr and read output
 			w.Close()
 			os.Stderr = oldStderr
-			
+
 			var buf bytes.Buffer
 			buf.ReadFrom(r)
 			output := buf.String()
-			
+
 			// Verify output is not empty
 			if output == "" {
 				t.Errorf("%s() produced no output", tt.name)

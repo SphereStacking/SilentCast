@@ -21,7 +21,7 @@ func (w *windowsLauncher) PrepareCommand(ctx context.Context, path string, args 
 	if w.RequiresShell(path) {
 		return exec.CommandContext(ctx, "cmd", "/c", "start", "", path)
 	}
-	
+
 	// Regular executable
 	if len(args) > 0 {
 		return exec.CommandContext(ctx, path, args...)

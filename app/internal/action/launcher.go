@@ -9,10 +9,10 @@ import (
 type AppLauncher interface {
 	// PrepareCommand prepares the command for launching an application
 	PrepareCommand(ctx context.Context, path string, args []string) *exec.Cmd
-	
+
 	// IsSpecialPath checks if the path requires special handling
 	IsSpecialPath(path string) bool
-	
+
 	// RequiresShell checks if the application should be launched via shell
 	RequiresShell(path string) bool
 }

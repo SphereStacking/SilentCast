@@ -11,7 +11,7 @@ import (
 func TestLoader_Load(t *testing.T) {
 	// Create a temporary directory for test configs
 	tempDir := t.TempDir()
-	
+
 	// Create test configuration files
 	commonConfig := `
 daemon:
@@ -39,7 +39,7 @@ grimoire:
     type: script
     command: "git status"
 `
-	
+
 	osSpecificConfig := `
 hotkeys:
   prefix: "cmd+space"
@@ -53,13 +53,13 @@ grimoire:
     command: /Applications/VSCode.app
     description: "Launch VS Code"
 `
-	
+
 	// Write common config
-	err := os.WriteFile(filepath.Join(tempDir, "spellbook.yml"), []byte(commonConfig), 0644)
+	err := os.WriteFile(filepath.Join(tempDir, "spellbook.yml"), []byte(commonConfig), 0o600)
 	if err != nil {
 		t.Fatalf("Failed to write common config: %v", err)
 	}
-	
+
 	// Write OS-specific config based on current OS
 	var osConfigFile string
 	switch runtime.GOOS {
@@ -73,21 +73,21 @@ grimoire:
 		// For other platforms, skip OS-specific config
 		osConfigFile = ""
 	}
-	
+
 	if osConfigFile != "" {
-		err = os.WriteFile(filepath.Join(tempDir, osConfigFile), []byte(osSpecificConfig), 0644)
+		err = os.WriteFile(filepath.Join(tempDir, osConfigFile), []byte(osSpecificConfig), 0o600)
 		if err != nil {
 			t.Fatalf("Failed to write OS config: %v", err)
 		}
 	}
-	
+
 	// Test loading
 	loader := NewLoader(tempDir)
 	cfg, err := loader.Load()
 	if err != nil {
 		t.Fatalf("Failed to load config: %v", err)
 	}
-	
+
 	// Verify merged configuration
 	tests := []struct {
 		name     string
@@ -95,8 +95,8 @@ grimoire:
 		expected bool
 	}{
 		{
-			name:     "OS-specific prefix overrides common",
-			check:    func() bool { 
+			name: "OS-specific prefix overrides common",
+			check: func() bool {
 				// Only expect override if OS-specific config was written
 				if osConfigFile != "" {
 					return cfg.Hotkeys.Prefix == "cmd+space"
@@ -111,8 +111,8 @@ grimoire:
 			expected: true,
 		},
 		{
-			name:     "OS-specific spell overrides common",
-			check:    func() bool { 
+			name: "OS-specific spell overrides common",
+			check: func() bool {
 				// Only expect override if OS-specific config was written
 				if osConfigFile != "" {
 					return cfg.Shortcuts["e"] == "vscode"
@@ -132,8 +132,8 @@ grimoire:
 			expected: true,
 		},
 		{
-			name:     "New grimoire entry is added",
-			check:    func() bool { 
+			name: "New grimoire entry is added",
+			check: func() bool {
 				// Only expect vscode entry if OS-specific config was written
 				if osConfigFile != "" {
 					_, exists := cfg.Actions["vscode"]
@@ -151,7 +151,7 @@ grimoire:
 			expected: true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.check(); got != tt.expected {
@@ -255,22 +255,22 @@ grimoire:
 			errMsg:  "invalid log level",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tempDir := t.TempDir()
-			err := os.WriteFile(filepath.Join(tempDir, ConfigName+".yml"), []byte(tt.config), 0644)
+			err := os.WriteFile(filepath.Join(tempDir, ConfigName+".yml"), []byte(tt.config), 0o600)
 			if err != nil {
 				t.Fatalf("Failed to write config: %v", err)
 			}
-			
+
 			loader := NewLoader(tempDir)
 			_, err = loader.Load()
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Load() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			
+
 			if tt.wantErr && err != nil && tt.errMsg != "" {
 				if !contains(err.Error(), tt.errMsg) {
 					t.Errorf("Expected error containing '%s', got '%s'", tt.errMsg, err.Error())

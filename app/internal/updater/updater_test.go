@@ -1,6 +1,7 @@
 package updater
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -21,13 +22,13 @@ func TestNewUpdater(t *testing.T) {
 		RepoName:       "repo",
 		CheckInterval:  1 * time.Hour,
 	}
-	
+
 	u := NewUpdater(cfg)
-	
+
 	if u.currentVersion != cfg.CurrentVersion {
 		t.Errorf("Expected version %s, got %s", cfg.CurrentVersion, u.currentVersion)
 	}
-	
+
 	if u.checkInterval != cfg.CheckInterval {
 		t.Errorf("Expected interval %v, got %v", cfg.CheckInterval, u.checkInterval)
 	}
@@ -49,7 +50,7 @@ func TestIsNewerVersion(t *testing.T) {
 		{"v1.0.0", "v2.0.0", true},
 		{"v1.9.0", "v1.10.0", true},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.current+"_vs_"+tt.new, func(t *testing.T) {
 			u := &Updater{currentVersion: tt.current}
@@ -69,34 +70,34 @@ func TestFindPlatformAsset(t *testing.T) {
 		{Name: "spellbook-linux-arm64", Size: 1500},
 		{Name: "checksums.txt", Size: 100},
 	}
-	
+
 	u := &Updater{}
-	
+
 	// Test current platform
 	currentPlatform := fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)
 	asset, err := u.findPlatformAsset(assets)
-	
+
 	// Skip if current platform not in test assets
 	if err != nil && strings.Contains(err.Error(), "no asset found") {
 		t.Skipf("Skipping test - no asset for current platform %s", currentPlatform)
 		return
 	}
-	
+
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
-	
+
 	// Verify the asset name contains the platform
 	if asset != nil && !strings.Contains(asset.Name, currentPlatform) {
 		t.Errorf("Expected asset name to contain %s, got %s", currentPlatform, asset.Name)
 	}
-	
+
 	// Test no matching asset
 	noMatchAssets := []Asset{
 		{Name: "spellbook-freebsd-amd64", Size: 1000},
 		{Name: "checksums.txt", Size: 100},
 	}
-	
+
 	_, err = u.findPlatformAsset(noMatchAssets)
 	if err == nil {
 		t.Error("Expected error for no matching platform")
@@ -110,35 +111,34 @@ func TestCheckForUpdate(t *testing.T) {
 			http.NotFound(w, r)
 			return
 		}
-		
+
 		release := Release{
 			TagName:     "v2.0.0",
 			Name:        "Release v2.0.0",
 			Body:        "New features",
 			PublishedAt: time.Now(),
-			Assets: []Asset{
-			},
+			Assets:      []Asset{},
 		}
-		
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(release)
 	}))
 	defer server.Close()
-	
+
 	u := &Updater{
 		currentVersion: "v1.0.0",
 		repoOwner:      "test",
 		repoName:       "repo",
 		httpClient:     &http.Client{Timeout: 5 * time.Second},
 	}
-	
+
 	// Override API URL for testing
 	oldURL := "https://api.github.com"
 	defer func() {
 		// Restore original URL
 		_ = oldURL
 	}()
-	
+
 	// Note: In real implementation, make the API URL configurable
 	ctx := context.Background()
 	info, err := u.CheckForUpdate(ctx)
@@ -151,36 +151,36 @@ func TestCheckForUpdate(t *testing.T) {
 
 func TestCreateBackup(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// Create source file
 	srcPath := filepath.Join(tempDir, "source")
 	srcContent := []byte("test content")
-	if err := os.WriteFile(srcPath, srcContent, 0755); err != nil {
+	if err := os.WriteFile(srcPath, srcContent, 0o755); err != nil {
 		t.Fatalf("Failed to create source file: %v", err)
 	}
-	
+
 	// Create backup
 	u := &Updater{}
 	backupPath := filepath.Join(tempDir, "backup")
-	
+
 	if err := u.createBackup(srcPath, backupPath); err != nil {
 		t.Fatalf("Failed to create backup: %v", err)
 	}
-	
+
 	// Verify backup
 	backupContent, err := os.ReadFile(backupPath)
 	if err != nil {
 		t.Fatalf("Failed to read backup: %v", err)
 	}
-	
-	if string(backupContent) != string(srcContent) {
+
+	if !bytes.Equal(backupContent, srcContent) {
 		t.Error("Backup content doesn't match source")
 	}
-	
+
 	// Check permissions
 	srcInfo, _ := os.Stat(srcPath)
 	backupInfo, _ := os.Stat(backupPath)
-	
+
 	if srcInfo.Mode() != backupInfo.Mode() {
 		t.Error("Backup permissions don't match source")
 	}
@@ -189,23 +189,23 @@ func TestCreateBackup(t *testing.T) {
 func TestVerifyChecksum(t *testing.T) {
 	tempDir := t.TempDir()
 	testFile := filepath.Join(tempDir, "test.bin")
-	
+
 	// Create test file
 	content := []byte("test content for checksum")
-	if err := os.WriteFile(testFile, content, 0644); err != nil {
+	if err := os.WriteFile(testFile, content, 0o600); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
-	
+
 	// Expected checksum (pre-calculated)
 	expectedChecksum := "8b3d6c91e8f0c6e9d8a7f9e1c2b4a6d8e5f7a9b1c3d5e7f9"
-	
+
 	u := &Updater{}
-	
+
 	// Test with wrong checksum (should fail)
 	err := u.verifyChecksum(testFile, expectedChecksum)
 	if err == nil {
 		t.Error("Expected checksum verification to fail with wrong checksum")
 	}
-	
+
 	// Note: In real test, calculate actual checksum and test with correct value
 }

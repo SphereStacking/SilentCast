@@ -5,10 +5,10 @@ type PlatformUpdater interface {
 	// CanReplaceRunningExecutable returns true if the platform allows
 	// replacing a running executable
 	CanReplaceRunningExecutable() bool
-	
+
 	// ReplaceExecutable performs platform-specific executable replacement
 	ReplaceExecutable(src, dst string) error
-	
+
 	// MakeExecutable sets executable permissions on the file
 	MakeExecutable(path string) error
 }

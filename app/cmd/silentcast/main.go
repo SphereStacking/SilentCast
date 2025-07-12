@@ -79,8 +79,8 @@ func run(noTray bool) error {
 		Compress:   cfg.Logger.Compress,
 		Console:    true, // Always enable console output
 	}
-	if err := logger.Initialize(loggerConfig); err != nil {
-		return errors.Wrap(errors.ErrorTypeSystem, "failed to initialize logger", err)
+	if initErr := logger.Initialize(loggerConfig); initErr != nil {
+		return errors.Wrap(errors.ErrorTypeSystem, "failed to initialize logger", initErr)
 	}
 
 	logger.Info("%s starting up v%s", config.AppDisplayName, Version)
@@ -103,15 +103,19 @@ func run(noTray bool) error {
 
 	// Display permission status
 	for _, perm := range permissions {
-		if perm.Required && perm.Status != permission.StatusGranted {
-			logger.Warn("Permission required: %s - %s", perm.Type, perm.Description)
-			notifier.Warning(ctx, "Permission Required",
-				fmt.Sprintf("%s: %s", perm.Type, perm.Description))
-
-			instructions := permManager.GetInstructions(perm.Type)
-			fmt.Println(instructions)
-			fmt.Println()
+		if !perm.Required || perm.Status == permission.StatusGranted {
+			continue
 		}
+
+		logger.Warn("Permission required: %s - %s", perm.Type, perm.Description)
+		if notifyErr := notifier.Warning(ctx, "Permission Required",
+			fmt.Sprintf("%s: %s", perm.Type, perm.Description)); notifyErr != nil {
+			logger.Error("Failed to send warning notification: %v", notifyErr)
+		}
+
+		instructions := permManager.GetInstructions(perm.Type)
+		fmt.Println(instructions)
+		fmt.Println()
 	}
 
 	// Initialize action manager
@@ -128,13 +132,17 @@ func run(noTray bool) error {
 	// Set up hotkey handler
 	hotkeyManager.SetHandler(hotkey.HandlerFunc(func(event hotkey.Event) error {
 		logger.Info("Spell cast: %s → %s", event.Sequence.String(), event.SpellName)
-		notifier.Info(ctx, "Spell Cast",
-			fmt.Sprintf("🎯 %s → %s", event.Sequence.String(), event.SpellName))
+		if err := notifier.Info(ctx, "Spell Cast",
+			fmt.Sprintf("🎯 %s → %s", event.Sequence.String(), event.SpellName)); err != nil {
+			logger.Error("Failed to send info notification: %v", err)
+		}
 
 		// Execute the action
 		if err := actionManager.Execute(ctx, event.SpellName); err != nil {
 			logger.Error("Failed to execute spell %s: %v", event.SpellName, err)
-			notifier.Error(ctx, "Spell Failed", err.Error())
+			if notifyErr := notifier.Error(ctx, "Spell Failed", err.Error()); notifyErr != nil {
+				logger.Error("Failed to send error notification: %v", notifyErr)
+			}
 			return err
 		}
 
@@ -146,8 +154,10 @@ func run(noTray bool) error {
 	for sequence, spellName := range cfg.Shortcuts {
 		if err := hotkeyManager.Register(sequence, spellName); err != nil {
 			logger.Warn("Failed to register hotkey %s: %v", sequence, err)
-			notifier.Warning(ctx, "Registration Failed",
-				fmt.Sprintf("Could not register %s: %v", sequence, err))
+			if notifyErr := notifier.Warning(ctx, "Registration Failed",
+				fmt.Sprintf("Could not register %s: %v", sequence, err)); notifyErr != nil {
+				logger.Error("Failed to send warning notification: %v", notifyErr)
+			}
 			continue
 		}
 		logger.Info("Registered hotkey: %s → %s", sequence, spellName)
@@ -160,11 +170,17 @@ func run(noTray bool) error {
 	if err := hotkeyManager.Start(); err != nil {
 		return errors.Wrap(errors.ErrorTypeHotkey, "failed to start hotkey manager", err)
 	}
-	defer hotkeyManager.Stop()
+	defer func() {
+		if err := hotkeyManager.Stop(); err != nil {
+			logger.Error("Failed to stop hotkey manager: %v", err)
+		}
+	}()
 
 	logger.Info("%s is active! Listening with prefix: %s", config.AppDisplayName, cfg.Hotkeys.Prefix)
-	notifier.Success(ctx, config.AppDisplayName+" Active",
-		fmt.Sprintf("Listening with prefix: %s", cfg.Hotkeys.Prefix))
+	if err := notifier.Success(ctx, config.AppDisplayName+" Active",
+		fmt.Sprintf("Listening with prefix: %s", cfg.Hotkeys.Prefix)); err != nil {
+		logger.Error("Failed to send success notification: %v", err)
+	}
 
 	// Setup shutdown handling
 	shutdownCh := make(chan struct{})
@@ -197,7 +213,9 @@ func run(noTray bool) error {
 
 		trayManager.AddMenuItem("Reload Config", "Reload configuration file", func() {
 			logger.Info("Config reload requested")
-			notifier.Info(ctx, "Config Reload", "Feature coming soon")
+			if err := notifier.Info(ctx, "Config Reload", "Feature coming soon"); err != nil {
+				logger.Error("Failed to send info notification: %v", err)
+			}
 		})
 
 		trayManager.AddSeparator()

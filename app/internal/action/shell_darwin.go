@@ -28,7 +28,7 @@ func (d *darwinShellExecutor) GetShell() (string, string) {
 
 func (d *darwinShellExecutor) WrapInTerminal(ctx context.Context, cmd *exec.Cmd) *exec.Cmd {
 	// macOS: use Terminal.app via AppleScript
-	script := fmt.Sprintf(`tell application "Terminal" to do script "%s"`, 
+	script := fmt.Sprintf(`tell application "Terminal" to do script "%s"`,
 		strings.ReplaceAll(cmd.String(), `"`, `\"`))
 	return exec.CommandContext(ctx, "osascript", "-e", script)
 }

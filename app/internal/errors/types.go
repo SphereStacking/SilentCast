@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -74,12 +75,12 @@ func IsType(err error, errType ErrorType) bool {
 	if err == nil {
 		return false
 	}
-	
-	spellErr, ok := err.(*SpellbookError)
-	if !ok {
+
+	var spellErr *SpellbookError
+	if !errors.As(err, &spellErr) {
 		return false
 	}
-	
+
 	return spellErr.Type == errType
 }
 
@@ -88,12 +89,12 @@ func GetUserMessage(err error) string {
 	if err == nil {
 		return ""
 	}
-	
-	spellErr, ok := err.(*SpellbookError)
-	if !ok {
+
+	var spellErr *SpellbookError
+	if !errors.As(err, &spellErr) {
 		return "An unexpected error occurred"
 	}
-	
+
 	switch spellErr.Type {
 	case ErrorTypeConfig:
 		return fmt.Sprintf("Configuration error: %s", spellErr.Message)

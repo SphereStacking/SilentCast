@@ -2,6 +2,7 @@ package config
 
 import (
 	"testing"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -13,7 +14,7 @@ func TestMapCustomKeys(t *testing.T) {
 	origGrimoire := KeyActions
 	origLogger := KeyLogger
 	origUpdater := KeyUpdater
-	
+
 	// Test cases
 	tests := []struct {
 		name        string
@@ -83,7 +84,7 @@ spells:
 				if err := yaml.Unmarshal(output, &result); err != nil {
 					t.Fatalf("Failed to unmarshal output: %v", err)
 				}
-				
+
 				// Check that Japanese keys were mapped to standard keys
 				if _, ok := result["daemon"]; !ok {
 					t.Error("Expected 'daemon' key in output")
@@ -97,7 +98,7 @@ spells:
 				if _, ok := result["grimoire"]; !ok {
 					t.Error("Expected 'grimoire' key in output")
 				}
-				
+
 				// Check that Japanese keys are NOT in output
 				if _, ok := result["デーモン"]; ok {
 					t.Error("Japanese key 'デーモン' should not be in output")
@@ -136,7 +137,7 @@ updates:
 				if err := yaml.Unmarshal(output, &result); err != nil {
 					t.Fatalf("Failed to unmarshal output: %v", err)
 				}
-				
+
 				// All custom keys should be mapped to standard keys
 				expectedKeys := []string{"daemon", "hotkeys", "spells", "grimoire", "logger", "updater"}
 				for _, key := range expectedKeys {
@@ -144,7 +145,7 @@ updates:
 						t.Errorf("Expected '%s' key in output", key)
 					}
 				}
-				
+
 				// Custom keys should not exist in output
 				customKeys := []string{"service", "shortcuts", "mappings", "commands", "logging", "updates"}
 				for _, key := range customKeys {
@@ -180,7 +181,7 @@ grimoire:
 				if err := yaml.Unmarshal(output, &result); err != nil {
 					t.Fatalf("Failed to unmarshal output: %v", err)
 				}
-				
+
 				// All should be mapped to standard keys
 				if _, ok := result["daemon"]; !ok {
 					t.Error("Expected 'daemon' key in output")
@@ -219,28 +220,28 @@ grimoire:
 			},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Setup custom keys
 			tt.setupKeys()
-			
+
 			// Run the mapping
 			output, _, err := MapCustomKeys([]byte(tt.input))
-			
+
 			// Check error
 			if (err != nil) != tt.wantErr {
 				t.Errorf("MapCustomKeys() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			
+
 			// Check output if no error expected
 			if !tt.wantErr && tt.checkOutput != nil {
 				tt.checkOutput(t, output)
 			}
 		})
 	}
-	
+
 	// Restore original keys
 	KeyDaemon = origDaemon
 	KeyHotkeys = origHotkeys
