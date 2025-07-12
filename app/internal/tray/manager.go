@@ -7,7 +7,6 @@ import (
 
 	"github.com/getlantern/systray"
 
-	"github.com/SphereStacking/silentcast/assets"
 	"github.com/SphereStacking/silentcast/internal/config"
 	"github.com/SphereStacking/silentcast/pkg/logger"
 )
@@ -85,7 +84,12 @@ func (m *Manager) Stop() {
 // setupMenu sets up the tray menu
 func (m *Manager) setupMenu() {
 	// Set tray icon and tooltip
-	systray.SetIcon(getIcon())
+	icon := getIcon()
+	if len(icon) > 0 {
+		systray.SetIcon(icon)
+	} else {
+		logger.Warn("No icon data available for system tray")
+	}
 	systray.SetTitle(m.title)
 	systray.SetTooltip(m.tooltip)
 
@@ -132,10 +136,4 @@ func (m *Manager) ShowNotification(title, message string) {
 	// Note: systray doesn't support notifications directly
 	// This would need platform-specific implementation
 	logger.Info("Tray notification: %s - %s", title, message)
-}
-
-// getIcon returns the tray icon data
-func getIcon() []byte {
-	// Return the embedded icon data
-	return assets.Icon
 }

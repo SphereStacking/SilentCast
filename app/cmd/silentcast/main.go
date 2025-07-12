@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/SphereStacking/silentcast/internal/action"
 	"github.com/SphereStacking/silentcast/internal/config"
@@ -70,9 +71,15 @@ func run(noTray bool) error {
 	}
 
 	// Initialize logger
+	logFile := cfg.Logger.File
+	if logFile == "" {
+		// Use default log file path if not specified
+		logFile = filepath.Join(configPath, "silentcast.log")
+	}
+	
 	loggerConfig := logger.Config{
 		Level:      cfg.Logger.Level,
-		File:       cfg.Logger.File,
+		File:       logFile,
 		MaxSize:    cfg.Logger.MaxSize,
 		MaxBackups: cfg.Logger.MaxBackups,
 		MaxAge:     cfg.Logger.MaxAge,
@@ -195,9 +202,11 @@ func run(noTray bool) error {
 		close(shutdownCh)
 	}()
 
+	var trayManager *tray.Manager
 	if !noTray {
 		// Initialize system tray
-		trayManager, err := tray.NewManager(ctx, cfg)
+		var err error
+		trayManager, err = tray.NewManager(ctx, cfg)
 		if err != nil {
 			return errors.Wrap(errors.ErrorTypeSystem, "failed to initialize tray manager", err)
 		}
@@ -250,8 +259,26 @@ func run(noTray bool) error {
 	// Cancel context to stop all components
 	cancel()
 
-	// Wait for all goroutines
-	wg.Wait()
+	// Stop tray if it's running
+	if trayManager != nil {
+		logger.Info("Stopping system tray...")
+		trayManager.Stop()
+	}
+
+	// Wait for all goroutines with timeout
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// Normal shutdown
+	case <-time.After(3 * time.Second):
+		// Force exit after timeout
+		logger.Warn("Shutdown timeout exceeded, forcing exit")
+	}
 
 	return nil
 }
