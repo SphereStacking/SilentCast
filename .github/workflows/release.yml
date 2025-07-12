@@ -3,94 +3,56 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*.*.*'
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 env:
   GO_VERSION: '1.21'
 
 jobs:
-  create-release:
+  release:
     name: Create Release
     runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-      release_id: ${{ steps.create_release.outputs.id }}
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ env.GO_VERSION }}
+        cache-dependency-path: app/go.sum
+    
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@v5
+      with:
+        distribution: goreleaser
+        version: latest
+        args: release --clean
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: true
-        prerelease: false
-        body: |
-          # Spellbook ${{ github.ref }}
-          
-          ## 🎯 What's Changed
-          
-          <!-- Add release notes here -->
-          
-          ## 📦 Installation
-          
-          ### macOS
-          ```bash
-          # Intel
-          curl -L https://github.com/${{ github.repository }}/releases/download/${{ github.ref }}/spellbook-${{ github.ref }}-darwin-amd64.tar.gz | tar xz
-          
-          # Apple Silicon
-          curl -L https://github.com/${{ github.repository }}/releases/download/${{ github.ref }}/spellbook-${{ github.ref }}-darwin-arm64.tar.gz | tar xz
-          ```
-          
-          ### Windows
-          Download the appropriate ZIP file for your architecture and extract it.
-          
-          ## 🔧 Configuration
-          
-          Copy `spellbook.example.yml` to `spellbook.yml` and customize it for your needs.
-          
-          ## 📝 Checksums
-          
-          See `checksums.txt` in the release assets.
+        GITHUB_REPOSITORY: ${{ github.repository }}
 
-  build-release:
-    name: Build Release
-    needs: create-release
+  build-with-cgo:
+    name: Build with CGO
+    needs: release
     strategy:
       matrix:
         include:
-          # Windows
           - os: windows-latest
             goos: windows
             goarch: amd64
-            binary: spellbook.exe
-            archive: spellbook-${{ github.ref_name }}-windows-amd64.zip
-          - os: windows-latest
-            goos: windows
-            goarch: arm64
-            binary: spellbook.exe
-            archive: spellbook-${{ github.ref_name }}-windows-arm64.zip
-          
-          # macOS
           - os: macos-latest
             goos: darwin
             goarch: amd64
-            binary: spellbook
-            archive: spellbook-${{ github.ref_name }}-darwin-amd64.tar.gz
           - os: macos-latest
             goos: darwin
             goarch: arm64
-            binary: spellbook
-            archive: spellbook-${{ github.ref_name }}-darwin-arm64.tar.gz
-          
-    
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -99,103 +61,63 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ env.GO_VERSION }}
+        cache-dependency-path: app/go.sum
+    
+    - name: Install macOS dependencies
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew list pkg-config || brew install pkg-config
     
     - name: Build
       env:
         GOOS: ${{ matrix.goos }}
         GOARCH: ${{ matrix.goarch }}
-        CGO_ENABLED: 0
+        CGO_ENABLED: 1
       run: |
-        go build -ldflags "-X main.version=${{ github.ref_name }} -s -w" -o ${{ matrix.binary }} ./cmd/spellbook
+        cd app
+        go build -ldflags "-X main.Version=${GITHUB_REF#refs/tags/v} -s -w" -o ../silentcast-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }} ./cmd/silentcast
     
-    - name: Prepare release directory
-      run: |
-        mkdir -p release/spellbook
-        cp ${{ matrix.binary }} release/spellbook/
-        cp README.md release/spellbook/ || echo "No README.md"
-        cp LICENSE release/spellbook/ || echo "No LICENSE"
-        cp spellbook.yml release/spellbook/spellbook.example.yml
-        
-        # Copy platform-specific config if exists
-        if [ "${{ matrix.goos }}" = "darwin" ]; then
-          cp spellbook.mac.yml release/spellbook/ || true
-        elif [ "${{ matrix.goos }}" = "windows" ]; then
-          cp spellbook.windows.yml release/spellbook/ || true
-        fi
-        
-        if false; then
-          cp spellbook.linux.yml release/spellbook/ || true
-        fi
-      shell: bash
-    
-    - name: Create archive (Windows)
-      if: matrix.goos == 'windows'
-      run: |
-        cd release
-        Compress-Archive -Path spellbook -DestinationPath ../${{ matrix.archive }}
-      shell: pwsh
-    
-    - name: Create archive (Unix)
-      if: matrix.goos != 'windows'
-      run: |
-        cd release
-        tar czf ../${{ matrix.archive }} spellbook
-    
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload to release
+      uses: softprops/action-gh-release@v1
       with:
-        upload_url: ${{ needs.create-release.outputs.upload_url }}
-        asset_path: ./${{ matrix.archive }}
-        asset_name: ${{ matrix.archive }}
-        asset_content_type: application/octet-stream
+        draft: true
+        files: |
+          silentcast-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
 
-  checksums:
-    name: Generate Checksums
-    needs: [create-release, build-release]
+  update-docs:
+    name: Update Documentation Version
+    needs: release
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Download release assets
-      uses: actions/github-script@v7
       with:
-        script: |
-          const assets = await github.rest.repos.listReleaseAssets({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            release_id: ${{ needs.create-release.outputs.release_id }}
-          });
-          
-          for (const asset of assets.data) {
-            if (asset.name.endsWith('.tar.gz') || asset.name.endsWith('.zip')) {
-              const download = await github.rest.repos.getReleaseAsset({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                asset_id: asset.id,
-                headers: {
-                  Accept: 'application/octet-stream'
-                }
-              });
-              
-              const fs = require('fs');
-              fs.writeFileSync(asset.name, Buffer.from(download.data));
-              console.log(`Downloaded ${asset.name}`);
-            }
-          }
+        token: ${{ secrets.GITHUB_TOKEN }}
+        ref: main
     
-    - name: Generate checksums
+    - name: Extract version
+      id: version
       run: |
-        sha256sum *.tar.gz *.zip > checksums.txt
-        cat checksums.txt
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
     
-    - name: Upload checksums
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.create-release.outputs.upload_url }}
-        asset_path: ./checksums.txt
-        asset_name: checksums.txt
-        asset_content_type: text/plain
+    - name: Update VitePress config
+      run: |
+        VERSION="${{ steps.version.outputs.VERSION }}"
+        sed -i "s/text: 'v[0-9.]*'/text: 'v$VERSION'/" docs/.vitepress/config.mts
+        
+        # Update package.json version
+        cd docs
+        npm version $VERSION --no-git-tag-version || true
+    
+    - name: Commit version updates
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+        if git diff --quiet; then
+          echo "No changes to commit"
+        else
+          git add -A
+          git commit -m "chore: update documentation version to ${{ steps.version.outputs.VERSION }}"
+          git push
+        fi

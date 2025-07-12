@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   push:
     branches: [ main, master, develop ]
+    paths:
+      - 'app/**'
+      - '.github/workflows/build-dev.yml'
+      - 'go.mod'
+      - 'go.sum'
 
 jobs:
   build:
@@ -29,31 +34,52 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: '1.21'
+        cache-dependency-path: app/go.sum
     
     - name: Install macOS dependencies
       if: matrix.os == 'macos-latest'
       run: |
-        brew install pkg-config
+        brew list pkg-config || brew install pkg-config
     
     - name: Build with CGO
+      shell: bash
       env:
         GOOS: ${{ matrix.goos }}
         GOARCH: ${{ matrix.goarch }}
         CGO_ENABLED: 1
       run: |
         cd app
-        go build -o ../silentcast-${{ matrix.name }}${{ matrix.os == 'windows-latest' && '.exe' || '' }} ./cmd/silentcast
+        go build -o silentcast-${{ matrix.name }}${{ matrix.os == 'windows-latest' && '.exe' || '' }} ./cmd/silentcast
+    
+    - name: List build output (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        cd app
+        Get-ChildItem silentcast-*
+    
+    - name: List build output (Unix)
+      if: matrix.os != 'windows-latest'
+      run: |
+        cd app
         ls -lah silentcast-*
         file silentcast-*
         ldd silentcast-* || true
     
-    - name: Test binary
+    - name: Test binary (Windows)
+      if: matrix.os == 'windows-latest'
       run: |
-        ./silentcast-${{ matrix.name }}${{ matrix.os == 'windows-latest' && '.exe' || '' }} --version || true
+        cd app
+        .\silentcast-${{ matrix.name }}.exe --version
+    
+    - name: Test binary (Unix)
+      if: matrix.os != 'windows-latest'
+      run: |
+        cd app
+        ./silentcast-${{ matrix.name }} --version || true
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: silentcast-${{ matrix.name }}
-        path: silentcast-${{ matrix.name }}
+        path: app/silentcast-${{ matrix.name }}${{ matrix.os == 'windows-latest' && '.exe' || '' }}
         retention-days: 7
