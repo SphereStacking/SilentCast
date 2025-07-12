@@ -1,5 +1,9 @@
 # Getting Started
 
+:::warning Development Status
+SilentCast is currently under active development. Features may change and bugs may exist. Please use at your own risk and report any issues on [GitHub](https://github.com/SphereStacking/silentcast/issues).
+:::
+
 This guide will help you set up SilentCast and start using keyboard shortcuts in less than 5 minutes.
 
 ## Prerequisites

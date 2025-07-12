@@ -1,12 +1,25 @@
-# SilentCast 🤫⚡
+# SilentCast
 
-[![CI](https://github.com/SphereStacking/silentcast/actions/workflows/ci.yml/badge.svg)](https://github.com/SphereStacking/silentcast/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/SphereStacking/silentcast)](https://github.com/SphereStacking/silentcast/releases)
-[![License](https://img.shields.io/github/license/SphereStacking/silentcast)](LICENSE)
+<div align="center">
+  <img src="https://spherestacking.github.io/SilentCast/logo.svg" alt="SilentCast Logo" width="200" height="200">
+</div>
 
-[English](README.md) | [日本語](README.ja.md)
+<p align="center">
+  <a href="https://github.com/SphereStacking/silentcast/actions/workflows/ci.yml"><img src="https://github.com/SphereStacking/silentcast/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/SphereStacking/silentcast/releases"><img src="https://img.shields.io/github/v/release/SphereStacking/silentcast" alt="Release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/SphereStacking/silentcast" alt="License"></a>
+</p>
 
-SilentCast は、シンプルなキーボードショートカットでタスクを実行できる、サイレントなホットキー駆動タスクランナーです。キーボードから手を離すことなくワークフローを効率化したい開発者に最適です。
+<p align="center">
+  <a href="README.md">English</a> | <a href="README.ja.md">日本語</a>
+</p>
+
+> ⚠️ **開発状況**: このプロジェクトは現在開発中です。機能が変更されたり、バグが存在する可能性があります。ご自身の責任でご利用ください。
+
+<p align="center">
+  SilentCast は、シンプルなキーボードショートカットでタスクを実行できる、サイレントなホットキー駆動タスクランナーです。<br>
+  キーボードから手を離すことなくワークフローを効率化したい開発者に最適です。
+</p>
 
 ## ✨ 機能
 

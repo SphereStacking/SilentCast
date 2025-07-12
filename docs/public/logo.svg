@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffff"/>
+      <stop offset="100%" style="stop-color:#00ffcc"/>
+    </linearGradient>
+    
+    <linearGradient id="fadeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff" stop-opacity="0.1"/>
+      <stop offset="50%" style="stop-color:#ffffff" stop-opacity="0.4"/>
+      <stop offset="100%" style="stop-color:#ffffff" stop-opacity="0.6"/>
+    </linearGradient>
+    
+    <linearGradient id="magicGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6600cc"/>
+      <stop offset="30%" style="stop-color:#9933ff"/>
+      <stop offset="70%" style="stop-color:#cc66ff"/>
+      <stop offset="100%" style="stop-color:#ffffff"/>
+    </linearGradient>
+    
+    <linearGradient id="wandTipGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a"/>
+      <stop offset="30%" style="stop-color:#3a3a3a"/>
+      <stop offset="60%" style="stop-color:#5a5a5a"/>
+      <stop offset="85%" style="stop-color:#7a7a7a"/>
+      <stop offset="100%" style="stop-color:#9a9a9a"/>
+    </linearGradient>
+    
+    <filter id="electricGlow">
+      <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="textGlow">
+      <feGaussianBlur stdDeviation="0.3" result="textBlur"/>
+      <feMerge> 
+        <feMergeNode in="textBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <linearGradient id="trailGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff6b6b" stop-opacity="0.8"/>
+      <stop offset="30%" style="stop-color:#4ecdc4" stop-opacity="0.6"/>
+      <stop offset="60%" style="stop-color:#ffd93d" stop-opacity="0.4"/>
+      <stop offset="100%" style="stop-color:#cc66ff" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- テキスト行 1 -->
+  <path fill="url(#textGradient)" filter="url(#textGlow)" d="M3 17h7.522l-2 2H3a1 1 0 0 1-.117-1.993z"/>
+  <path fill="url(#fadeGradient)" d="M3 17h7.522l-2 2H3a1 1 0 0 1-.117-1.993z"/>
+  
+  <!-- テキスト行 2 -->
+  <path fill="url(#textGradient)" filter="url(#textGlow)" d="M3 15h7.848a1.75 1.75 0 0 1-.775-2H3l-.117.007A1 1 0 0 0 3 15z"/>
+  <path fill="url(#fadeGradient)" d="M3 15h7.848a1.75 1.75 0 0 1-.775-2H3l-.117.007A1 1 0 0 0 3 15z"/>
+  
+  <!-- テキスト行 3（最上部の完全な行） -->
+  <path fill="url(#textGradient)" filter="url(#textGlow)" d="M3 7h18l.117-.007A1 1 0 0 0 21 5H3l-.117.007A1 1 0 0 0 3 7z"/>
+  <path fill="url(#fadeGradient)" d="M3 7h18l.117-.007A1 1 0 0 0 21 5H3l-.117.007A1 1 0 0 0 3 7z"/>
+  
+  <!-- 編集カーソル/矢印（魔法のステッキ） -->
+  <path fill="url(#wandTipGradient)" d="M12.72 16.216a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 1 1-1.06-1.06z"/>
+  
+  <!-- テキスト行 4 -->
+  <path fill="url(#textGradient)" filter="url(#textGlow)" d="M3 9h10a1 1 0 0 1 .117 1.993L13 11H3a1 1 0 0 1-.117-1.993z"/>
+  <path fill="url(#fadeGradient)" d="M3 9h10a1 1 0 0 1 .117 1.993L13 11H3a1 1 0 0 1-.117-1.993z"/>
+  
+  <!-- 魔法の星（魔法のステッキ） -->
+  <path fill="url(#magicGradient)" filter="url(#electricGlow)" d="M16.5 8a.75.75 0 0 1 .744.658l.14 1.13a3.25 3.25 0 0 0 2.828 2.829l1.13.139a.75.75 0 0 1 0 1.488l-1.13.14a3.25 3.25 0 0 0-2.829 2.828l-.139 1.13a.75.75 0 0 1-1.488 0l-.14-1.13a3.25 3.25 0 0 0-2.828-2.829l-1.13-.139a.75.75 0 0 1 0-1.488l1.13-.14a3.25 3.25 0 0 0 2.829-2.828l.139-1.13A.75.75 0 0 1 16.5 8z">
+    <animate
+      attributeName="opacity"
+      values="0.6;1;0.9;1;0.6"
+      dur="3s"
+      keyTimes="0;0.3;0.6;0.8;1"
+      calcMode="spline"
+      keySplines="0.4,0,0.6,1;0.4,0,0.6,1;0.4,0,0.6,1;0.4,0,0.6,1"
+      repeatCount="indefinite"/>
+  </path>
+
+  <!-- 魔法のパーティクル（ステッキの軌跡） -->
+  <circle cx="16.5" cy="12.8" r="0.5" fill="#ff6b6b" opacity="0.8">
+    <animate attributeName="opacity" values="0;0.8;0.4;0" dur="1.8s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;-5,1;-10,2" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="16.5" cy="12.8" r="0.35" fill="#4ecdc4" opacity="0.6">
+    <animate attributeName="opacity" values="0;0.6;0.3;0" dur="2.2s" begin="0.2s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;-4,-0.8;-8,-1.6" dur="2.2s" begin="0.2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="16.5" cy="12.8" r="0.4" fill="#ffd93d" opacity="0.7">
+    <animate attributeName="opacity" values="0;0.7;0.3;0" dur="2.0s" begin="0.4s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;-6,1.5;-12,3" dur="2.0s" begin="0.4s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="16.5" cy="12.8" r="0.28" fill="#a8e6cf" opacity="0.5">
+    <animate attributeName="opacity" values="0;0.5;0.2;0" dur="1.6s" begin="0.6s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;-4.5,-1.2;-9,-2.4" dur="1.6s" begin="0.6s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="16.5" cy="12.8" r="0.32" fill="#ff9ff3" opacity="0.6">
+    <animate attributeName="opacity" values="0;0.6;0.2;0" dur="1.9s" begin="0.8s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;-7,0.5;-14,1" dur="1.9s" begin="0.8s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="16.5" cy="12.8" r="0.38" fill="#b19cd9" opacity="0.7">
+    <animate attributeName="opacity" values="0;0.7;0.3;0" dur="1.7s" begin="1.0s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;-5.5,1.8;-11,3.6" dur="1.7s" begin="1.0s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="16.5" cy="12.8" r="0.3" fill="#ff6347" opacity="0.5">
+    <animate attributeName="opacity" values="0;0.5;0.2;0" dur="2.1s" begin="1.2s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;-3.8,-0.9;-7.6,-1.8" dur="2.1s" begin="1.2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="16.5" cy="12.8" r="0.26" fill="#87ceeb" opacity="0.6">
+    <animate attributeName="opacity" values="0;0.6;0.2;0" dur="1.5s" begin="1.4s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0,0;-6.2,0.3;-12.4,0.6" dur="1.5s" begin="1.4s" repeatCount="indefinite"/>
+  </circle>
+</svg>

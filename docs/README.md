@@ -1,5 +1,9 @@
 # SilentCast ドキュメント
 
+<div align="center">
+  <img src="./public/logo.svg" alt="SilentCast Logo" width="200" height="200">
+</div>
+
 このディレクトリにはSilentCastのVitePressドキュメントが含まれています。
 
 ## 開発
@@ -11,9 +15,9 @@ npm install
 
 # 開発サーバーを起動
 npm run docs:dev
-```
 
-http://localhost:5173 でドキュメントを確認できます。
+# ドキュメントは http://localhost:5173 で確認できます
+```
 
 ## ビルド
 

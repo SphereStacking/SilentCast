@@ -1,12 +1,25 @@
-# SilentCast 🤫⚡
+# SilentCast
 
-[![CI](https://github.com/SphereStacking/silentcast/actions/workflows/ci.yml/badge.svg)](https://github.com/SphereStacking/silentcast/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/SphereStacking/silentcast)](https://github.com/SphereStacking/silentcast/releases)
-[![License](https://img.shields.io/github/license/SphereStacking/silentcast)](LICENSE)
+<div align="center">
+  <img src="https://spherestacking.github.io/SilentCast/logo.svg" alt="SilentCast Logo" width="200" height="200">
+</div>
 
-[English](README.md) | [日本語](README.ja.md)
+<p align="center">
+  <a href="https://github.com/SphereStacking/silentcast/actions/workflows/ci.yml"><img src="https://github.com/SphereStacking/silentcast/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/SphereStacking/silentcast/releases"><img src="https://img.shields.io/github/v/release/SphereStacking/silentcast" alt="Release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/SphereStacking/silentcast" alt="License"></a>
+</p>
 
-SilentCast is a silent hotkey-driven task runner that lets you execute tasks with simple keyboard shortcuts. Perfect for developers who want to streamline their workflow without leaving the keyboard.
+<p align="center">
+  <a href="README.md">English</a> | <a href="README.ja.md">日本語</a>
+</p>
+
+> ⚠️ **Development Status**: This project is currently under active development. Features may change and bugs may exist. Use at your own risk.
+
+<p align="center">
+  SilentCast is a silent hotkey-driven task runner that lets you execute tasks with simple keyboard shortcuts.<br>
+  Perfect for developers who want to streamline their workflow without leaving the keyboard.
+</p>
 
 ## ✨ Features
 
@@ -92,7 +105,7 @@ spells:
   e: "editor"
   t: "terminal"
   b: "browser"
-  
+
   # Multi-key sequences (VS Code style)
   "g,s": "git_status"
   "g,p": "git_pull"
@@ -103,12 +116,12 @@ grimoire:
     type: app
     command: "code"    # VS Code
     description: "Open VS Code"
-  
+
   terminal:
     type: app
     command: "wt"      # Windows Terminal
     description: "Open Terminal"
-  
+
   git_status:
     type: script
     command: "git status"
@@ -121,7 +134,7 @@ SilentCast supports platform-specific overrides:
 
 - `spellbook.yml` - Base configuration (loaded first)
 - `spellbook.mac.yml` - macOS overrides
-- `spellbook.windows.yml` - Windows overrides  
+- `spellbook.windows.yml` - Windows overrides
 
 Example `spellbook.mac.yml`:
 ```yaml
@@ -129,7 +142,7 @@ grimoire:
   terminal:
     type: app
     command: "Terminal"
-  
+
   browser:
     type: app
     command: "Safari"
@@ -182,7 +195,7 @@ When running with system tray support:
 - ✅ System tray integration
 - ✅ No special permissions required
 
-### macOS  
+### macOS
 - ✅ Full global hotkey support
 - ⚠️ Requires accessibility permissions
 - ✅ System tray integration
@@ -195,6 +208,7 @@ When running with system tray support:
 
 - Go 1.21 or later
 - Make (optional but recommended)
+- Python 3.x (for pre-commit hooks)
 
 ## 📁 Project Structure
 
@@ -220,8 +234,14 @@ SilentCast/
 git clone https://github.com/SphereStacking/silentcast.git
 cd silentcast
 
-# Build for development
-make build-stub
+# Setup development environment
+make setup
+
+# Install pre-commit hooks (recommended)
+make pre-commit
+
+# Build for development (fast)
+make build-dev
 
 # Run
 ./app/build/silentcast --no-tray
@@ -241,8 +261,10 @@ See [docs/api/build.md](docs/api/build.md) for detailed build instructions.
 
 ```bash
 # Application
-make build         # Build the application
-make build-stub    # Build without C dependencies
+make build-dev     # Development build (fast, no hotkeys)
+make build         # Production build (requires C libs)
+make build-snapshot # Snapshot build for all platforms
+make lint          # Run linting checks
 make test          # Run tests
 make clean         # Clean build artifacts
 

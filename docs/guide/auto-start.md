@@ -401,4 +401,3 @@ grimoire:
 - Configure [Logging](/guide/logging) for startup debugging
 - Set up [Environment Variables](/guide/env-vars) for auto-start
 - Review [Platform Guide](/guide/platforms) for OS-specific details
-- Check [Troubleshooting](/guide/troubleshooting) for common issues

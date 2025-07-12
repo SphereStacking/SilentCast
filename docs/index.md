@@ -5,15 +5,15 @@ hero:
   name: "SilentCast"
   text: "Silent Hotkey Task Runner"
   tagline: Execute tasks instantly with keyboard shortcuts. Works on Windows and macOS. Lightweight and developer-friendly.
+  pretext:
+    text: "⚠️ Currently in Development"
+    color: "warning"
   image:
     src: /logo.svg
     alt: SilentCast
-  background:
-    image: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
-    filter: blur(72px)
   actions:
     - theme: brand
-      text: Get Started
+      text: Get Started 🚀
       link: /guide/getting-started
     - theme: alt
       text: View on GitHub
@@ -56,6 +56,10 @@ features:
     link: /guide/scripts
     linkText: Automation guide
 ---
+
+:::warning Development Status
+SilentCast is currently under active development. Features may change and bugs may exist. Please use at your own risk and report any issues on [GitHub](https://github.com/SphereStacking/silentcast/issues).
+:::
 
 ## Quick Example
 
@@ -120,7 +124,9 @@ silentcast --config ~/my-spellbook.yml
 
 ## Why SilentCast?
 
-<div class="features-comparison">
+<div class="grid md:grid-cols-2 gap-8 my-12">
+
+<div class="space-y-6">
 
 ### 🎯 **Built for Developers**
 
@@ -129,6 +135,10 @@ Designed specifically for developer workflows. Launch your IDE, run build script
 ### 🧩 **Simple Configuration**
 
 Uses standard YAML format for configuration. No scripting languages or complex GUIs required.
+
+</div>
+
+<div class="space-y-6">
 
 ### 🚀 **Lightweight**
 
@@ -140,103 +150,52 @@ Runs entirely on your machine. No cloud services, telemetry, or account required
 
 </div>
 
-## Ready to Get Started?
+</div>
 
-<div class="cta-section">
 
-Quick installation to start using keyboard shortcuts for your tasks.
+## 🚀 Ready to Get Started?
 
-[Get Started →](/guide/getting-started)
-
+<div class="my-16 text-center">
+  <div class="inline-block relative px-16 py-12 rounded-3xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-indigo-500/20 overflow-hidden transition-all duration-300 hover:scale-110 hover:border-indigo-500/40 hover:shadow-[0_20px_25px_-5px_rgba(99,102,241,0.1),0_10px_10px_-5px_rgba(99,102,241,0.04),inset_0_1px_0_0_rgba(255,255,255,0.1)] group">
+    <div class="absolute inset-[-50%] bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.3)_0%,transparent_70%)] opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-50 group-hover:animate-pulse"></div>
+    <div class="relative z-10">
+      <h3 class="text-3xl font-bold mb-4 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+        Start Using Keyboard Shortcuts Today
+      </h3>
+      <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+        Install SilentCast in seconds and boost your productivity with powerful hotkeys
+      </p>
+      <a href="/guide/getting-started" class="inline-flex items-center gap-2 px-8 py-3.5 border-4 border-gradient-to-r from-indigo-500 to-purple-600 font-semibold text-lg rounded-xl no-underline transition-all duration-300 relative overflow-hidden shadow-[0_10px_15px_-3px_rgba(99,102,241,0.3),0_4px_6px_-2px_rgba(99,102,241,0.2)] group/btn ">
+        <span class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 transition-opacity duration-300 group-hover/btn:opacity-80"></span>
+        <span class="relative z-10 ">Get Started</span>
+        <span class="relative z-10 text-xl transition-transform duration-300 group-hover/btn:translate-x-1">→</span>
+      </a>
+    </div>
+  </div>
 </div>
 
 <style>
-
-/* 6. Aurora - オーロラ */
-.VPHero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-  margin-bottom: 20px
-}
-
-/* Hero image (logo) customization */
+/* Hero animations */
 .VPHero .VPImage {
-  width: 180px !important;
-  height: 180px !important;
-  max-width: 180px !important;
-  max-height: 180px !important;
+  /* animation: float 6s ease-in-out infinite; */
+  filter: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
+  width: 11rem;
+  height: 11rem;
+  transition: transform 0.3s ease;
 }
 
-/* Larger on desktop */
 @media (min-width: 768px) {
   .VPHero .VPImage {
-    width: 240px !important;
-    height: 240px !important;
-    max-width: 240px !important;
-    max-height: 240px !important;
+    width: 15rem;
+    height: 15rem;
   }
 }
 
-/* Even larger on wide screens */
-@media (min-width: 1200px) {
+@media (min-width: 1024px) {
   .VPHero .VPImage {
-    width: 300px !important;
-    height: 300px !important;
-    max-width: 300px !important;
-    max-height: 300px !important;
+    width: 18rem;
+    height: 18rem;
   }
-}
-
-.features-comparison {
-  margin: 3rem 0;
-}
-
-.features-comparison h3 {
-  margin: 2rem 0 1rem;
-}
-
-.community-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin: 2rem 0;
-}
-
-.community-links a {
-  flex: 1;
-  min-width: 200px;
-  padding: 1rem;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  text-align: center;
-  transition: all 0.3s;
-}
-
-.community-links a:hover {
-  border-color: var(--vp-c-brand);
-  transform: translateY(-2px);
-}
-
-.cta-section {
-  text-align: center;
-  margin: 4rem 0;
-  padding: 3rem;
-  background: var(--vp-c-bg-soft);
-  border-radius: 12px;
-}
-
-.cta-button {
-  display: inline-block;
-  padding: 12px 24px;
-  background: var(--vp-c-brand);
-  color: white;
-  border-radius: 6px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s;
-}
-
-.cta-button:hover {
-  background: var(--vp-c-brand-dark);
-  transform: translateY(-2px);
 }
 </style>
+

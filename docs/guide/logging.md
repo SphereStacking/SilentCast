@@ -471,4 +471,3 @@ chmod 700 ~/.local/share/silentcast/
 - Configure [Auto-start](/guide/auto-start) with proper logging
 - Use [Environment Variables](/guide/env-vars) for dynamic log paths
 - See [CLI Options](/api/) for runtime log control
-- Check [Troubleshooting](/guide/troubleshooting) for common issues

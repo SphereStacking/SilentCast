@@ -53,11 +53,10 @@ grimoire:     # Action definitions
 
 ## Quick Links
 
-- [Daemon Settings](/config/daemon) - Background service configuration
-- [Hotkey Settings](/config/hotkeys) - Keyboard shortcut behavior
-- [Spells & Grimoire](/config/spells) - Defining shortcuts and actions
-- [Platform Overrides](/config/platform-overrides) - OS-specific configurations
-- [Examples](/config/examples) - Real-world configuration examples
+- [Configuration Guide](/config/configuration-guide) - Detailed configuration guide
+- [Getting Started](/guide/getting-started) - Quick start guide
+- [Configuration Examples](/guide/samples) - Real-world configuration examples
+- [Platform Support](/guide/platforms) - OS-specific configurations
 
 ## Complete Example
 
@@ -283,8 +282,8 @@ grimoire:
 
 Dive deeper into specific configuration areas:
 
-- [Daemon Settings](/config/daemon) - Background service options
-- [Hotkey Settings](/config/hotkeys) - Keyboard shortcut configuration
-- [Spells & Grimoire](/config/spells) - Action definitions
-- [Platform Overrides](/config/platform-overrides) - OS-specific settings
-- [Examples](/config/examples) - Real-world configurations
+- [Configuration Guide](/config/configuration-guide) - Complete configuration reference
+- [Shortcuts Guide](/guide/shortcuts) - Keyboard shortcut configuration
+- [Actions Guide](/guide/actions) - Action definitions
+- [Platform Support](/guide/platforms) - OS-specific settings
+- [Configuration Examples](/guide/samples) - Real-world configurations

@@ -1,5 +1,9 @@
 # Installation
 
+:::warning Development Status
+SilentCast is currently under active development. The installation methods described below may change. For the most stable experience, we recommend using the official releases from GitHub.
+:::
+
 This guide covers all installation methods for SilentCast across different platforms. Choose the method that best suits your needs.
 
 ## System Requirements
@@ -347,4 +351,4 @@ Now that SilentCast is installed:
 2. [Learn about shortcuts](/guide/shortcuts) - Master the magic
 3. [Explore automation](/guide/scripts) - Advanced scripting features
 
-Need help? Join our [Discord community](https://discord.gg/silentcast) or check the [troubleshooting guide](/guide/troubleshooting).
+Need help? Join our [Discord community](https://discord.gg/silentcast).

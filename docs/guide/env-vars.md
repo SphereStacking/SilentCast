@@ -536,4 +536,4 @@ AZURE_SUBSCRIPTION_ID=xxx
 - Review [Configuration Guide](/guide/configuration) for variable usage
 - Check [Script Execution](/guide/scripts) for environment examples
 - See [Platform Guide](/guide/platforms) for OS-specific variables
-- Explore [Examples](/config/examples) for real-world usage
+- Explore [Configuration Samples](/guide/samples) for real-world usage

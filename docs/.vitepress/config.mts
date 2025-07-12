@@ -1,7 +1,10 @@
 import { defineConfig } from 'vitepress'
 import llmstxt from 'vitepress-plugin-llms'
 import { copyOrDownloadAsMarkdownButtons } from 'vitepress-plugin-llms'
+import tailwindcss from '@tailwindcss/vite'
 
+// Get version from environment variable or default
+const version = process.env.VITEPRESS_VERSION || '0.1.0-dev'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -9,7 +12,7 @@ export default defineConfig({
   title: "SilentCast",
   description: "Silent hotkey-driven task runner for developers",
   vite: {
-    plugins: [llmstxt()],
+    plugins: [llmstxt(),tailwindcss()],
   },
   markdown: {
     config(md) {
@@ -30,6 +33,12 @@ export default defineConfig({
 
   cleanUrls: true,
   lastUpdated: true,
+  
+  // Ignore dead links in README.md files
+  ignoreDeadLinks: [
+    // Ignore localhost URLs in development
+    /^https?:\/\/localhost/
+  ],
 
   themeConfig: {
     logo: '/logo.svg',
@@ -40,7 +49,7 @@ export default defineConfig({
       { text: 'Config', link: '/config/' },
       { text: 'API', link: '/api/' },
       {
-        text: 'v1.0.0',
+        text: `v${version}`,
         items: [
           { text: 'Changelog', link: 'https://github.com/SphereStacking/SilentCast/releases' },
           { text: 'Contributing', link: '/contributing' }
@@ -86,12 +95,7 @@ export default defineConfig({
           text: 'Configuration',
           items: [
             { text: 'Overview', link: '/config/' },
-            { text: 'File Structure', link: '/config/file-structure' },
-            { text: 'Daemon Settings', link: '/config/daemon' },
-            { text: 'Hotkey Settings', link: '/config/hotkeys' },
-            { text: 'Spells & Grimoire', link: '/config/spells' },
-            { text: 'Platform Overrides', link: '/config/platform-overrides' },
-            { text: 'Examples', link: '/config/examples' }
+            { text: 'Configuration Guide', link: '/config/configuration-guide' }
           ]
         }
       ],
@@ -101,17 +105,7 @@ export default defineConfig({
           items: [
             { text: 'CLI Options', link: '/api/' },
             { text: 'Key Names', link: '/api/key-names' },
-            { text: 'Environment Variables', link: '/api/env-vars' },
-            { text: 'Exit Codes', link: '/api/exit-codes' }
-          ]
-        },
-        {
-          text: 'Development',
-          items: [
-            { text: 'Architecture', link: '/api/architecture' },
-            { text: 'Building', link: '/api/building' },
-            { text: 'Testing', link: '/api/testing' },
-            { text: 'Contributing', link: '/api/contributing' }
+            { text: 'Testing', link: '/api/testing' }
           ]
         }
       ]
