@@ -1,3 +1,29 @@
+linters:
+  enable-all: false
+  disable-all: true
+  enable: # please keep this alphabetized
+    - bodyclose # checks if HTTP responses are properly closed
+    - containedctx # checks best practice of not storing Context in structs
+    - depguard # defines and checks for disallowed package imports
+    - errcheck # [default] checks for code issues with error wrapping introduced in Go 1.13
+    - errorlint # checks for unchecked error handling
+    - gocritic # linter with many check items
+    - gofmt # checks if go fmt has been applied
+    - goimports # checks if goimports has been applied
+    - gosec # checks various security aspects
+    - gosimple # [default] checks for unnecessary code patterns
+    - govet # [default] official go vet tool
+    - ineffassign # [default] checks for unnecessary assignments
+    - misspell # spell checker
+    - nakedret # checks for naked returns in long functions
+    # - paralleltest # checks for tests without t.Parallel() - TODO: enable after adding t.Parallel() to tests
+    - rowserrcheck # checks if database/sql Rows errors are properly handled
+    - sqlclosecheck # checks if sql.Rows and sql.Stmt are properly closed
+    - staticcheck # [default] linter with many check items
+    - unconvert # checks for unnecessary type conversions
+    - unparam # checks for unused parameters
+    - unused # checks for unused variables/constants/functions/types
+
 run:
   timeout: 5m
   tests: true
@@ -5,72 +31,24 @@ run:
     - nogohook
     - notray
 
-linters:
-  enable:
-    - gofmt
-    - goimports
-    - golint
-    - govet
-    - errcheck
-    - staticcheck
-    - unused
-    - gosimple
-    - structcheck
-    - varcheck
-    - ineffassign
-    - deadcode
-    - typecheck
-    - misspell
-    - gosec
-    - godot
-    - whitespace
-    - prealloc
-    - predeclared
-    - nolintlint
-    - dogsled
-    - dupl
-    - funlen
-    - gochecknoinits
-    - goconst
-    - gocritic
-    - gocyclo
-    - godox
-    - gofumpt
-    - goprintffuncname
-    - lll
-    - nakedret
-    - noctx
-    - rowserrcheck
-    - stylecheck
-    - unconvert
-    - unparam
-
-  disable:
-    - gochecknoglobals
-    - gocognit
-    - testpackage
-    - wsl
-    - gomnd
-    - exhaustivestruct
-    - goerr113
-    - wrapcheck
-    - nlreturn
-
 linters-settings:
-  gofmt:
-    simplify: true
+  depguard:
+    rules:
+      main:
+        deny:
+          - pkg: io/ioutil
+            desc: The io/ioutil package has been deprecated, see https://go.dev/doc/go1.16#ioutil
+  revive:
+    rules:
+      - name: package-comments
+        disabled: true
   goimports:
-    local-prefixes: github.com/SphereStacking/spellbook
-  golint:
-    min-confidence: 0.8
+    local-prefixes: github.com/SphereStacking/silentcast
   govet:
     check-shadowing: true
   errcheck:
     check-type-assertions: true
     check-blank: true
-  goconst:
-    min-len: 3
-    min-occurrences: 3
   gocritic:
     enabled-tags:
       - diagnostic
@@ -78,46 +56,38 @@ linters-settings:
       - opinionated
       - performance
       - style
-  gocyclo:
-    min-complexity: 15
-  dupl:
-    threshold: 100
-  funlen:
-    lines: 100
-    statements: 50
-  lll:
-    line-length: 120
-    tab-width: 4
   misspell:
     locale: US
   nakedret:
     max-func-lines: 30
-  prealloc:
-    simple: true
-    range-loops: true
-    for-loops: true
   unparam:
     check-exported: true
 
 issues:
+  # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
+  max-issues-per-linter: 0
+
+  # Maximum count of issues with the same text. Set to 0 to disable. Default is 3.
+  max-same-issues: 0
+
   exclude-rules:
     # Exclude some linters from running on tests files
     - path: _test\.go
       linters:
         - gosec
-        - dupl
-        - funlen
-    
-    # Exclude lll in long strings
-    - linters:
-        - lll
-      source: "^(.*`[^`]+`.*|.*\"[^\"]+\".*)$"
+        - errcheck
     
     # Exclude godot in comments with URLs
     - linters:
         - godot
       source: "https?://"
-
-  max-issues-per-linter: 0
-  max-same-issues: 0
-  new: false
+    
+    # Exclude linters for generated files
+    - path: "(^|/)vendor/"
+      linters:
+        - typecheck
+    
+    # Exclude specific messages
+    - text: "exported .* should have comment or be unexported"
+      linters:
+        - revive

@@ -1,0 +1,103 @@
+version: 2
+
+dist: app/dist
+
+before:
+  hooks:
+    - go mod tidy -C app
+
+builds:
+  - id: silentcast
+    main: ./cmd/silentcast
+    dir: app
+    binary: silentcast
+    env:
+      - CGO_ENABLED=0
+    tags:
+      - nogohook
+      - notray
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+      - goos: linux
+        goarch: arm64
+    overrides:
+      - goos: linux
+        env:
+          - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X main.Version={{.Version}}
+
+archives:
+  - id: default
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+    files:
+      - README.md
+      - LICENSE
+
+checksum:
+  name_template: 'checksums.txt'
+
+release:
+  draft: true
+  prerelease: auto
+  name_template: "SilentCast {{.Tag}}"
+  header: |
+    # SilentCast {{.Tag}}
+
+    ## 🎯 What's Changed
+
+    <!-- Add release notes here -->
+
+  footer: |
+    ## 📦 Installation
+
+    ### macOS
+    ```bash
+    # Intel
+    curl -L https://github.com/{{ .Env.GITHUB_REPOSITORY }}/releases/download/{{ .Tag }}/{{ .ProjectName }}_{{ .Version }}_darwin_x86_64.tar.gz | tar xz
+    sudo mv silentcast /usr/local/bin/
+
+    # Apple Silicon
+    curl -L https://github.com/{{ .Env.GITHUB_REPOSITORY }}/releases/download/{{ .Tag }}/{{ .ProjectName }}_{{ .Version }}_darwin_arm64.tar.gz | tar xz
+    sudo mv silentcast /usr/local/bin/
+    ```
+
+    ### Windows
+    Download the appropriate ZIP file for your architecture and extract it to a directory in your PATH.
+
+    ### Linux
+    ```bash
+    curl -L https://github.com/{{ .Env.GITHUB_REPOSITORY }}/releases/download/{{ .Tag }}/{{ .ProjectName }}_{{ .Version }}_linux_x86_64.tar.gz | tar xz
+    sudo mv silentcast /usr/local/bin/
+    ```
+
+    ## 🔧 Configuration
+
+    See the [documentation](https://spherestacking.github.io/SilentCast/) for configuration details.
+
+changelog:
+  use: github
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'

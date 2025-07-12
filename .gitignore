@@ -1,0 +1,22 @@
+# Binaries
+app/silentcast-stub
+app/build/
+dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# Coverage
+coverage.*
+*.coverprofile

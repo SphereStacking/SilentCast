@@ -30,3 +30,12 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# GoReleaser
+dist/
+
+# Build artifacts
+build/
+silentcast
+silentcast-*
+*.exe
