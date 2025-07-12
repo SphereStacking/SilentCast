@@ -73,6 +73,8 @@ Common alternatives:
    export SILENTCAST_CONFIG=/path/to/config/directory
    ```
 
+📖 **See also**: [Windows configuration setup guide](/guide/faq#i-get-hotkeys-prefix-is-required-error-on-windows-what-do-i-do) for detailed step-by-step instructions.
+
 </details>
 
 <details>

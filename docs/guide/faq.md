@@ -57,6 +57,52 @@ You can also specify a custom location:
 silentcast --config /path/to/spellbook.yml
 ```
 
+### I get "hotkeys.prefix is required" error on Windows, what do I do?
+
+This error means SilentCast can't find a configuration file. Here's how to fix it:
+
+**Option 1: Create config in AppData (Recommended)**
+
+1. Open PowerShell and create the config directory:
+   ```powershell
+   mkdir $env:APPDATA\silentcast
+   ```
+
+2. Create the configuration file:
+   ```powershell
+   notepad $env:APPDATA\silentcast\spellbook.yml
+   ```
+
+3. Add this minimal configuration and save:
+   ```yaml
+   # Required settings
+   hotkeys:
+     prefix: "alt+space"
+
+   # Your shortcuts
+   spells:
+     e: "editor"
+     t: "terminal"
+
+   # What shortcuts do
+   grimoire:
+     editor:
+       type: app
+       command: "notepad"
+       description: "Open Notepad"
+       
+     terminal:
+       type: app
+       command: "cmd"
+       description: "Open Command Prompt"
+   ```
+
+**Option 2: Create config in current directory**
+
+Create `spellbook.yml` in the same folder as `silentcast.exe` with the configuration above.
+
+**Verify it works**: You should see your configured shortcuts listed when SilentCast starts.
+
 ### Can I use the same configuration across platforms?
 
 Yes! Use the base `spellbook.yml` for common settings and platform-specific files for overrides:

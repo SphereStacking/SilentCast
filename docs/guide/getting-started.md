@@ -88,7 +88,32 @@ Let's create a simple configuration to open your favorite editor:
 
 ### 1. Create Configuration File
 
-Create `~/.config/silentcast/spellbook.yml`:
+Create your configuration file in the default location:
+
+- **macOS/Linux**: `~/.config/silentcast/spellbook.yml`
+- **Windows**: `%APPDATA%\silentcast\spellbook.yml`
+
+::: code-group
+
+```bash [macOS/Linux]
+# Create directory
+mkdir -p ~/.config/silentcast
+
+# Create configuration file
+nano ~/.config/silentcast/spellbook.yml
+```
+
+```powershell [Windows]
+# Create directory
+mkdir $env:APPDATA\silentcast
+
+# Create configuration file
+notepad $env:APPDATA\silentcast\spellbook.yml
+```
+
+:::
+
+Add this configuration:
 
 ```yaml
 # My first spellbook
