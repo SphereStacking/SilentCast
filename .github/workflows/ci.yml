@@ -65,7 +65,7 @@ jobs:
       shell: bash
       run: |
         cd app
-        go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+        go test -v -race -tags "nogohook notray" -coverprofile=coverage.txt -covermode=atomic ./...
 
     - name: Upload coverage
       if: matrix.os == 'ubuntu-latest' && matrix.go == '1.21'
