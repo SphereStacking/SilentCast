@@ -10,8 +10,9 @@ help:
 	@echo "  make [target]"
 	@echo ""
 	@echo "Application Build:"
-	@echo "  build         Build the application"
-	@echo "  build-stub    Build with stub mode (for development)"
+	@echo "  build-dev     Build for development (fast, no hotkeys)"
+	@echo "  build         Build production version (requires C libs)"
+	@echo "  build-snapshot Test release build for all platforms"
 	@echo "  test          Run tests"
 	@echo "  clean         Remove build artifacts"
 	@echo ""
@@ -21,13 +22,21 @@ help:
 	@echo ""
 	@echo "Project Management:"
 	@echo "  setup         Setup development environment"
+	@echo "  pre-commit    Install pre-commit hooks"
+	@echo "  lint          Run linting checks"
 
 # Application build
+# Production build (requires C libraries)
 build:
 	@$(MAKE) -C app build
 
-build-stub:
-	@$(MAKE) -C app build-stub
+# Development build (fast, no dependencies)
+build-dev:
+	@$(MAKE) -C app build-dev
+
+# Snapshot build for all platforms
+build-snapshot:
+	@$(MAKE) -C app build-snapshot
 
 test:
 	@$(MAKE) -C app test
@@ -51,3 +60,19 @@ setup:
 	@cd app && go mod download
 	@cd docs && npm install
 	@echo "✅ Setup complete!"
+
+# Pre-commit hooks
+pre-commit:
+	@echo "🪝 Installing pre-commit hooks..."
+	@pip install --user pre-commit || pip3 install --user pre-commit
+	@PATH="$$HOME/.local/bin:$$PATH" pre-commit install
+	@PATH="$$HOME/.local/bin:$$PATH" pre-commit install --hook-type commit-msg
+	@echo "✅ Pre-commit hooks installed!"
+	@echo ""
+	@echo "ℹ️  Note: Add ~/.local/bin to your PATH if not already done:"
+	@echo '    export PATH="$$HOME/.local/bin:$$PATH"'
+
+# Run linting
+lint:
+	@echo "🔍 Running linters..."
+	@cd app && golangci-lint run ./...

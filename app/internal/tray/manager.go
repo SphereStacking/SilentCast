@@ -3,27 +3,30 @@
 package tray
 
 import (
+	"context"
+
 	"github.com/getlantern/systray"
+
 	"github.com/SphereStacking/silentcast/internal/config"
 	"github.com/SphereStacking/silentcast/pkg/logger"
 )
 
 // Manager manages the system tray integration
 type Manager struct {
-	title       string
-	tooltip     string
-	onReady     func()
-	onExit      func()
-	menuItems   []*MenuItem
-	quitItem    *systray.MenuItem
+	title     string
+	tooltip   string
+	onReady   func()
+	onExit    func()
+	menuItems []*MenuItem
+	quitItem  *systray.MenuItem
 }
 
 // MenuItem represents a tray menu item
 type MenuItem struct {
-	Title    string
-	Tooltip  string
-	Handler  func()
-	item     *systray.MenuItem
+	Title   string
+	Tooltip string
+	Handler func()
+	item    *systray.MenuItem
 }
 
 // Config represents tray configuration
@@ -33,12 +36,16 @@ type Config struct {
 }
 
 // NewManager creates a new tray manager
-func NewManager(cfg Config) *Manager {
-	return &Manager{
-		title:     cfg.Title,
-		tooltip:   cfg.Tooltip,
-		menuItems: make([]*MenuItem, 0),
+func NewManager(ctx context.Context, cfg *config.Config) (*Manager, error) {
+	trayConfig := Config{
+		Title:   config.AppDisplayName,
+		Tooltip: config.AppDescription,
 	}
+	return &Manager{
+		title:     trayConfig.Title,
+		tooltip:   trayConfig.Tooltip,
+		menuItems: make([]*MenuItem, 0),
+	}, nil
 }
 
 // AddMenuItem adds a menu item to the tray
@@ -64,7 +71,7 @@ func (m *Manager) Start() {
 	m.onExit = func() {
 		logger.Info("System tray exiting")
 	}
-	
+
 	// Run systray in the main thread
 	systray.Run(m.onReady, m.onExit)
 }
@@ -80,17 +87,17 @@ func (m *Manager) setupMenu() {
 	systray.SetIcon(getIcon())
 	systray.SetTitle(m.title)
 	systray.SetTooltip(m.tooltip)
-	
+
 	// Add menu items
 	for _, item := range m.menuItems {
 		if item == nil {
 			systray.AddSeparator()
 			continue
 		}
-		
+
 		menuItem := systray.AddMenuItem(item.Title, item.Tooltip)
 		item.item = menuItem
-		
+
 		// Handle click in goroutine
 		go func(mi *MenuItem) {
 			for range mi.item.ClickedCh {
@@ -100,10 +107,10 @@ func (m *Manager) setupMenu() {
 			}
 		}(item)
 	}
-	
+
 	// Add separator before quit
 	systray.AddSeparator()
-	
+
 	// Add quit item
 	m.quitItem = systray.AddMenuItem("Quit "+config.AppDisplayName, "Exit the application")
 	go func() {

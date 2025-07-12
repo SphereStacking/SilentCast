@@ -21,18 +21,27 @@ import (
 	"github.com/SphereStacking/silentcast/pkg/logger"
 )
 
-var version = "0.1.0-dev"
+var Version = "0.1.0-dev"
 
 func main() {
 	// Parse command line flags
-	var noTray bool
+	var (
+		noTray  bool
+		version bool
+	)
 	flag.BoolVar(&noTray, "no-tray", false, "Disable system tray integration")
+	flag.BoolVar(&version, "version", false, "Print version and exit")
 	flag.Parse()
+
+	if version {
+		fmt.Printf("SilentCast v%s\n", Version)
+		os.Exit(0)
+	}
 
 	if err := run(noTray); err != nil {
 		// Print user-friendly error message
 		fmt.Fprintf(os.Stderr, "❌ %s\n", errors.GetUserMessage(err))
-		
+
 		// Log detailed error for debugging
 		log.Printf("Error: %+v", err)
 		os.Exit(1)
@@ -42,19 +51,19 @@ func main() {
 func run(noTray bool) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	
+
 	// WaitGroup to coordinate shutdown
 	var wg sync.WaitGroup
 
 	// Print banner
-	fmt.Printf("🪄 %s - %s v%s\n", config.AppDisplayName, config.AppDescription, version)
+	fmt.Printf("🪄 %s - %s v%s\n", config.AppDisplayName, config.AppDescription, Version)
 	fmt.Println("Press Ctrl+C to exit")
 	fmt.Println()
 
 	// Load configuration first for logger settings
 	configPath := getConfigPath()
 	loader := config.NewLoader(configPath)
-	
+
 	cfg, err := loader.Load()
 	if err != nil {
 		return errors.Wrap(errors.ErrorTypeConfig, "failed to load configuration", err)
@@ -74,7 +83,7 @@ func run(noTray bool) error {
 		return errors.Wrap(errors.ErrorTypeSystem, "failed to initialize logger", err)
 	}
 
-	logger.Info("%s starting up v%s", config.AppDisplayName, version)
+	logger.Info("%s starting up v%s", config.AppDisplayName, Version)
 	logger.Info("Configuration loaded from %s", configPath)
 
 	// Initialize notification manager
@@ -96,9 +105,9 @@ func run(noTray bool) error {
 	for _, perm := range permissions {
 		if perm.Required && perm.Status != permission.StatusGranted {
 			logger.Warn("Permission required: %s - %s", perm.Type, perm.Description)
-			notifier.Warning(ctx, "Permission Required", 
+			notifier.Warning(ctx, "Permission Required",
 				fmt.Sprintf("%s: %s", perm.Type, perm.Description))
-			
+
 			instructions := permManager.GetInstructions(perm.Type)
 			fmt.Println(instructions)
 			fmt.Println()
@@ -119,16 +128,16 @@ func run(noTray bool) error {
 	// Set up hotkey handler
 	hotkeyManager.SetHandler(hotkey.HandlerFunc(func(event hotkey.Event) error {
 		logger.Info("Spell cast: %s → %s", event.Sequence.String(), event.SpellName)
-		notifier.Info(ctx, "Spell Cast", 
+		notifier.Info(ctx, "Spell Cast",
 			fmt.Sprintf("🎯 %s → %s", event.Sequence.String(), event.SpellName))
-		
+
 		// Execute the action
 		if err := actionManager.Execute(ctx, event.SpellName); err != nil {
 			logger.Error("Failed to execute spell %s: %v", event.SpellName, err)
 			notifier.Error(ctx, "Spell Failed", err.Error())
 			return err
 		}
-		
+
 		logger.Info("Successfully executed spell: %s", event.SpellName)
 		return nil
 	}))
@@ -137,7 +146,7 @@ func run(noTray bool) error {
 	for sequence, spellName := range cfg.Shortcuts {
 		if err := hotkeyManager.Register(sequence, spellName); err != nil {
 			logger.Warn("Failed to register hotkey %s: %v", sequence, err)
-			notifier.Warning(ctx, "Registration Failed", 
+			notifier.Warning(ctx, "Registration Failed",
 				fmt.Sprintf("Could not register %s: %v", sequence, err))
 			continue
 		}
@@ -154,16 +163,16 @@ func run(noTray bool) error {
 	defer hotkeyManager.Stop()
 
 	logger.Info("%s is active! Listening with prefix: %s", config.AppDisplayName, cfg.Hotkeys.Prefix)
-	notifier.Success(ctx, config.AppDisplayName+" Active", 
+	notifier.Success(ctx, config.AppDisplayName+" Active",
 		fmt.Sprintf("Listening with prefix: %s", cfg.Hotkeys.Prefix))
 
 	// Setup shutdown handling
 	shutdownCh := make(chan struct{})
-	
+
 	// Handle OS signals
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-	
+
 	go func() {
 		sig := <-sigChan
 		logger.Info("Received signal: %v", sig)
@@ -172,11 +181,11 @@ func run(noTray bool) error {
 
 	if !noTray {
 		// Initialize system tray
-		trayManager := tray.NewManager(tray.Config{
-			Title:   config.AppDisplayName,
-			Tooltip: fmt.Sprintf("%s - Prefix: %s", config.AppDisplayName, cfg.Hotkeys.Prefix),
-		})
-		
+		trayManager, err := tray.NewManager(ctx, cfg)
+		if err != nil {
+			return errors.Wrap(errors.ErrorTypeSystem, "failed to initialize tray manager", err)
+		}
+
 		// Add menu items
 		trayManager.AddMenuItem("Show Hotkeys", "Display configured hotkeys", func() {
 			logger.Info("Show hotkeys requested")
@@ -185,21 +194,21 @@ func run(noTray bool) error {
 				fmt.Printf("  ✨ %s → %s\n", sequence, spellName)
 			}
 		})
-		
+
 		trayManager.AddMenuItem("Reload Config", "Reload configuration file", func() {
 			logger.Info("Config reload requested")
 			notifier.Info(ctx, "Config Reload", "Feature coming soon")
 		})
-		
+
 		trayManager.AddSeparator()
-		
+
 		trayManager.AddMenuItem("About", "About "+config.AppDisplayName, func() {
 			logger.Info("About requested")
-			fmt.Printf("\n🪄 %s v%s\n", config.AppDisplayName, version)
+			fmt.Printf("\n🪄 %s v%s\n", config.AppDisplayName, Version)
 			fmt.Println(config.AppDescription)
 			fmt.Printf("https://github.com/%s/%s\n", config.AppOrg, config.AppRepo)
 		})
-		
+
 		// Run tray in a goroutine since Start blocks
 		wg.Add(1)
 		go func() {
@@ -208,7 +217,7 @@ func run(noTray bool) error {
 			logger.Info("System tray stopped")
 			close(shutdownCh) // Trigger shutdown if tray exits
 		}()
-		
+
 		// Give tray time to initialize
 		// In a real implementation, we'd use a better synchronization method
 		logger.Info("Starting system tray...")
@@ -216,16 +225,16 @@ func run(noTray bool) error {
 
 	// Wait for shutdown signal
 	<-shutdownCh
-	
+
 	fmt.Println("\n👋 Shutting down " + config.AppDisplayName + "...")
 	logger.Info("Shutting down %s...", config.AppDisplayName)
-	
+
 	// Cancel context to stop all components
 	cancel()
-	
+
 	// Wait for all goroutines
 	wg.Wait()
-	
+
 	return nil
 }
 
@@ -235,18 +244,18 @@ func getConfigPath() string {
 	if path := os.Getenv("SILENTCAST_CONFIG"); path != "" {
 		return path
 	}
-	
+
 	// Check current directory
 	if _, err := os.Stat(config.ConfigName + ".yml"); err == nil {
 		return "."
 	}
-	
+
 	// Use user config directory
 	configDir, err := os.UserConfigDir()
 	if err != nil {
 		// Fallback to current directory
 		return "."
 	}
-	
+
 	return filepath.Join(configDir, config.AppName)
 }

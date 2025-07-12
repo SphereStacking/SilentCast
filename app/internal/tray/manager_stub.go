@@ -3,21 +3,24 @@
 package tray
 
 import (
+	"context"
+
+	"github.com/SphereStacking/silentcast/internal/config"
 	"github.com/SphereStacking/silentcast/pkg/logger"
 )
 
 // Manager manages the system tray integration (stub version)
 type Manager struct {
-	title       string
-	tooltip     string
-	menuItems   []*MenuItem
+	title     string
+	tooltip   string
+	menuItems []*MenuItem
 }
 
 // MenuItem represents a tray menu item
 type MenuItem struct {
-	Title    string
-	Tooltip  string
-	Handler  func()
+	Title   string
+	Tooltip string
+	Handler func()
 }
 
 // Config represents tray configuration
@@ -27,13 +30,17 @@ type Config struct {
 }
 
 // NewManager creates a new tray manager
-func NewManager(cfg Config) *Manager {
+func NewManager(ctx context.Context, cfg *config.Config) (*Manager, error) {
 	logger.Info("System tray disabled (notray build tag)")
-	return &Manager{
-		title:     cfg.Title,
-		tooltip:   cfg.Tooltip,
-		menuItems: make([]*MenuItem, 0),
+	trayConfig := Config{
+		Title:   config.AppDisplayName,
+		Tooltip: config.AppDescription,
 	}
+	return &Manager{
+		title:     trayConfig.Title,
+		tooltip:   trayConfig.Tooltip,
+		menuItems: make([]*MenuItem, 0),
+	}, nil
 }
 
 // AddMenuItem adds a menu item to the tray

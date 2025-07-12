@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 	
@@ -278,12 +279,44 @@ func (u *Updater) getLatestRelease(ctx context.Context) (*Release, error) {
 
 // isNewerVersion compares version strings
 func (u *Updater) isNewerVersion(newVersion string) bool {
-	// Simple string comparison for now
-	// In production, use proper semver comparison
+	// Handle dev versions
+	if u.currentVersion == "dev" || newVersion == "dev" {
+		return false
+	}
+	
+	// Remove 'v' prefix if present
 	current := strings.TrimPrefix(u.currentVersion, "v")
 	new := strings.TrimPrefix(newVersion, "v")
 	
-	return new > current && new != "dev" && current != "dev"
+	// Split versions into parts
+	currentParts := strings.Split(current, ".")
+	newParts := strings.Split(new, ".")
+	
+	// Compare each part numerically
+	for i := 0; i < len(currentParts) && i < len(newParts); i++ {
+		currentNum, err1 := strconv.Atoi(currentParts[i])
+		newNum, err2 := strconv.Atoi(newParts[i])
+		
+		// If parsing fails, fall back to string comparison
+		if err1 != nil || err2 != nil {
+			if newParts[i] > currentParts[i] {
+				return true
+			} else if newParts[i] < currentParts[i] {
+				return false
+			}
+			continue
+		}
+		
+		// Numeric comparison
+		if newNum > currentNum {
+			return true
+		} else if newNum < currentNum {
+			return false
+		}
+	}
+	
+	// If all compared parts are equal, the longer version is newer
+	return len(newParts) > len(currentParts)
 }
 
 // findPlatformAsset finds the appropriate asset for current platform

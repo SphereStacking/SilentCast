@@ -67,11 +67,18 @@ grimoire:
 		osConfigFile = "spellbook.mac.yml"
 	case "windows":
 		osConfigFile = "spellbook.windows.yml"
+	case "linux":
+		osConfigFile = "spellbook.linux.yml"
+	default:
+		// For other platforms, skip OS-specific config
+		osConfigFile = ""
 	}
 	
-	err = os.WriteFile(filepath.Join(tempDir, osConfigFile), []byte(osSpecificConfig), 0644)
-	if err != nil {
-		t.Fatalf("Failed to write OS config: %v", err)
+	if osConfigFile != "" {
+		err = os.WriteFile(filepath.Join(tempDir, osConfigFile), []byte(osSpecificConfig), 0644)
+		if err != nil {
+			t.Fatalf("Failed to write OS config: %v", err)
+		}
 	}
 	
 	// Test loading
@@ -89,7 +96,13 @@ grimoire:
 	}{
 		{
 			name:     "OS-specific prefix overrides common",
-			check:    func() bool { return cfg.Hotkeys.Prefix == "cmd+space" },
+			check:    func() bool { 
+				// Only expect override if OS-specific config was written
+				if osConfigFile != "" {
+					return cfg.Hotkeys.Prefix == "cmd+space"
+				}
+				return cfg.Hotkeys.Prefix == "alt+space"
+			},
 			expected: true,
 		},
 		{
@@ -99,7 +112,13 @@ grimoire:
 		},
 		{
 			name:     "OS-specific spell overrides common",
-			check:    func() bool { return cfg.Shortcuts["e"] == "vscode" },
+			check:    func() bool { 
+				// Only expect override if OS-specific config was written
+				if osConfigFile != "" {
+					return cfg.Shortcuts["e"] == "vscode"
+				}
+				return cfg.Shortcuts["e"] == "editor"
+			},
 			expected: true,
 		},
 		{
@@ -114,7 +133,16 @@ grimoire:
 		},
 		{
 			name:     "New grimoire entry is added",
-			check:    func() bool { _, exists := cfg.Actions["vscode"]; return exists },
+			check:    func() bool { 
+				// Only expect vscode entry if OS-specific config was written
+				if osConfigFile != "" {
+					_, exists := cfg.Actions["vscode"]
+					return exists
+				}
+				// Otherwise, editor entry should exist
+				_, exists := cfg.Actions["editor"]
+				return exists
+			},
 			expected: true,
 		},
 		{

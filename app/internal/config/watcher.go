@@ -53,7 +53,7 @@ func NewWatcher(cfg WatcherConfig) (*Watcher, error) {
 		onChange: cfg.OnChange,
 		debounce: debounce,
 		configPaths: []string{
-			filepath.Join(cfg.ConfigPath, AppName+".yml"),
+			filepath.Join(cfg.ConfigPath, ConfigName+".yml"),
 			filepath.Join(cfg.ConfigPath, platformConfigFile),
 		},
 	}
