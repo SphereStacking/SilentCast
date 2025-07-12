@@ -22,7 +22,6 @@ help:
 	@echo ""
 	@echo "Project Management:"
 	@echo "  setup         Setup development environment"
-	@echo "  pre-commit    Install pre-commit hooks"
 	@echo "  lint          Run linting checks"
 
 # Application build
@@ -60,17 +59,6 @@ setup:
 	@cd app && go mod download
 	@cd docs && npm install
 	@echo "✅ Setup complete!"
-
-# Pre-commit hooks
-pre-commit:
-	@echo "🪝 Installing pre-commit hooks..."
-	@pip install --user pre-commit || pip3 install --user pre-commit
-	@PATH="$$HOME/.local/bin:$$PATH" pre-commit install
-	@PATH="$$HOME/.local/bin:$$PATH" pre-commit install --hook-type commit-msg
-	@echo "✅ Pre-commit hooks installed!"
-	@echo ""
-	@echo "ℹ️  Note: Add ~/.local/bin to your PATH if not already done:"
-	@echo '    export PATH="$$HOME/.local/bin:$$PATH"'
 
 # Run linting
 lint:

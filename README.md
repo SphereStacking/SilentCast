@@ -208,7 +208,6 @@ When running with system tray support:
 
 - Go 1.21 or later
 - Make (optional but recommended)
-- Python 3.x (for pre-commit hooks)
 
 ## 📁 Project Structure
 
@@ -236,9 +235,6 @@ cd silentcast
 
 # Setup development environment
 make setup
-
-# Install pre-commit hooks (recommended)
-make pre-commit
 
 # Build for development (fast)
 make build-dev
