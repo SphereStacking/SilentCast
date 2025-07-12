@@ -65,19 +65,7 @@
   <path fill="url(#textGradient)" filter="url(#textGlow)" d="M3 9h10a1 1 0 0 1 .117 1.993L13 11H3a1 1 0 0 1-.117-1.993z"/>
   <path fill="url(#fadeGradient)" d="M3 9h10a1 1 0 0 1 .117 1.993L13 11H3a1 1 0 0 1-.117-1.993z"/>
   
-  <!-- 魔法の星（魔法のステッキ） -->
-  <path fill="url(#magicGradient)" filter="url(#electricGlow)" d="M16.5 8a.75.75 0 0 1 .744.658l.14 1.13a3.25 3.25 0 0 0 2.828 2.829l1.13.139a.75.75 0 0 1 0 1.488l-1.13.14a3.25 3.25 0 0 0-2.829 2.828l-.139 1.13a.75.75 0 0 1-1.488 0l-.14-1.13a3.25 3.25 0 0 0-2.828-2.829l-1.13-.139a.75.75 0 0 1 0-1.488l1.13-.14a3.25 3.25 0 0 0 2.829-2.828l.139-1.13A.75.75 0 0 1 16.5 8z">
-    <animate
-      attributeName="opacity"
-      values="0.6;1;0.9;1;0.6"
-      dur="3s"
-      keyTimes="0;0.3;0.6;0.8;1"
-      calcMode="spline"
-      keySplines="0.4,0,0.6,1;0.4,0,0.6,1;0.4,0,0.6,1;0.4,0,0.6,1"
-      repeatCount="indefinite"/>
-  </path>
-
-  <!-- 魔法のパーティクル（ステッキの軌跡） -->
+    <!-- 魔法のパーティクル（ステッキの軌跡） -->
   <circle cx="16.5" cy="12.8" r="0.5" fill="#ff6b6b" opacity="0.8">
     <animate attributeName="opacity" values="0;0.8;0.4;0" dur="1.8s" repeatCount="indefinite"/>
     <animateTransform attributeName="transform" type="translate" values="0,0;-5,1;-10,2" dur="1.8s" repeatCount="indefinite"/>
@@ -117,4 +105,17 @@
     <animate attributeName="opacity" values="0;0.6;0.2;0" dur="1.5s" begin="1.4s" repeatCount="indefinite"/>
     <animateTransform attributeName="transform" type="translate" values="0,0;-6.2,0.3;-12.4,0.6" dur="1.5s" begin="1.4s" repeatCount="indefinite"/>
   </circle>
+  
+  <!-- 魔法の星（魔法のステッキ） -->
+  <path fill="url(#magicGradient)" filter="url(#electricGlow)" d="M16.5 8a.75.75 0 0 1 .744.658l.14 1.13a3.25 3.25 0 0 0 2.828 2.829l1.13.139a.75.75 0 0 1 0 1.488l-1.13.14a3.25 3.25 0 0 0-2.829 2.828l-.139 1.13a.75.75 0 0 1-1.488 0l-.14-1.13a3.25 3.25 0 0 0-2.828-2.829l-1.13-.139a.75.75 0 0 1 0-1.488l1.13-.14a3.25 3.25 0 0 0 2.829-2.828l.139-1.13A.75.75 0 0 1 16.5 8z">
+    <animate
+      attributeName="opacity"
+      values="0.6;1;0.9;1;0.6"
+      dur="3s"
+      keyTimes="0;0.3;0.6;0.8;1"
+      calcMode="spline"
+      keySplines="0.4,0,0.6,1;0.4,0,0.6,1;0.4,0,0.6,1;0.4,0,0.6,1"
+      repeatCount="indefinite"/>
+  </path>
+
 </svg>
