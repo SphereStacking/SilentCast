@@ -58,6 +58,10 @@
   <path fill="url(#textGradient)" filter="url(#textGlow)" d="M3 15h7.848a1.75 1.75 0 0 1-.775-2H3l-.117.007A1 1 0 0 0 3 15z"/>
   <path fill="url(#fadeGradient)" d="M3 15h7.848a1.75 1.75 0 0 1-.775-2H3l-.117.007A1 1 0 0 0 3 15z"/>
   
+  <!-- テキスト行 3（最上部の完全な行） -->
+  <path fill="url(#textGradient)" filter="url(#textGlow)" d="M3 7h18l.117-.007A1 1 0 0 0 21 5H3l-.117.007A1 1 0 0 0 3 7z"/>
+  <path fill="url(#fadeGradient)" d="M3 7h18l.117-.007A1 1 0 0 0 21 5H3l-.117.007A1 1 0 0 0 3 7z"/>
+  
   <!-- 編集カーソル/矢印（魔法のステッキ） -->
   <path fill="url(#wandTipGradient)" d="M12.72 16.216a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 1 1-1.06-1.06z"/>
   
