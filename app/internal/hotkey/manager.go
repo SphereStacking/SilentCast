@@ -71,6 +71,10 @@ func (m *DefaultManager) Start() error {
 		return fmt.Errorf("hotkey manager already running")
 	}
 
+	logger.Debug("Starting hotkey manager...")
+	logger.Debug("Prefix key: %s", m.prefixKey.String())
+	logger.Debug("Registered sequences: %d", len(m.sequences))
+
 	m.running = true
 	m.stopChan = make(chan struct{})
 
@@ -80,6 +84,7 @@ func (m *DefaultManager) Start() error {
 	// Start hook event collection
 	go m.collectEvents()
 
+	logger.Info("✅ Hotkey manager started with prefix: %s", m.prefixKey.String())
 	return nil
 }
 
@@ -157,20 +162,29 @@ func (m *DefaultManager) IsRunning() bool {
 
 // collectEvents collects keyboard events from gohook
 func (m *DefaultManager) collectEvents() {
+	logger.Debug("Starting gohook event collection...")
 	evChan := hook.Start()
 	defer hook.End()
+	
+	logger.Info("🎮 Hotkey listener started successfully")
 
 	for {
 		select {
 		case <-m.stopChan:
+			logger.Debug("Stopping event collection")
 			return
 		case ev := <-evChan:
-			// Only process key down events
+			// Log all key events for debugging
 			if ev.Kind == hook.KeyDown {
+				// Convert to readable key name for logging
+				keyName := m.getKeyName(ev)
+				logger.Info("⌨️  Key pressed: %s (keycode=%d, rawcode=%d)", keyName, ev.Keycode, ev.Rawcode)
+				
 				select {
 				case m.eventChan <- ev:
 				default:
 					// Drop event if channel is full
+					logger.Warn("Event channel full, dropping key event")
 				}
 			}
 		}
@@ -339,4 +353,16 @@ func (m *DefaultManager) checkTimeouts() {
 func (m *DefaultManager) resetState() {
 	m.prefixActive = false
 	m.currentSequence = []Key{}
+}
+
+// getKeyName converts a gohook event to a readable key name
+func (m *DefaultManager) getKeyName(ev hook.Event) string {
+	// Try to convert to our Key type first
+	key := m.convertEvent(ev)
+	if key != nil {
+		return key.String()
+	}
+	
+	// Fallback to raw keycode
+	return fmt.Sprintf("Unknown(%d)", ev.Keycode)
 }
