@@ -29,15 +29,10 @@ builds:
       - goos: linux
         goarch: arm64
     overrides:
-      # Windows用の特別な設定
-      - goos: windows
-        goarch: amd64
+      # Linuxはそのまま
+      - goos: linux
         env:
-          - CGO_ENABLED=1
-          - CC=x86_64-w64-mingw32-gcc
-          - CXX=x86_64-w64-mingw32-g++
-        tags:
-          - notray  # nogohookは除外
+          - CGO_ENABLED=0
     ldflags:
       - -s -w -X main.Version={{.Version}}
 
