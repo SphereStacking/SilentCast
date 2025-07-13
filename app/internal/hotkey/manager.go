@@ -15,6 +15,29 @@ import (
 	"github.com/SphereStacking/silentcast/pkg/logger"
 )
 
+
+// Modifier mask constants from gohook's C header (iohook.h)
+// These are not exposed as Go constants in the gohook package
+const (
+	// Left modifiers
+	maskShiftL = 1 << 0
+	maskCtrlL  = 1 << 1
+	maskMetaL  = 1 << 2
+	maskAltL   = 1 << 3
+	
+	// Right modifiers
+	maskShiftR = 1 << 4
+	maskCtrlR  = 1 << 5
+	maskMetaR  = 1 << 6
+	maskAltR   = 1 << 7
+	
+	// Combined masks (left or right)
+	maskShift = maskShiftL | maskShiftR
+	maskCtrl  = maskCtrlL | maskCtrlR
+	maskMeta  = maskMetaL | maskMetaR
+	maskAlt   = maskAltL | maskAltR
+)
+
 // DefaultManager implements the Manager interface using gohook
 type DefaultManager struct {
 	mu        sync.RWMutex
@@ -24,6 +47,7 @@ type DefaultManager struct {
 	running   bool
 	stopChan  chan struct{}
 	eventChan chan hook.Event
+	keyMapper KeyMapper
 
 	// Prefix key configuration
 	prefixKey       KeySequence
@@ -54,6 +78,7 @@ func NewManager(cfg *config.HotkeyConfig) (*DefaultManager, error) {
 		validator:       NewValidator(),
 		stopChan:        make(chan struct{}),
 		eventChan:       make(chan hook.Event, 100),
+		keyMapper:       GetKeyMapper(),
 		prefixKey:       prefixSeq,
 		prefixTimeout:   cfg.Timeout.ToDuration(),
 		sequenceTimeout: cfg.SequenceTimeout.ToDuration(),
@@ -178,7 +203,18 @@ func (m *DefaultManager) collectEvents() {
 			if ev.Kind == hook.KeyDown {
 				// Convert to readable key name for logging
 				keyName := m.getKeyName(ev)
-				logger.Info("⌨️  Key pressed: %s (keycode=%d, rawcode=%d)", keyName, ev.Keycode, ev.Rawcode)
+				logger.Debug("⌨️  Key pressed: %s (keycode=%d, rawcode=%d, mask=%d)", keyName, ev.Keycode, ev.Rawcode, ev.Mask)
+				
+				// Also log modifier states
+				if ev.Mask != 0 {
+					var mods []string
+					if ev.Mask&maskCtrl != 0 { mods = append(mods, "Ctrl") }
+					if ev.Mask&maskShift != 0 { mods = append(mods, "Shift") }
+					if ev.Mask&maskAlt != 0 { mods = append(mods, "Alt") }
+					if len(mods) > 0 {
+						logger.Debug("   Active modifiers: %s", strings.Join(mods, "+"))
+					}
+				}
 				
 				select {
 				case m.eventChan <- ev:
@@ -278,20 +314,40 @@ func (m *DefaultManager) handleKeyEvent(ev hook.Event) {
 
 // convertEvent converts a gohook event to our Key type
 func (m *DefaultManager) convertEvent(ev hook.Event) *Key {
-	// This is a simplified conversion
-	// In a real implementation, we'd need proper keycode mapping
-
-	keyName := hook.RawcodetoKeychar(ev.Rawcode)
+	keyName := ""
+	modifiers := []string{}
+	
+	// Check if this is a modifier key itself
+	if modName, isModifier := m.keyMapper.IsModifierKey(ev.Rawcode); isModifier {
+		keyName = modName
+		modifiers = append(modifiers, modName)
+	} else {
+		// Regular key - check for active modifiers
+		if ev.Mask&maskCtrl != 0 {
+			modifiers = append(modifiers, "ctrl")
+		}
+		if ev.Mask&maskShift != 0 {
+			modifiers = append(modifiers, "shift")
+		}
+		if ev.Mask&maskAlt != 0 {
+			modifiers = append(modifiers, "alt")
+		}
+		
+		// Try platform-specific mapping first
+		keyName = m.keyMapper.GetKeyNameFromRawcode(ev.Rawcode)
+		
+		// Fallback to gohook's built-in conversion
+		if keyName == "" {
+			keyName = hook.RawcodetoKeychar(ev.Rawcode)
+		}
+	}
+	
 	if keyName == "" {
 		return nil
 	}
 
-	// Extract modifiers
-	modifiers := []string{}
-	// Note: gohook modifier detection would need proper implementation
-
 	return &Key{
-		Code:      ev.Rawcode,
+		Code:      ev.Keycode, // Use keycode instead of rawcode
 		Modifiers: modifiers,
 		Name:      strings.ToLower(keyName),
 	}
@@ -366,3 +422,4 @@ func (m *DefaultManager) getKeyName(ev hook.Event) string {
 	// Fallback to raw keycode
 	return fmt.Sprintf("Unknown(%d)", ev.Keycode)
 }
+

@@ -7,6 +7,12 @@ type KeyMapper interface {
 
 	// GetSpecialKeys returns any platform-specific special key codes
 	GetSpecialKeys() map[string]uint16
+
+	// GetKeyNameFromRawcode converts platform-specific rawcode to key name
+	GetKeyNameFromRawcode(rawcode uint16) string
+
+	// IsModifierKey checks if the rawcode is a modifier key and returns its name
+	IsModifierKey(rawcode uint16) (string, bool)
 }
 
 // keyMapperFactory creates the appropriate key mapper for the current platform
