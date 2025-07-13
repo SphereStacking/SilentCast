@@ -75,14 +75,14 @@ jobs:
         CGO_ENABLED: 1
       run: |
         cd app
-        go build -ldflags "-X main.Version=${GITHUB_REF#refs/tags/v} -s -w" -o ../silentcast-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }} ./cmd/silentcast
+        go build -ldflags "-X main.Version=${GITHUB_REF#refs/tags/v} -s -w" -o ../silentcast-${{ matrix.goos }}-${{ matrix.goarch }}-cgo${{ matrix.goos == 'windows' && '.exe' || '' }} ./cmd/silentcast
     
     - name: Upload to release
       uses: softprops/action-gh-release@v1
       with:
-        draft: true
+        draft: false
         files: |
-          silentcast-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
+          silentcast-${{ matrix.goos }}-${{ matrix.goarch }}-cgo${{ matrix.goos == 'windows' && '.exe' || '' }}
 
   update-docs:
     name: Update Documentation Version
