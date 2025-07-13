@@ -12,6 +12,7 @@ import (
 	hook "github.com/robotn/gohook"
 
 	"github.com/SphereStacking/silentcast/internal/config"
+	"github.com/SphereStacking/silentcast/pkg/logger"
 )
 
 // DefaultManager implements the Manager interface using gohook
@@ -212,6 +213,7 @@ func (m *DefaultManager) handleKeyEvent(ev hook.Event) {
 		m.prefixActive = true
 		m.prefixTime = time.Now()
 		m.currentSequence = []Key{}
+		logger.Info("🔵 Prefix key detected - waiting for command...")
 		return
 	}
 
@@ -226,6 +228,7 @@ func (m *DefaultManager) handleKeyEvent(ev hook.Event) {
 		// Check for exact match
 		if spellName, exists := m.sequences[normalized]; exists {
 			// We have a match! Execute the handler
+			logger.Info("✅ Executed: %s", spellName)
 			if m.handler != nil {
 				event := Event{
 					Sequence:  currentSeq,
@@ -253,6 +256,7 @@ func (m *DefaultManager) handleKeyEvent(ev hook.Event) {
 
 		// If not a possible prefix, reset
 		if !isPossiblePrefix {
+			logger.Info("❌ Unknown command: %s", normalized)
 			m.resetState()
 		}
 	}
@@ -319,12 +323,14 @@ func (m *DefaultManager) checkTimeouts() {
 
 	// Check prefix timeout
 	if now.Sub(m.prefixTime) > m.prefixTimeout {
+		logger.Info("⏱️  Timeout - command cancelled")
 		m.resetState()
 		return
 	}
 
 	// Check sequence timeout (if we have started a sequence)
 	if len(m.currentSequence) > 0 && now.Sub(m.prefixTime) > m.sequenceTimeout {
+		logger.Info("⏱️  Timeout - command cancelled")
 		m.resetState()
 	}
 }
