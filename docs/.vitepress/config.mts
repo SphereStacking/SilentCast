@@ -48,11 +48,15 @@ export default defineConfig({
       { text: 'Guide', link: '/guide/getting-started' },
       { text: 'Config', link: '/config/' },
       { text: 'API', link: '/api/' },
+      { text: 'Development', link: '/development/setup' },
+      { text: 'Troubleshooting', link: '/troubleshooting/' },
       {
         text: `v${version}`,
         items: [
-          { text: 'Changelog', link: 'https://github.com/SphereStacking/SilentCast/releases' },
-          { text: 'Contributing', link: '/contributing' }
+          { text: 'Changelog', link: '/CHANGELOG' },
+          { text: 'Releases', link: 'https://github.com/SphereStacking/SilentCast/releases' },
+          { text: 'Contributing', link: '/contributing' },
+          { text: 'TDD Guide', link: '/guide/tdd-development' }
         ]
       }
     ],
@@ -69,24 +73,74 @@ export default defineConfig({
           ]
         },
         {
-          text: 'Essentials',
+          text: 'Core Concepts',
           collapsed: false,
           items: [
             { text: 'Configuration', link: '/guide/configuration' },
-            { text: 'Configuration Samples', link: '/guide/samples' },
-            { text: 'Shortcuts', link: '/guide/shortcuts' },
-            { text: 'Actions', link: '/guide/actions' },
-            { text: 'Platform Support', link: '/guide/platforms' }
+            { text: 'Spells (Hotkeys)', link: '/guide/spells' },
+            { text: 'Grimoire (Actions)', link: '/guide/grimoire' },
+            { text: 'Configuration Samples', link: '/guide/samples' }
+          ]
+        },
+        {
+          text: 'Features',
+          collapsed: false,
+          items: [
+            { text: 'Script Execution', link: '/guide/scripts' },
+            { text: 'Browser Detection', link: '/guide/browser-detection' },
+            { text: 'Browser Launcher', link: '/guide/browser-launcher' },
+            { text: 'Custom Shells', link: '/guide/custom-shells' },
+            { text: 'Terminal Customization', link: '/guide/terminal-customization' },
+            { text: 'Force Terminal', link: '/guide/force-terminal' }
+          ]
+        },
+        {
+          text: 'Platform & Services',
+          collapsed: true,
+          items: [
+            { text: 'Platform Support', link: '/guide/platforms' },
+            { text: 'Windows Service', link: '/guide/windows-service' },
+            { text: 'macOS Service', link: '/guide/macos-service' },
+            { text: 'Linux Service', link: '/guide/linux-service' },
+            { text: 'Windows Guide', link: '/guide/windows' }
+          ]
+        },
+        {
+          text: 'Management',
+          collapsed: true,
+          items: [
+            { text: 'Auto-start', link: '/guide/auto-start' },
+            { text: 'Updates', link: '/guide/updates' },
+            { text: 'Self-update', link: '/guide/self-update' },
+            { text: 'Update Notifications', link: '/guide/update-notifications' },
+            { text: 'Timeout Notifications', link: '/guide/timeout-notifications' },
+            { text: 'Backup & Restore', link: '/guide/backup-restore' }
           ]
         },
         {
           text: 'Advanced',
-          collapsed: false,
+          collapsed: true,
           items: [
-            { text: 'Script Execution', link: '/guide/scripts' },
             { text: 'Environment Variables', link: '/guide/env-vars' },
-            { text: 'Auto-start', link: '/guide/auto-start' },
-            { text: 'Logging', link: '/guide/logging' }
+            { text: 'Logging', link: '/guide/logging' },
+            { text: 'Performance Optimization', link: '/guide/performance-optimization' },
+            { text: 'Interpreter Mode', link: '/guide/interpreter-mode' }
+          ]
+        },
+        {
+          text: 'Reference',
+          collapsed: true,
+          items: [
+            { text: 'CLI Reference', link: '/guide/cli-reference' },
+            { text: 'FAQ', link: '/guide/faq' },
+            { text: 'Troubleshooting', link: '/guide/troubleshooting' }
+          ]
+        },
+        {
+          text: 'Development',
+          collapsed: true,
+          items: [
+            { text: 'TDD Development', link: '/guide/tdd-development' }
           ]
         }
       ],
@@ -95,7 +149,8 @@ export default defineConfig({
           text: 'Configuration',
           items: [
             { text: 'Overview', link: '/config/' },
-            { text: 'Configuration Guide', link: '/config/configuration-guide' }
+            { text: 'Configuration Guide', link: '/config/configuration-guide' },
+            { text: 'File Structure', link: '/config/file-structure' }
           ]
         }
       ],
@@ -105,7 +160,43 @@ export default defineConfig({
           items: [
             { text: 'CLI Options', link: '/api/' },
             { text: 'Key Names', link: '/api/key-names' },
-            { text: 'Testing', link: '/api/testing' }
+            { text: 'Exit Codes', link: '/api/exit-codes' },
+            { text: 'Environment Variables', link: '/api/env-vars' },
+            { text: 'Architecture', link: '/api/architecture' },
+            { text: 'Building', link: '/api/building' },
+            { text: 'Testing', link: '/api/testing' },
+            { text: 'Contributing', link: '/api/contributing' }
+          ]
+        }
+      ],
+      '/development/': [
+        {
+          text: 'Development',
+          items: [
+            { text: 'Setup Guide', link: '/development/setup' },
+            { text: 'TDD Best Practices', link: '/development/tdd-best-practices' },
+            { text: 'Error Handling', link: '/development/error-handling' },
+            { text: 'Architecture Improvements', link: '/development/architecture-improvements' },
+            { text: 'Code Quality Analysis', link: '/development/code_quality_analysis_report' },
+            { text: 'Code Quality Priorities', link: '/development/code_quality_fix_priorities' }
+          ]
+        }
+      ],
+      '/troubleshooting/': [
+        {
+          text: 'Troubleshooting',
+          items: [
+            { text: 'Overview', link: '/troubleshooting/' },
+            { text: 'Installation Issues', link: '/troubleshooting/installation' },
+            { text: 'Configuration Issues', link: '/troubleshooting/configuration' },
+            { text: 'Hotkey Issues', link: '/troubleshooting/hotkeys' },
+            { text: 'Action Issues', link: '/troubleshooting/actions' },
+            { text: 'Performance Issues', link: '/troubleshooting/performance' },
+            { text: 'Permission Issues', link: '/troubleshooting/permissions' },
+            { text: 'Platform-Specific', link: '/troubleshooting/platform-specific' },
+            { text: 'Debugging', link: '/troubleshooting/debugging' },
+            { text: 'FAQ', link: '/troubleshooting/faq' },
+            { text: 'Support', link: '/troubleshooting/support' }
           ]
         }
       ]
