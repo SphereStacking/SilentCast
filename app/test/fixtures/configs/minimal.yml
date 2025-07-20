@@ -1,0 +1,9 @@
+# Minimal configuration for E2E testing
+spells:
+  t: test-action
+
+grimoire:
+  test-action:
+    type: script
+    command: echo "Minimal test executed"
+    description: "Minimal test action"
