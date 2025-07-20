@@ -1,11 +1,10 @@
 name: Performance Benchmarks
 
 on:
-  # Disable automatic runs due to CI environment limitations with system notifications
-  # push:
-  #   branches: [ main ]
-  # pull_request:
-  #   branches: [ main ]
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
   schedule:
     # Run benchmarks daily at 2 AM UTC
     - cron: '0 2 * * *'

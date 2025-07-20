@@ -2,6 +2,7 @@ package benchmarks
 
 import (
 	"context"
+	"os"
 	"runtime"
 	"sync"
 	"testing"
@@ -76,7 +77,13 @@ func testNotificationManagerLeaks(t *testing.T, baseline int) {
 
 	// Create and use notification managers
 	for i := 0; i < 50; i++ {
-		mgr := notify.NewManager()
+		var mgr NotificationManager
+		// In CI environment, use mock notifier
+		if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
+			mgr = &mockNotificationManager{}
+		} else {
+			mgr = notify.NewManager()
+		}
 		ctx := context.Background()
 		
 		// Send notifications

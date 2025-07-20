@@ -18,6 +18,15 @@ import (
 	"github.com/SphereStacking/silentcast/internal/permission"
 )
 
+// NotificationManager interface for testing
+type NotificationManager interface {
+	Notify(ctx context.Context, notification notify.Notification) error
+	Info(ctx context.Context, title, message string) error
+	Success(ctx context.Context, title, message string) error
+	Warning(ctx context.Context, title, message string) error
+	Error(ctx context.Context, title, message string) error
+}
+
 // BenchmarkEnvironment provides a standardized environment for performance testing
 type BenchmarkEnvironment struct {
 	TempDir       string
@@ -26,7 +35,7 @@ type BenchmarkEnvironment struct {
 	ConfigLoader  *config.Loader
 	ActionManager *action.Manager
 	HotkeyManager hotkey.Manager
-	NotifyManager *notify.Manager
+	NotifyManager NotificationManager
 	OutputManager output.Manager
 	PermManager   permission.Manager
 	ctx           context.Context
@@ -89,7 +98,12 @@ func (e *BenchmarkEnvironment) InitializeComponents() error {
 	e.OutputManager = output.NewBufferedManager(output.DefaultOptions())
 	
 	// Initialize notification manager
-	e.NotifyManager = notify.NewManager()
+	// In CI environment, use a mock notifier to avoid system notification issues
+	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
+		e.NotifyManager = &mockNotificationManager{}
+	} else {
+		e.NotifyManager = notify.NewManager()
+	}
 	
 	// Initialize permission manager
 	permManager, err := permission.NewManager()
@@ -321,4 +335,32 @@ func RunMemoryBenchmark(b *testing.B, fn func()) {
 	
 	b.ReportMetric(float64(allocations)/float64(b.N), "allocs/op")
 	b.ReportMetric(float64(allocBytes)/float64(b.N), "B/op")
+}
+
+// mockNotificationManager is a no-op notification manager for CI environments
+type mockNotificationManager struct{}
+
+func (m *mockNotificationManager) Notify(ctx context.Context, notification notify.Notification) error {
+	// No-op in CI environment
+	return nil
+}
+
+func (m *mockNotificationManager) Info(ctx context.Context, title, message string) error {
+	// No-op in CI environment
+	return nil
+}
+
+func (m *mockNotificationManager) Success(ctx context.Context, title, message string) error {
+	// No-op in CI environment
+	return nil
+}
+
+func (m *mockNotificationManager) Warning(ctx context.Context, title, message string) error {
+	// No-op in CI environment
+	return nil
+}
+
+func (m *mockNotificationManager) Error(ctx context.Context, title, message string) error {
+	// No-op in CI environment
+	return nil
 }
