@@ -51,7 +51,7 @@ jobs:
         path: |
           ~/.cache/go-build
           ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+        key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('app/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-${{ matrix.go-version }}-
 
@@ -59,7 +59,6 @@ jobs:
       working-directory: app
       run: |
         go mod download
-        go mod tidy
 
     - name: Create benchmark results directory
       run: mkdir -p benchmark-results
