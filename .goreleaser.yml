@@ -1,18 +1,15 @@
 version: 2
 
-dist: app/dist
-
-# before:
-#   hooks:
-#     - sh -c "cd app && go mod tidy"
+dist: dist
 
 builds:
   - id: silentcast
-    main: ./cmd/silentcast
     dir: app
+    main: ./cmd/silentcast
     binary: silentcast
     env:
       - CGO_ENABLED=0
+      - GO111MODULE=on
     tags:
       - nogohook
       - notray
