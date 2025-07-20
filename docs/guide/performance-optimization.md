@@ -482,6 +482,6 @@ type DynamicPool struct {
 
 ## See Also
 
-- [Performance Analysis](../performance/)
-- [Development Documentation](../development/)
+- [Performance Documentation](../performance/README.md)
+- [Development Setup](../development/setup.md)
 - [Troubleshooting Performance](../troubleshooting/performance.md)

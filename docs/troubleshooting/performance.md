@@ -393,6 +393,6 @@ curl http://localhost:6060/debug/pprof/goroutine?debug=1 > goroutines.txt
 ## 🔗 関連リソース
 
 - [パフォーマンス最適化ガイド](../guide/performance-optimization.md)
-- [開発ドキュメント](../development/)
+- [開発セットアップ](../development/setup.md)
 - [システム要件](../guide/installation.md#system-requirements)
 - [プロファイリング設定例](../../examples/config/performance_example.yml)

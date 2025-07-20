@@ -197,7 +197,7 @@ collect_support_info
 
 ### ドキュメント
 
-1. **[ユーザーガイド](../guide/)**: 基本的な使用方法
+1. **[ユーザーガイド](../guide/getting-started.md)**: 基本的な使用方法
 2. **[設定リファレンス](../guide/configuration.md)**: 詳細な設定オプション
 3. **[トラブルシューティング](../troubleshooting/)**: 問題解決ガイド
 4. **[FAQ](faq.md)**: よくある質問と回答

@@ -389,7 +389,7 @@ if len(data) > 1000 {
 - [Debugging Guide](../troubleshooting/debugging.md)
 - [TDD Development Guide](../guide/tdd-development.md)
 - [Troubleshooting](../troubleshooting/)
-- [Development Documentation](./)
+- [Development Setup](setup.md)
 
 ---
 

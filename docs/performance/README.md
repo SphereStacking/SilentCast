@@ -228,8 +228,8 @@ When reporting performance issues, please include:
 
 ### Internal Resources
 - [Troubleshooting Guide](../troubleshooting/performance.md)
-- [Development Documentation](../development/)
-- [Architecture Overview](../architecture/)
+- [Development Setup](../development/setup.md)
+- [Architecture Documentation](../api/architecture.md)
 - [Testing Guidelines](../guide/tdd-development.md)
 
 ---

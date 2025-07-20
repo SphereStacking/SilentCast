@@ -385,5 +385,5 @@ ls -la ~/.config/silentcast/
 
 - [設定ガイド](../guide/configuration.md)
 - [設定ファイル構造](../config/file-structure.md)
-- [設定例](../../examples/config/)
+- [設定例](../../examples/config/spellbook.yml)
 - [FAQ](../guide/faq.md)

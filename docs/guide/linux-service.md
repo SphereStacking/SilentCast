@@ -177,7 +177,7 @@ Environment="SILENTCAST_DEBUG=true"
 
 2. Check hotkey permissions:
    - Some distributions require additional permissions for global hotkeys
-   - See [Permissions Guide](./permissions.md)
+   - See [Permissions Documentation](../troubleshooting/permissions.md)
 
 ### Autostart Not Working
 
@@ -292,5 +292,5 @@ setsebool -P user_execmod on
 
 - [Installation Guide](installation.md)
 - [Configuration Reference](../config/)
-- [Permissions Guide](./permissions.md)
+- [Permissions Documentation](../troubleshooting/permissions.md)
 - [Troubleshooting Guide](../troubleshooting.md)
