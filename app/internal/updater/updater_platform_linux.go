@@ -4,6 +4,7 @@ package updater
 
 import (
 	"os"
+	"syscall"
 )
 
 func init() {
@@ -27,4 +28,18 @@ func (l *linuxUpdater) ReplaceExecutable(src, dst string) error {
 func (l *linuxUpdater) MakeExecutable(path string) error {
 	// Set executable permissions (755)
 	return os.Chmod(path, 0o755)
+}
+
+func (l *linuxUpdater) RestartApplication() error {
+	// Get current executable path
+	exe, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	// Prepare command arguments (same as current process)
+	args := os.Args
+
+	// Use exec to replace the current process
+	return syscall.Exec(exe, args, os.Environ())
 }
