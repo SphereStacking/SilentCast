@@ -50,7 +50,7 @@ archives:
       {{- else }}{{ .Arch }}{{ end }}
     files:
       - README.md
-      - LICENSE
+      - ../LICENSE
 
 checksum:
   name_template: 'checksums.txt'
