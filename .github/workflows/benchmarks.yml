@@ -63,12 +63,19 @@ jobs:
     - name: Create benchmark results directory
       run: mkdir -p benchmark-results
 
-    - name: Run all benchmarks
-      if: github.event.inputs.benchmark_type == 'all' || github.event.inputs.benchmark_type == ''
+    - name: Run all benchmarks (Windows)
+      if: (github.event.inputs.benchmark_type == 'all' || github.event.inputs.benchmark_type == '') && runner.os == 'Windows'
       working-directory: app
       run: |
         echo "Running comprehensive benchmarks..."
-        go test -tags "nogohook notray" -run=^$ -bench=. -benchmem -timeout=45m ./test/benchmarks/... | tee ../benchmark-results/all-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+        go test -tags "nogohook notray" -run='^$' -bench=. -benchmem -timeout=45m test/benchmarks -v | Out-File -FilePath ../benchmark-results/all-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+    
+    - name: Run all benchmarks (Unix)
+      if: (github.event.inputs.benchmark_type == 'all' || github.event.inputs.benchmark_type == '') && runner.os != 'Windows'
+      working-directory: app
+      run: |
+        echo "Running comprehensive benchmarks..."
+        go test -tags "nogohook notray" -run=^$ -bench=. -benchmem -timeout=45m -benchtime=10x ./test/benchmarks/... | tee ../benchmark-results/all-${{ matrix.os }}-go${{ matrix.go-version }}.txt
 
     - name: Run startup benchmarks
       if: github.event.inputs.benchmark_type == 'startup'
