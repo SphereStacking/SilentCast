@@ -165,62 +165,7 @@ test-integration-coverage:
 	@go tool cover -html=integration-coverage.out -o integration-coverage.html
 	@echo "✅ Integration coverage report: integration-coverage.html"
 
-# Run benchmarks
-benchmark:
-	@echo "⚡ Running performance benchmarks..."
-	@go test -tags "nogohook notray" -bench=. -benchmem -timeout=30m ./test/benchmarks/...
-
-# Run benchmarks with CPU profiling
-benchmark-cpu:
-	@echo "🔬 Running benchmarks with CPU profiling..."
-	@go test -tags "nogohook notray" -bench=. -benchmem -cpuprofile=cpu.prof -timeout=30m ./test/benchmarks/...
-	@echo "✅ CPU profile saved to cpu.prof (use 'go tool pprof cpu.prof')"
-
-# Run benchmarks with memory profiling
-benchmark-mem:
-	@echo "🧠 Running benchmarks with memory profiling..."
-	@go test -tags "nogohook notray" -bench=. -benchmem -memprofile=mem.prof -timeout=30m ./test/benchmarks/...
-	@echo "✅ Memory profile saved to mem.prof (use 'go tool pprof mem.prof')"
-
-# Run specific benchmark category
-benchmark-startup:
-	@echo "🚀 Running startup benchmarks..."
-	@go test -tags "nogohook notray" -bench=BenchmarkStartup -benchmem ./test/benchmarks/startup_test.go ./test/benchmarks/framework.go
-
-benchmark-hotkey:
-	@echo "🎯 Running hotkey benchmarks..."
-	@go test -tags "nogohook notray" -bench=BenchmarkKey -benchmem ./test/benchmarks/hotkey_test.go ./test/benchmarks/framework.go
-
-benchmark-action:
-	@echo "⚡ Running action benchmarks..."
-	@go test -tags "nogohook notray" -bench=BenchmarkAction -benchmem ./test/benchmarks/action_test.go ./test/benchmarks/framework.go
-
-benchmark-config:
-	@echo "⚙️ Running config benchmarks..."
-	@go test -tags "nogohook notray" -bench=BenchmarkConfig -benchmem ./test/benchmarks/config_test.go ./test/benchmarks/framework.go
-
-benchmark-memory:
-	@echo "🧠 Running memory benchmarks..."
-	@go test -tags "nogohook notray" -bench=BenchmarkMemory -benchmem ./test/benchmarks/memory_test.go ./test/benchmarks/framework.go
-
-benchmark-stress:
-	@echo "💪 Running stress test benchmarks..."
-	@go test -tags "nogohook notray" -bench=BenchmarkStress -benchmem -timeout=15m ./test/benchmarks/stress_test.go ./test/benchmarks/framework.go
-
-# Run watcher benchmarks
-benchmark-watcher:
-	@echo "📁 Running file watcher benchmarks..."
-	@go test -tags "nogohook notray" -bench=BenchmarkConfig -benchmem ./test/benchmarks/watcher_test.go ./test/benchmarks/framework.go
-
-# Compare benchmarks between runs
-benchmark-compare:
-	@echo "📊 Comparing benchmark results..."
-	@if [ -f benchmark-old.txt ] && [ -f benchmark-new.txt ]; then \
-		echo "Comparing benchmark-old.txt vs benchmark-new.txt"; \
-		benchcmp benchmark-old.txt benchmark-new.txt || echo "Install benchcmp: go install golang.org/x/tools/cmd/benchcmp@latest"; \
-	else \
-		echo "Missing benchmark files. Run 'make benchmark > benchmark-old.txt' first, then 'make benchmark > benchmark-new.txt'"; \
-	fi
+# Benchmark targets removed - use standard Go benchmark tools if needed
 
 # Install the application
 install:
@@ -297,54 +242,7 @@ release:
 	@VERSION=$(VERSION) $(BUILD_DIR)/build.sh
 
 # Help
-# Performance profiling targets
-profile:
-	@echo "🔬 Running benchmarks with full profiling enabled..."
-	@mkdir -p profiles
-	@ENABLE_PROFILING=1 go test -tags "nogohook notray" -bench=BenchmarkCritical -benchmem -timeout=30m ./test/benchmarks/...
-	@echo "✅ Profiles saved to profiles/"
-
-profile-cpu:
-	@echo "🔬 Running CPU profiling..."
-	@mkdir -p profiles
-	@go test -tags "nogohook notray" -bench=BenchmarkCritical -benchmem -cpuprofile=profiles/cpu.prof -timeout=30m ./test/benchmarks/...
-	@echo "✅ CPU profile: go tool pprof profiles/cpu.prof"
-
-profile-mem:
-	@echo "🧠 Running memory profiling..."
-	@mkdir -p profiles
-	@go test -tags "nogohook notray" -bench=BenchmarkCritical -benchmem -memprofile=profiles/mem.prof -timeout=30m ./test/benchmarks/...
-	@echo "✅ Memory profile: go tool pprof profiles/mem.prof"
-
-profile-trace:
-	@echo "📊 Running execution trace..."
-	@mkdir -p profiles
-	@ENABLE_PROFILING=1 PROFILE_TRACE=1 go test -tags "nogohook notray" -bench=BenchmarkCritical -benchmem -timeout=30m ./test/benchmarks/...
-	@echo "✅ Trace saved: go tool trace profiles/*/trace.out"
-
-profile-analyze:
-	@echo "📈 Analyzing latest profiles..."
-	@if [ -f profiles/cpu.prof ]; then \
-		echo "=== CPU Profile Top 10 ==="; \
-		go tool pprof -top10 profiles/cpu.prof; \
-	fi
-	@if [ -f profiles/mem.prof ]; then \
-		echo "\n=== Memory Profile Top 10 ==="; \
-		go tool pprof -top10 profiles/mem.prof; \
-	fi
-	@echo "\n💡 Use 'go tool pprof -http=:8080 profiles/cpu.prof' for interactive analysis"
-
-# Check for goroutine leaks
-check-leaks:
-	@echo "🔍 Checking for goroutine leaks..."
-	@go test -tags "nogohook notray" -v -run=TestGoroutineLeaks ./test/benchmarks/...
-
-# Clean profiles
-clean-profiles:
-	@echo "🧹 Cleaning profile data..."
-	@rm -rf profiles/
-	@rm -f *.prof *.out
-	@echo "✅ Profiles cleaned"
+# Profiling targets removed - use standard Go profiling tools if needed
 
 help:
 	@echo "SilentCast Makefile"
@@ -362,26 +260,6 @@ help:
 	@echo "  test-e2e                 Run end-to-end tests"
 	@echo "  test-e2e-coverage        Run E2E tests with coverage"
 	@echo "  test-all                 Run all tests (unit + integration + e2e)"
-	@echo "  benchmark                Run performance benchmarks"
-	@echo "  benchmark-cpu            Run benchmarks with CPU profiling"
-	@echo "  benchmark-mem            Run benchmarks with memory profiling"
-	@echo "  benchmark-startup        Run startup performance benchmarks"
-	@echo "  benchmark-hotkey         Run hotkey performance benchmarks"
-	@echo "  benchmark-action         Run action execution benchmarks"
-	@echo "  benchmark-config         Run configuration benchmarks"
-	@echo "  benchmark-memory         Run memory usage benchmarks"
-	@echo "  benchmark-stress         Run stress test benchmarks"
-	@echo "  benchmark-watcher        Run file watcher benchmarks"
-	@echo "  benchmark-compare        Compare benchmark results"
-	@echo ""
-	@echo "Profiling Targets:"
-	@echo "  profile                  Run benchmarks with full profiling"
-	@echo "  profile-cpu              Generate CPU profile"
-	@echo "  profile-mem              Generate memory profile"
-	@echo "  profile-trace            Generate execution trace"
-	@echo "  profile-analyze          Analyze existing profiles"
-	@echo "  check-leaks              Check for goroutine leaks"
-	@echo "  clean-profiles           Clean profiling data"
 	@echo ""
 	@echo "Other Targets:"
 	@echo "  install                  Install the application"
