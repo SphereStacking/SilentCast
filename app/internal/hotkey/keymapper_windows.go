@@ -53,16 +53,16 @@ func (w *windowsKeyMapper) GetKeyNameFromRawcode(rawcode uint16) string {
 		72: "up", 80: "down", 75: "left", 77: "right",
 
 		// Numpad
-		69: "numlock", 53: "divide", 55: "multiply", 74: "subtract", 78: "add",
-		96: "numpad0", 79: "numpad1", 80: "numpad2", 81: "numpad3",
-		75: "numpad4", 76: "numpad5", 77: "numpad6", 71: "numpad7",
-		72: "numpad8", 73: "numpad9",
+		69: "numlock", 181: "divide", 55: "multiply", 74: "subtract", 78: "add",
+		96: "numpad0", 97: "numpad1", 98: "numpad2", 99: "numpad3",
+		100: "numpad4", 101: "numpad5", 102: "numpad6", 103: "numpad7",
+		104: "numpad8", 105: "numpad9",
 
 		// Others
 		58: "capslock", 70: "scrolllock", 119: "pause",
 		12: "minus", 13: "equal", 26: "leftbracket", 27: "rightbracket",
 		39: "semicolon", 40: "apostrophe", 41: "grave", 43: "backslash",
-		51: "comma", 52: "period", 53: "slash",
+		51: "comma", 52: "period", 191: "slash",
 	}
 
 	if name, ok := keyMap[rawcode]; ok {

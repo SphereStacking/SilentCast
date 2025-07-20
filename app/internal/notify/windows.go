@@ -62,14 +62,8 @@ func (n *WindowsNotifier) sendToastNotification(ctx context.Context, notificatio
 	title := escapeForPowerShell(notification.Title)
 	message := escapeForPowerShell(notification.Message)
 
-	// Determine icon based on level
-	icon := "Information"
-	switch notification.Level {
-	case LevelWarning:
-		icon = "Warning"
-	case LevelError:
-		icon = "Error"
-	}
+	// Icon could be used in future versions
+	// Currently using default Windows toast notification icon
 
 	// PowerShell script to show toast notification
 	script := fmt.Sprintf(`
