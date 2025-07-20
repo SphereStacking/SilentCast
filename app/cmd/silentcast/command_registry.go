@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/SphereStacking/silentcast/internal/commands"
+	"github.com/SphereStacking/silentcast/internal/config"
 	"github.com/SphereStacking/silentcast/internal/version"
 )
 
@@ -24,12 +27,50 @@ func NewCommandRegistry(flags *CommandFlags) *CommandRegistry {
 func NewCommandRegistryWithService(flags *CommandFlags, onRun func() error) *CommandRegistry {
 	registry := commands.NewRegistry()
 
-	// Helper functions for config path
+	// Helper functions for config path - inline to avoid build issues
 	configPathFunc := func() string {
-		return getConfigPath()
+		// Check for environment variable
+		if path := os.Getenv("SILENTCAST_CONFIG"); path != "" {
+			return path
+		}
+
+		// Check current directory
+		if _, err := os.Stat(config.ConfigName + ".yml"); err == nil {
+			return "."
+		}
+
+		// Use user config directory
+		configDir, err := os.UserConfigDir()
+		if err != nil {
+			// Fallback to current directory
+			return "."
+		}
+
+		return filepath.Join(configDir, config.AppName)
 	}
+	
 	searchPathsFunc := func() []string {
-		return getConfigSearchPaths()
+		var paths []string
+
+		// 1. Environment variable
+		if envPath := os.Getenv("SILENTCAST_CONFIG"); envPath != "" {
+			paths = append(paths, envPath)
+		}
+
+		// 2. Current directory
+		paths = append(paths, ".")
+
+		// 3. User config directory
+		if configDir, err := os.UserConfigDir(); err == nil {
+			paths = append(paths, filepath.Join(configDir, config.AppName))
+		}
+
+		// 4. System config directory (Unix-like systems)
+		if runtime.GOOS != "windows" {
+			paths = append(paths, "/etc/"+config.AppName)
+		}
+
+		return paths
 	}
 
 	// Register all commands
