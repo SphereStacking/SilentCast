@@ -4,7 +4,6 @@ dist: dist
 
 builds:
   - id: silentcast
-    dir: app
     main: ./cmd/silentcast
     binary: silentcast
     env:
