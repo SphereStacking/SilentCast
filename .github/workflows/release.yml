@@ -34,6 +34,7 @@ jobs:
         distribution: goreleaser
         version: '~> v2'
         args: release --clean
+        workdir: ./app
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ github.repository }}
