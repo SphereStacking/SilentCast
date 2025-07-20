@@ -50,7 +50,6 @@ type Flags struct {
 	Once      bool
 	SpellName string
 	TestSpell bool
-	Benchmark bool
 	Install   bool
 	Uninstall bool
 }

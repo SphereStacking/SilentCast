@@ -16,62 +16,47 @@ SilentCast is designed to be a lightweight, responsive hotkey-driven task runner
 | Memory Usage | < 50MB | Idle state memory footprint |
 | CPU Usage | < 1% | Idle state CPU usage |
 
-## Benchmarking
+## Performance Testing
 
-### Running Benchmarks
+### Running Performance Tests
+
+SilentCast includes standard Go benchmark functions in its test files. You can run performance tests using Go's built-in benchmarking tools:
 
 ```bash
-# Run all performance benchmarks
-make benchmark
+# Run all benchmarks in a specific package
+go test -bench=. ./internal/action/...
 
-# Run specific benchmark categories
-make benchmark-startup
-make benchmark-hotkey
-make benchmark-action
-make benchmark-config
-make benchmark-memory
-make benchmark-stress
+# Run benchmarks with memory allocation stats
+go test -bench=. -benchmem ./internal/...
 
-# Generate profiling data
-make benchmark-cpu    # CPU profiling
-make benchmark-mem    # Memory profiling
+# Generate CPU profile
+go test -bench=. -cpuprofile=cpu.prof ./internal/...
+go tool pprof cpu.prof
+
+# Generate memory profile
+go test -bench=. -memprofile=mem.prof ./internal/...
+go tool pprof mem.prof
 ```
 
-### Benchmark Categories
+### Performance Test Categories
 
-#### 1. Startup Benchmarks
-- Application initialization time
-- Component setup overhead
-- Configuration loading performance
-- System resource allocation
+The codebase includes benchmark tests for:
 
-#### 2. Hotkey Benchmarks
-- Key sequence parsing performance
-- Hotkey registration overhead
-- Event processing latency
-- Multi-key sequence handling
+#### 1. Core Components
+- Action execution performance
+- Configuration parsing and validation
+- Hotkey processing
+- File watching operations
 
-#### 3. Action Benchmarks
-- Action execution startup time
-- Different action type performance (app, script, URL)
-- Argument processing overhead
-- Environment variable expansion
-
-#### 4. Configuration Benchmarks
-- YAML parsing performance
-- Configuration validation speed
-- File watching overhead
-- Configuration reload time
-
-#### 5. Memory Benchmarks
+#### 2. Memory Management
 - Memory allocation patterns
 - Garbage collection impact
-- Memory leak detection
-- Long-running session stability
+- Resource usage under load
 
-#### 6. Stress Tests
-- High-frequency action execution
-- Massive configuration files
+#### 3. Integration Points
+- Cross-platform compatibility
+- External process launching
+- IPC communication
 - Concurrent user simulation
 - Resource exhaustion scenarios
 
@@ -81,15 +66,15 @@ make benchmark-mem    # Memory profiling
 
 ```bash
 # CPU profiling
-go test -bench=BenchmarkStartup -cpuprofile=cpu.prof ./test/benchmarks/
+go test -bench=. -cpuprofile=cpu.prof ./internal/...
 go tool pprof cpu.prof
 
 # Memory profiling
-go test -bench=BenchmarkMemory -memprofile=mem.prof ./test/benchmarks/
+go test -bench=. -memprofile=mem.prof ./internal/...
 go tool pprof mem.prof
 
 # Trace analysis
-go test -bench=BenchmarkAction -trace=trace.out ./test/benchmarks/
+go test -bench=. -trace=trace.out ./internal/...
 go tool trace trace.out
 ```
 
@@ -334,14 +319,14 @@ func (m *AppMetrics) RecordActionExecution(duration time.Duration) {
 
 ## CI/CD Integration
 
-### Automated Performance Testing
+### Performance Testing Best Practices
 
-The CI/CD pipeline automatically runs performance benchmarks:
+When developing new features or optimizing existing code:
 
-1. **Pull Request Analysis**: Compare performance against main branch
-2. **Regression Detection**: Alert on significant performance degradations
-3. **Historical Tracking**: Maintain performance baseline over time
-4. **Cross-Platform Testing**: Ensure consistent performance across OS platforms
+1. **Write Benchmark Tests**: Add benchmark functions for performance-critical code
+2. **Profile Before Optimizing**: Use Go's profiling tools to identify bottlenecks
+3. **Test Across Platforms**: Ensure performance is consistent on Windows and macOS
+4. **Monitor Resource Usage**: Check memory allocation and CPU usage patterns
 
 ### Performance Gates
 
@@ -430,7 +415,7 @@ func logPerformance(operation string, fn func()) {
 ### Testing Requirements
 
 - [ ] Performance tests added for new features
-- [ ] Benchmark comparison against previous version
+- [ ] Performance comparison against previous version
 - [ ] Memory leak tests for long-running operations
 - [ ] Stress tests for resource-intensive features
 

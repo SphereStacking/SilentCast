@@ -56,7 +56,7 @@ Found **26 unchecked error return values**:
 **Impact:** Low - Code maintainability issue
 
 Found **15 unused parameters** including:
-- `debug` parameter in `testSpell()` and `runBenchmark()` functions
+- `debug` parameter in `testSpell()` function
 - Context parameters in various detector functions
 - Test parameters in several test functions
 
@@ -65,9 +65,8 @@ Found **15 unused parameters** including:
 **Status:** 🟡 Identified  
 **Impact:** Low - Code clarity issue
 
-Found **3 ineffectual assignments**:
+Found **1 ineffectual assignment**:
 - `internal/config/validator.go:314` - `shellPath` variable assigned but never used
-- `test/benchmarks/memory_test.go:198` - `temp` variable used for allocation testing
 
 ### 4. Cyclomatic Complexity (gocyclo) - MEDIUM PRIORITY
 
