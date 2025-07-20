@@ -482,6 +482,6 @@ type DynamicPool struct {
 
 ## See Also
 
-- [Benchmarking Guide](../testing/benchmarks.md)
-- [Profiling Documentation](../development/profiling.md)
-- [CI/CD Performance Integration](../ci-cd/performance.md)
+- [Performance Analysis](../performance/)
+- [Development Documentation](../development/)
+- [Troubleshooting Performance](../troubleshooting/performance.md)

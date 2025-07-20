@@ -290,7 +290,7 @@ setsebool -P user_execmod on
 
 ## Related Documentation
 
-- [Installation Guide](../installation.md)
+- [Installation Guide](installation.md)
 - [Configuration Reference](../config/)
 - [Permissions Guide](./permissions.md)
 - [Troubleshooting Guide](../troubleshooting.md)

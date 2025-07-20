@@ -456,7 +456,7 @@ spells:
 
 Now that you're a shortcut wizard:
 
-1. [Configure Actions](/guide/actions) - Define what your shortcuts do
+1. [Configure Grimoire](grimoire.md) - Define what your spells do
 2. [Script Execution](/guide/scripts) - Run complex commands
 3. [Platform Features](/guide/platforms) - OS-specific shortcuts
 4. [Share Your Spellbook](https://github.com/SphereStacking/silentcast-spellbooks) - Share with the community

@@ -4,21 +4,11 @@ This directory contains comprehensive performance documentation for SilentCast, 
 
 ## 📁 Documentation Structure
 
-### Core Documents
-- **[benchmarking.md](benchmarking.md)** - Complete benchmarking guide and methodology
-- **[optimization.md](optimization.md)** - Performance optimization strategies and best practices
-- **[monitoring.md](monitoring.md)** - Performance monitoring and profiling guide
-- **[targets.md](targets.md)** - Performance targets and SLA definitions
+### Documentation Overview
+This directory contains performance analysis and optimization documentation for the SilentCast project.
 
-### Specialized Guides
-- **[memory-optimization.md](memory-optimization.md)** - Memory management and leak prevention
-- **[startup-optimization.md](startup-optimization.md)** - Application startup performance
-- **[runtime-optimization.md](runtime-optimization.md)** - Runtime performance optimization
-- **[cross-platform.md](cross-platform.md)** - Platform-specific performance considerations
-
-### Tools and Scripts
-- **[tools.md](tools.md)** - Performance analysis tools and utilities
-- **[automation.md](automation.md)** - Automated performance testing and CI/CD integration
+**Available Documents:**
+- **[optimization-report-t069.md](optimization-report-t069.md)** - Detailed performance optimization report
 
 ## 🎯 Performance Philosophy
 
@@ -238,8 +228,8 @@ When reporting performance issues, please include:
 
 ### Internal Resources
 - [Troubleshooting Guide](../troubleshooting/performance.md)
-- [Development Setup](../development/README.md)
-- [Architecture Documentation](../development/architecture.md)
+- [Development Documentation](../development/)
+- [Architecture Overview](../architecture/)
 - [Testing Guidelines](../guide/tdd-development.md)
 
 ---

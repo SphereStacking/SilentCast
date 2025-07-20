@@ -1005,6 +1005,6 @@ After setting up your configuration:
 ## Next Steps
 
 - Review the [Configuration Guide](/guide/configuration) for detailed explanations
-- Learn about [Advanced Shortcuts](/guide/shortcuts)
+- Learn about [Advanced Spells](spells.md)
 - Explore [Script Execution](/guide/scripts) features
 - Check [Platform-Specific Features](/guide/platforms)

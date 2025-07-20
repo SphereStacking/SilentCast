@@ -562,9 +562,9 @@ func TestActionExecution(t *testing.T) {
 ## 📚 See Also
 
 - [Development Guide](../development/setup.md) - Setting up development environment
-- [Contributing Guide](../../CONTRIBUTING.md) - How to contribute
-- [API Reference](./api-reference.md) - Detailed API documentation
-- [Testing Guide](../development/testing.md) - Testing strategies and tools
+- [Contributing Guide](../contributing.md) - How to contribute
+- [Key Names Reference](key-names.md) - Supported key names
+- [TDD Development Guide](../guide/tdd-development.md) - Test-driven development
 
 ---
 

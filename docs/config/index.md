@@ -283,7 +283,7 @@ grimoire:
 Dive deeper into specific configuration areas:
 
 - [Configuration Guide](/config/configuration-guide) - Complete configuration reference
-- [Shortcuts Guide](/guide/shortcuts) - Keyboard shortcut configuration
-- [Actions Guide](/guide/actions) - Action definitions
+- [Spells Guide](/guide/spells) - Spell configuration
+- [Grimoire Guide](/guide/grimoire) - Grimoire entries
 - [Platform Support](/guide/platforms) - OS-specific settings
 - [Configuration Examples](/guide/samples) - Real-world configurations

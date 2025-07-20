@@ -294,4 +294,4 @@ To migrate from desktop to service mode:
 
 - [Configuration Guide](configuration.md)
 - [Troubleshooting Guide](troubleshooting.md)
-- [Security Best Practices](security.md)
+- [Platform-Specific Documentation](../troubleshooting/platform-specific.md)

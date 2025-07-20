@@ -415,6 +415,6 @@ For special characters, use their descriptive names:
 
 ## See Also
 
-- [Shortcuts Guide](/guide/shortcuts) - How to create effective shortcuts
+- [Spells Guide](/guide/spells) - How to create effective spells
 - [Configuration Reference](/config/) - Full configuration options
 - [Platform Guide](/guide/platforms) - Platform-specific considerations

@@ -249,7 +249,7 @@ git push origin feature/your-feature-name
 
 ### コード貢献の準備
 
-1. **[Contributing Guide](../CONTRIBUTING.md)** を読む
+1. **[Contributing Guide](../contributing.md)** を読む
 2. **[Development Setup](../development/setup.md)** に従って環境構築
 3. **Issue** または **Discussion** で提案内容を事前相談
 4. **テスト** を含む実装

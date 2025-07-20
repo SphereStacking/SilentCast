@@ -119,9 +119,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Testability**: 100% of new features developed with TDD
 
 ### Contributing
-All new features and bug fixes are developed using Test-Driven Development (TDD) methodology. See [TDD Development Guide](docs/guide/tdd-development.md) for detailed guidelines.
+All new features and bug fixes are developed using Test-Driven Development (TDD) methodology. See [TDD Development Guide](guide/tdd-development.md) for detailed guidelines.
 
-For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+For contribution guidelines, see [Contributing Guide](contributing.md).
 
 ---
 

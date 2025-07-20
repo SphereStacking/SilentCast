@@ -208,5 +208,5 @@ make build-stub
 - [インストールガイド](../guide/installation.md)
 - [設定ガイド](../guide/configuration.md)
 - [パフォーマンス最適化](../guide/performance-optimization.md)
-- [開発者ガイド](../development/README.md)
+- [開発ドキュメント](../development/)
 - [FAQ](../guide/faq.md)

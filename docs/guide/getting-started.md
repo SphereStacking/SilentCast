@@ -286,7 +286,7 @@ Deep dive into all configuration options
 
 <div class="card">
 
-### 🎮 [Shortcuts Guide](/guide/shortcuts)
+### 🎮 [Spells Guide](spells.md)
 Advanced shortcut patterns and best practices
 
 </div>

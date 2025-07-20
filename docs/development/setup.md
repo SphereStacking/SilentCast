@@ -440,7 +440,7 @@ refactor: simplify action executor
 ### Internal Documentation
 
 - [Architecture Overview](../api/architecture.md)
-- [Testing Guide](./testing.md)
+- [TDD Development Guide](../guide/tdd-development.md)
 - [Error Handling](./error-handling.md)
 - [TDD Best Practices](./tdd-best-practices.md)
 
@@ -477,7 +477,7 @@ go test -timeout 30s ./...
 
 ## 🎯 Next Steps
 
-1. Read [Contributing Guide](../../CONTRIBUTING.md)
+1. Read [Contributing Guide](../contributing.md)
 2. Check [open issues](https://github.com/SphereStacking/silentcast/issues)
 3. Join discussions
 4. Start coding!

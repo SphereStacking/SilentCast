@@ -237,7 +237,7 @@ The following features are planned for future releases:
 
 ## Related Documentation
 
-- [Installation Guide](../installation.md)
+- [Installation Guide](installation.md)
 - [Configuration Reference](../config/)
-- [Version History](../changelog.md)
+- [Version History](../CHANGELOG.md)
 - [Contributing Guide](../contributing.md)
