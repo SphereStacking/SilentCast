@@ -36,6 +36,21 @@ type Permission struct {
 	Required    bool
 }
 
+// IsRequired returns true if this permission is required but not granted
+func (p Permission) IsRequired() bool {
+	return p.Required && p.Status != StatusGranted
+}
+
+// String returns string representation of Status
+func (s Status) String() string {
+	return string(s)
+}
+
+// String returns string representation of PermissionType
+func (pt PermissionType) String() string {
+	return string(pt)
+}
+
 // Manager defines the interface for OS-specific permission management
 type Manager interface {
 	// Check returns the current status of all permissions
