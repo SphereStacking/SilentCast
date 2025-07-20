@@ -1,93 +1,149 @@
-# Architecture
+# Architecture Overview
 
-This document describes the internal architecture of SilentCast, helping developers understand the codebase structure and design decisions.
+This document provides a comprehensive overview of SilentCast's internal architecture, design decisions, and implementation patterns.
 
-## Overview
+## 🎯 High-Level Architecture
 
-SilentCast follows a modular architecture with clear separation of concerns:
+SilentCast follows a modular, event-driven architecture with clear separation of concerns:
 
 ```mermaid
-graph TD
-    A[Main Process] --> B[Hotkey Manager]
-    A --> C[Config Manager]
-    A --> D[Action Executor]
-    A --> E[System Tray]
-    A --> F[Logger]
+graph TB
+    subgraph "User Interface"
+        UI[System Tray]
+        CLI[CLI Interface]
+    end
     
-    B --> G[Platform Hotkey APIs]
-    C --> H[File Watcher]
-    D --> I[App Launcher]
-    D --> J[Script Runner]
-    D --> K[URL Handler]
+    subgraph "Core Application"
+        Main[Main Process]
+        HM[Hotkey Manager]
+        CM[Config Manager]
+        AE[Action Executor]
+        NM[Notification Manager]
+    end
+    
+    subgraph "Platform Layer"
+        OS[OS Integration]
+        FS[File System]
+        Proc[Process Management]
+    end
+    
+    UI --> Main
+    CLI --> Main
+    Main --> HM
+    Main --> CM
+    Main --> AE
+    Main --> NM
+    
+    HM --> OS
+    CM --> FS
+    AE --> Proc
+    NM --> OS
+    
+    style Main fill:#f9f,stroke:#333,stroke-width:4px
+    style HM fill:#bbf,stroke:#333,stroke-width:2px
+    style CM fill:#bfb,stroke:#333,stroke-width:2px
+    style AE fill:#fbf,stroke:#333,stroke-width:2px
 ```
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-silentcast/
-├── cmd/
-│   └── silentcast/
-│       └── main.go              # Entry point
-├── internal/                    # Private packages
-│   ├── action/                  # Action execution
-│   │   ├── executor.go         # Action dispatcher
-│   │   ├── app.go              # Application launcher
-│   │   ├── script.go           # Script runner
-│   │   └── url.go              # URL handler
-│   ├── config/                 # Configuration management
-│   │   ├── config.go           # Config structures
-│   │   ├── loader.go           # YAML loading
-│   │   ├── watcher.go          # File watching
-│   │   └── validator.go        # Validation logic
-│   ├── hotkey/                 # Keyboard handling
-│   │   ├── manager.go          # Hotkey registration
-│   │   ├── parser.go           # Key string parsing
-│   │   └── platform_*.go       # Platform-specific
-│   ├── permission/             # Permission handling
-│   │   ├── manager.go          # Permission checks
-│   │   └── platform_*.go       # Platform-specific
-│   └── tray/                   # System tray
-│       ├── tray.go             # Tray interface
-│       └── menu.go             # Menu handling
-├── pkg/                        # Public packages
-│   └── logger/                 # Logging utilities
-│       ├── logger.go           # Logger interface
-│       └── rotation.go         # Log rotation
-└── build/                      # Build artifacts
+SilentCast/
+├── app/                           # Application source code
+│   ├── cmd/silentcast/            # Main entry point
+│   │   └── main.go                # Application bootstrap
+│   │
+│   ├── internal/                  # Private packages (not importable)
+│   │   ├── action/                # Action execution system
+│   │   │   ├── app/               # Application launcher
+│   │   │   ├── browser/           # Browser URL handler
+│   │   │   ├── launcher/          # Platform launchers
+│   │   │   ├── script/            # Script execution
+│   │   │   ├── shell/             # Shell management
+│   │   │   ├── url/               # URL handling
+│   │   │   ├── executor.go        # Main executor
+│   │   │   └── elevated.go        # Elevated permissions
+│   │   │
+│   │   ├── config/                # Configuration management
+│   │   │   ├── loader.go          # Config loading logic
+│   │   │   ├── types.go           # Config structures
+│   │   │   ├── validator.go       # Validation logic
+│   │   │   └── watcher.go         # File watching
+│   │   │
+│   │   ├── hotkey/                # Hotkey detection
+│   │   │   ├── manager.go         # Hotkey management
+│   │   │   ├── manager_stub.go    # No-op implementation
+│   │   │   ├── keymapper_*.go    # Platform key mapping
+│   │   │   └── parser.go          # Key string parsing
+│   │   │
+│   │   ├── notify/                # Notification system
+│   │   │   ├── interface.go       # Notifier interface
+│   │   │   ├── console.go         # Console output
+│   │   │   ├── system_*.go        # Platform notifications
+│   │   │   └── queue.go           # Notification queuing
+│   │   │
+│   │   ├── output/                # Output management
+│   │   │   ├── interface.go       # Output interfaces
+│   │   │   ├── buffered.go        # Buffered output
+│   │   │   ├── streaming.go       # Streaming output
+│   │   │   └── formatter.go       # Output formatting
+│   │   │
+│   │   ├── permission/            # Permission management
+│   │   │   ├── interface.go       # Permission interface
+│   │   │   ├── manager_*.go       # Platform managers
+│   │   │   └── types.go           # Permission types
+│   │   │
+│   │   ├── tray/                  # System tray
+│   │   │   ├── tray.go            # Tray management
+│   │   │   ├── menu.go            # Menu construction
+│   │   │   └── icon_*.go          # Platform icons
+│   │   │
+│   │   └── updater/               # Auto-update system
+│   │       ├── updater.go         # Update logic
+│   │       ├── checksum.go        # File verification
+│   │       └── progress.go        # Download progress
+│   │
+│   └── pkg/                       # Public packages
+│       └── logger/                # Logging utilities
+│           ├── logger.go          # Logger implementation
+│           └── config.go          # Logger configuration
+│
+├── docs/                          # Documentation
+├── examples/                      # Example configurations
+└── .ticket/                       # Development tickets
 ```
 
-## Core Components
+## 🏗️ Core Components
 
 ### Main Process
 
-The main process coordinates all components:
+The main process orchestrates all components and manages the application lifecycle:
 
 ```go
 // cmd/silentcast/main.go
 func main() {
-    // 1. Parse command line arguments
-    flags := parseFlags()
+    // 1. Parse CLI arguments
+    args := parseArgs()
     
     // 2. Initialize logger
-    log := logger.New(flags.LogLevel)
+    logger := initLogger(args)
     
-    // 3. Load configuration
-    cfg := config.Load(flags.ConfigPath)
-    
-    // 4. Check permissions
-    permission.CheckAndRequest()
-    
-    // 5. Initialize components
-    hotkeyMgr := hotkey.NewManager()
-    executor := action.NewExecutor()
-    
-    // 6. Register hotkeys
-    registerHotkeys(cfg, hotkeyMgr, executor)
-    
-    // 7. Start system tray
-    if !flags.NoTray {
-        tray.Start()
+    // 3. Handle special commands
+    if handleCommands(args) {
+        return
     }
+    
+    // 4. Load configuration
+    config := loadConfig(args)
+    
+    // 5. Check permissions
+    checkPermissions()
+    
+    // 6. Initialize components
+    components := initializeComponents(config)
+    
+    // 7. Start services
+    startServices(components)
     
     // 8. Run main loop
     runMainLoop()
@@ -96,369 +152,422 @@ func main() {
 
 ### Configuration System
 
-#### Config Loading
+The configuration system handles YAML-based spellbook files with platform-specific overrides:
 
-```go
-// internal/config/loader.go
-type Loader struct {
-    basePath     string
-    platformPath string
-}
-
-func (l *Loader) Load() (*Config, error) {
-    // 1. Load base configuration
-    base := l.loadFile(l.basePath)
+```mermaid
+graph LR
+    A[spellbook.yml] --> D[Config Loader]
+    B[spellbook.os.yml] --> D
+    C[Environment Vars] --> D
+    D --> E[Merged Config]
+    E --> F[Validator]
+    F --> G[Active Config]
     
-    // 2. Load platform overrides
-    platform := l.loadFile(l.platformPath)
+    H[File Watcher] --> D
     
-    // 3. Merge configurations
-    return l.merge(base, platform)
-}
+    style D fill:#bbf,stroke:#333,stroke-width:2px
+    style G fill:#bfb,stroke:#333,stroke-width:2px
 ```
 
-#### Config Watching
-
-```go
-// internal/config/watcher.go
-type Watcher struct {
-    paths    []string
-    onChange func(*Config)
-}
-
-func (w *Watcher) Start() {
-    watcher := fsnotify.NewWatcher()
-    
-    for _, path := range w.paths {
-        watcher.Add(path)
-    }
-    
-    go w.handleEvents(watcher)
-}
-```
+#### Key Features:
+- **Cascade Loading**: Base + platform-specific overrides
+- **Live Reload**: Automatic configuration reloading
+- **Validation**: Type checking and reference validation
+- **Environment Expansion**: `${VAR}` substitution
 
 ### Hotkey Management
 
-#### Key Registration
+The hotkey system captures global keyboard events and matches them to configured spells:
 
-```go
-// internal/hotkey/manager.go
-type Manager struct {
-    prefix   Hotkey
-    spells   map[string]string
-    timeout  time.Duration
-}
-
-func (m *Manager) RegisterPrefix(keys string) error {
-    // Parse key combination
-    hotkey := parseHotkey(keys)
+```mermaid
+sequenceDiagram
+    participant User
+    participant OS
+    participant HotkeyManager
+    participant SpellMatcher
+    participant Executor
     
-    // Register with OS
-    return m.registerSystemHotkey(hotkey)
-}
+    User->>OS: Press Alt+Space
+    OS->>HotkeyManager: Hotkey Event
+    HotkeyManager->>HotkeyManager: Detect Prefix
+    HotkeyManager->>User: Show Ready State
+    
+    User->>OS: Press 'g'
+    OS->>HotkeyManager: Key Event
+    HotkeyManager->>HotkeyManager: Build Sequence
+    
+    User->>OS: Press 's'
+    OS->>HotkeyManager: Key Event
+    HotkeyManager->>SpellMatcher: Match "g,s"
+    SpellMatcher->>Executor: Execute git_status
+    Executor->>User: Show Output
 ```
 
-#### Platform Integration
-
-```go
-// internal/hotkey/platform_windows.go
-// +build windows
-
-func (m *Manager) registerSystemHotkey(h Hotkey) error {
-    // Use Windows RegisterHotKey API
-    return registerHotKey(h.Modifiers, h.Key)
-}
-
-// internal/hotkey/platform_darwin.go
-// +build darwin
-
-func (m *Manager) registerSystemHotkey(h Hotkey) error {
-    // Use macOS CGEventTap API
-    return registerEventTap(h.Modifiers, h.Key)
-}
-```
+#### Platform Integration:
+- **Windows**: Uses Windows Hooks API
+- **macOS**: Uses Carbon Event Manager
+- **Linux**: Uses X11 or libinput
 
 ### Action Execution
 
-#### Executor Pattern
+Actions are executed through a flexible handler system:
+
+```mermaid
+graph TD
+    A[Action Request] --> B{Action Type}
+    B -->|app| C[App Launcher]
+    B -->|script| D[Script Executor]
+    B -->|url| E[URL Handler]
+    B -->|elevated| F[Elevated Executor]
+    
+    C --> G[Platform Launcher]
+    D --> H[Shell Manager]
+    E --> I[Browser Detector]
+    F --> J[Permission Check]
+    
+    G --> K[Process Creation]
+    H --> K
+    I --> K
+    J --> K
+```
+
+#### Action Types:
+
+1. **App Actions**: Launch applications
+   - Platform-specific launchers
+   - Working directory support
+   - Environment variables
+   - Arguments passing
+
+2. **Script Actions**: Execute shell commands
+   - Shell selection (bash, zsh, cmd, pwsh)
+   - Output capture
+   - Terminal integration
+   - Timeout handling
+
+3. **URL Actions**: Open web pages
+   - Browser detection
+   - Default browser support
+   - URL parameter expansion
+
+4. **Elevated Actions**: Admin/sudo commands
+   - Permission prompts
+   - Secure execution
+   - Platform-specific elevation
+
+### Notification System
+
+Multi-backend notification system with queuing and formatting:
+
+```mermaid
+graph LR
+    A[Notification Request] --> B[Queue Manager]
+    B --> C{Backend Selection}
+    C -->|System| D[Native Notifications]
+    C -->|Console| E[Terminal Output]
+    C -->|File| F[Log File]
+    
+    D --> G[Platform API]
+    E --> H[Formatter]
+    F --> I[Logger]
+    
+    style B fill:#fbf,stroke:#333,stroke-width:2px
+```
+
+## 🔄 Data Flow
+
+### Configuration Loading Flow
+
+```mermaid
+graph TD
+    A[Start] --> B[Search Config Paths]
+    B --> C{Found Config?}
+    C -->|No| D[Use Default]
+    C -->|Yes| E[Load Base Config]
+    E --> F[Load Platform Override]
+    F --> G[Merge Configs]
+    G --> H[Validate Config]
+    H --> I{Valid?}
+    I -->|No| J[Show Errors]
+    I -->|Yes| K[Apply Config]
+    K --> L[Start File Watcher]
+```
+
+### Spell Execution Flow
+
+```mermaid
+graph TD
+    A[Hotkey Detected] --> B[Match Spell]
+    B --> C{Spell Found?}
+    C -->|No| D[Ignore]
+    C -->|Yes| E[Lookup Grimoire Entry]
+    E --> F{Entry Found?}
+    F -->|No| G[Log Error]
+    F -->|Yes| H[Prepare Action]
+    H --> I[Execute Action]
+    I --> J{Show Output?}
+    J -->|Yes| K[Display Notification]
+    J -->|No| L[Log Only]
+```
+
+## 🎨 Design Patterns
+
+### 1. Interface-Based Design
+
+All major components are defined by interfaces for testability and flexibility:
 
 ```go
-// internal/action/executor.go
-type Executor struct {
-    handlers map[string]Handler
+// Notifier interface
+type Notifier interface {
+    Info(ctx context.Context, title, message string)
+    Success(ctx context.Context, title, message string)
+    Error(ctx context.Context, title, message string)
 }
 
-type Handler interface {
-    Execute(ctx context.Context, action Action) error
+// ActionExecutor interface
+type ActionExecutor interface {
+    Execute(ctx context.Context) error
+    Validate() error
 }
 
-func (e *Executor) Execute(action Action) error {
-    handler, ok := e.handlers[action.Type]
-    if !ok {
-        return fmt.Errorf("unknown action type: %s", action.Type)
-    }
-    
-    ctx := context.WithTimeout(action.Timeout)
-    return handler.Execute(ctx, action)
+// ConfigLoader interface
+type ConfigLoader interface {
+    Load() (*Config, error)
+    Watch(onChange func(*Config)) error
 }
 ```
 
-#### Action Handlers
-
-```go
-// internal/action/app.go
-type AppHandler struct{}
-
-func (h *AppHandler) Execute(ctx context.Context, action Action) error {
-    cmd := exec.CommandContext(ctx, action.Command, action.Args...)
-    cmd.Dir = action.WorkingDir
-    cmd.Env = append(os.Environ(), formatEnv(action.Env)...)
-    
-    if action.Admin {
-        return h.runAsAdmin(cmd)
-    }
-    
-    return cmd.Start()
-}
-```
-
-## Design Patterns
-
-### Dependency Injection
+### 2. Dependency Injection
 
 Components receive dependencies through constructors:
 
 ```go
-func NewExecutor(
-    appLauncher Launcher,
-    scriptRunner Runner,
-    urlHandler Handler,
-) *Executor {
-    return &Executor{
-        handlers: map[string]Handler{
-            "app":    appLauncher,
-            "script": scriptRunner,
-            "url":    urlHandler,
-        },
+func NewActionExecutor(
+    launcher Launcher,
+    scriptRunner ScriptRunner,
+    notifier Notifier,
+    logger Logger,
+) *ActionExecutor {
+    return &ActionExecutor{
+        launcher:     launcher,
+        scriptRunner: scriptRunner,
+        notifier:     notifier,
+        logger:       logger,
     }
 }
 ```
 
-### Interface Segregation
+### 3. Platform Abstraction
 
-Small, focused interfaces:
-
-```go
-type ConfigLoader interface {
-    Load(path string) (*Config, error)
-}
-
-type ConfigWatcher interface {
-    Watch(path string, onChange func(*Config)) error
-}
-
-type ConfigValidator interface {
-    Validate(cfg *Config) error
-}
-```
-
-### Platform Abstraction
-
-Platform-specific code behind interfaces:
+Platform-specific code is isolated behind interfaces:
 
 ```go
-// internal/permission/manager.go
-type Manager interface {
-    Check() Status
-    Request() error
+// Generic interface
+type PermissionManager interface {
+    CheckPermission(PermissionType) Status
+    RequestPermission(PermissionType) error
 }
 
-// Platform-specific implementations
-// internal/permission/manager_darwin.go
-// internal/permission/manager_windows.go
+// Platform implementations
+// +build darwin
+type DarwinPermissionManager struct{}
+
+// +build windows
+type WindowsPermissionManager struct{}
 ```
 
-## Concurrency Model
+### 4. Builder Pattern
 
-### Goroutine Usage
+Complex objects use builders for clarity:
 
 ```go
-// Main goroutines
-func main() {
-    // 1. Main thread - UI/System tray
-    
-    // 2. Hotkey listener goroutine
-    go hotkeyManager.Listen()
-    
-    // 3. Config watcher goroutine
-    go configWatcher.Watch()
-    
-    // 4. Update checker goroutine
-    go updateChecker.Start()
-    
-    // 5. Action execution goroutines (per action)
-    // Started on demand
-}
+action := NewActionBuilder().
+    WithType("script").
+    WithCommand("git status").
+    WithTimeout(30 * time.Second).
+    WithOutput(true).
+    Build()
 ```
 
-### Channel Communication
+## 🔒 Concurrency Model
 
-```go
-type HotkeyManager struct {
-    events   chan HotkeyEvent
-    actions  chan string
-    shutdown chan struct{}
-}
+### Goroutine Architecture
 
-func (m *HotkeyManager) Listen() {
-    for {
-        select {
-        case event := <-m.events:
-            m.handleHotkey(event)
-            
-        case <-m.shutdown:
-            return
-        }
-    }
-}
+```mermaid
+graph TD
+    A[Main Goroutine] --> B[Hotkey Listener]
+    A --> C[Config Watcher]
+    A --> D[System Tray]
+    A --> E[Update Checker]
+    
+    B --> F[Action Executor Pool]
+    C --> G[Config Reload Handler]
+    
+    F --> H[Worker 1]
+    F --> I[Worker 2]
+    F --> J[Worker N]
 ```
 
-## Error Handling
+### Synchronization
+
+- **Channels**: For goroutine communication
+- **Mutexes**: For shared state protection
+- **Context**: For cancellation and timeouts
+- **WaitGroups**: For goroutine coordination
+
+## 🛡️ Error Handling
 
 ### Error Types
 
 ```go
-// Custom error types
+// Structured errors with context
 type ConfigError struct {
-    Path string
-    Err  error
-}
-
-type HotkeyError struct {
-    Key string
-    Err error
+    Path   string
+    Line   int
+    Column int
+    Err    error
 }
 
 type ActionError struct {
-    Action string
-    Type   string
-    Err    error
+    Action  string
+    Type    string
+    Command string
+    Err     error
+}
+
+type HotkeyError struct {
+    Spell string
+    Keys  string
+    Err   error
 }
 ```
 
 ### Error Propagation
 
+Errors are wrapped with context at each layer:
+
 ```go
-func Execute(spell string) error {
-    // Find action
-    action, err := config.GetAction(spell)
+func ExecuteAction(name string) error {
+    action, err := config.GetAction(name)
     if err != nil {
-        return fmt.Errorf("spell not found: %w", err)
+        return fmt.Errorf("get action %q: %w", name, err)
     }
     
-    // Execute action
     if err := executor.Execute(action); err != nil {
-        return fmt.Errorf("execution failed: %w", err)
+        return fmt.Errorf("execute action %q: %w", name, err)
     }
     
     return nil
 }
 ```
 
-## Testing Strategy
+## 🧪 Testing Strategy
 
-### Unit Tests
+### Test Layers
+
+1. **Unit Tests**: Individual component testing
+2. **Integration Tests**: Component interaction testing
+3. **End-to-End Tests**: Full workflow testing
+4. **Platform Tests**: OS-specific functionality
+
+### Test Patterns
 
 ```go
-// internal/config/loader_test.go
-func TestLoader_Merge(t *testing.T) {
-    base := &Config{
-        Spells: map[string]string{"e": "editor"},
+// Table-driven tests
+func TestActionExecution(t *testing.T) {
+    tests := []struct {
+        name    string
+        action  Action
+        wantErr bool
+    }{
+        {"valid app", Action{Type: "app", Command: "echo"}, false},
+        {"invalid type", Action{Type: "unknown"}, true},
     }
     
-    override := &Config{
-        Spells: map[string]string{"e": "vscode"},
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            err := executor.Execute(tt.action)
+            if (err != nil) != tt.wantErr {
+                t.Errorf("Execute() error = %v, wantErr %v", err, tt.wantErr)
+            }
+        })
     }
-    
-    result := merge(base, override)
-    assert.Equal(t, "vscode", result.Spells["e"])
 }
 ```
 
-### Integration Tests
-
-```go
-// internal/hotkey/manager_test.go
-func TestManager_RegisterAndTrigger(t *testing.T) {
-    if runtime.GOOS == "linux" && os.Getenv("DISPLAY") == "" {
-        t.Skip("Requires display")
-    }
-    
-    mgr := NewManager()
-    err := mgr.RegisterPrefix("ctrl+alt+t")
-    require.NoError(t, err)
-    
-    // Simulate hotkey press
-    event := simulateHotkey("ctrl+alt+t")
-    assert.True(t, mgr.HandleEvent(event))
-}
-```
-
-## Performance Considerations
+## 📊 Performance Considerations
 
 ### Memory Management
 
-- Action execution in separate processes
-- Configuration cached in memory
-- Log rotation to prevent disk filling
+- **Object Pooling**: Reuse frequently allocated objects
+- **Buffer Management**: Preallocate buffers for output capture
+- **Lazy Loading**: Load configuration on demand
+- **Resource Cleanup**: Proper cleanup in defer blocks
 
-### CPU Usage
+### CPU Optimization
 
-- Event-driven architecture (no polling)
-- Idle when no hotkeys pressed
-- Efficient file watching with OS notifications
+- **Event-Driven**: No polling loops
+- **Selective Processing**: Early exit on non-matching events
+- **Concurrent Execution**: Parallel action execution
+- **Caching**: Cache compiled regexes and parsed configs
 
-## Security Considerations
+## 🔐 Security Model
 
-### Permission Model
+### Principle of Least Privilege
 
-- Minimal required permissions
+- Minimal permissions requested
 - No network access by default
 - Scripts run with user privileges
+- Explicit elevation required for admin actions
 
 ### Input Validation
 
-- Sanitize all configuration inputs
-- Validate hotkey combinations
-- Path traversal prevention
+- Sanitize all user inputs
+- Validate file paths
+- Prevent command injection
+- Safe environment variable handling
 
-## Future Architecture
+## 🚀 Future Architecture
 
-### Planned Improvements
+### Planned Enhancements
 
-1. **Plugin System**: Allow external action handlers
-2. **IPC Interface**: Control from other applications
-3. **Distributed Config**: Share configurations across machines
-4. **Action Marketplace**: Community-contributed actions
+1. **Plugin System**
+   ```go
+   type Plugin interface {
+       Name() string
+       Version() string
+       RegisterActions(registry ActionRegistry)
+   }
+   ```
 
-### API Design
+2. **Remote Control API**
+   ```go
+   type RemoteAPI interface {
+       ExecuteSpell(spell string) error
+       ListSpells() []Spell
+       ReloadConfig() error
+   }
+   ```
 
-```go
-// Future plugin API
-type Plugin interface {
-    Name() string
-    Version() string
-    Actions() []ActionHandler
-}
+3. **Cloud Sync**
+   - Encrypted configuration sync
+   - Cross-device spell sharing
+   - Usage analytics (opt-in)
 
-type ActionHandler interface {
-    Type() string
-    Execute(context.Context, map[string]interface{}) error
-}
-```
+4. **AI Integration**
+   - Natural language spell creation
+   - Smart spell suggestions
+   - Context-aware actions
 
-## Next Steps
+## 📚 See Also
 
-- [Building](/api/building) - Build instructions
-- [Testing](/api/testing) - Testing guide
-- [Contributing](/api/contributing) - Contribution guidelines
+- [Development Guide](../development/setup.md) - Setting up development environment
+- [Contributing Guide](../../CONTRIBUTING.md) - How to contribute
+- [API Reference](./api-reference.md) - Detailed API documentation
+- [Testing Guide](../development/testing.md) - Testing strategies and tools
+
+---
+
+<div align="center">
+  <p><strong>Architecture questions? Open an issue on GitHub! 🏗️</strong></p>
+</div>

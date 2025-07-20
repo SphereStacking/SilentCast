@@ -1,308 +1,472 @@
 # Configuration Guide
 
-SilentCast uses YAML configuration files to define your shortcuts and actions. This guide covers everything you need to know about configuration.
+SilentCast uses YAML configuration files called **spellbooks** to define your keyboard spells and the grimoire of actions they trigger. This guide covers everything you need to master the magic.
 
-## Configuration Overview
+## 🎯 Quick Start
 
-SilentCast follows a simple configuration model:
+Create your first spellbook:
 
-```mermaid
-graph TD
-    A[spellbook.yml<br/>Base Configuration] --> B[Platform Override]
-    B --> C[spellbook.windows.yml]
-    B --> D[spellbook.mac.yml]
-    C --> F[Final Configuration]
-    D --> F
+```yaml
+# ~/.config/silentcast/spellbook.yml
+hotkeys:
+  prefix: "alt+space"      # Your magic activation key
+
+spells:
+  e: "editor"              # Alt+Space, then E
+  t: "terminal"            # Alt+Space, then T
+  "g,s": "git_status"      # Alt+Space, then G, then S
+
+grimoire:
+  editor:
+    type: app
+    command: "code"
+    
+  terminal:
+    type: app
+    command: "wt"          # Windows Terminal
+    
+  git_status:
+    type: script
+    command: "git status"
+    show_output: true      # Display result in notification
 ```
 
-## File Locations
+That's it! Save the file and SilentCast will automatically reload your configuration.
 
-SilentCast looks for configuration files in these locations (in order):
+## 📁 File Locations
+
+SilentCast searches for spellbooks in these locations (first found wins):
 
 ::: code-group
 
-```bash [macOS]
-# Primary locations
+```bash [macOS/Linux]
+# Primary locations (recommended)
 ~/.config/silentcast/spellbook.yml
-~/.config/silentcast/spellbook.mac.yml
+~/.config/silentcast/spellbook.{os}.yml    # Platform-specific
 
 # Alternative locations
 ~/.silentcast/spellbook.yml
-/etc/silentcast/spellbook.yml
+/etc/silentcast/spellbook.yml              # System-wide
 
-# Current directory (for development)
-./spellbook.yml
+# Development
+./spellbook.yml                            # Current directory
+${SILENTCAST_CONFIG}/spellbook.yml         # Custom path
 ```
 
 ```powershell [Windows]
-# Primary locations
+# Primary locations (recommended)
 %APPDATA%\SilentCast\spellbook.yml
-%APPDATA%\SilentCast\spellbook.windows.yml
+%APPDATA%\SilentCast\spellbook.windows.yml # Platform-specific
 
 # Alternative locations
 %USERPROFILE%\.silentcast\spellbook.yml
-C:\ProgramData\SilentCast\spellbook.yml
+C:\ProgramData\SilentCast\spellbook.yml    # System-wide
 
-# Current directory (for development)
-.\spellbook.yml
+# Development
+.\spellbook.yml                            # Current directory
+%SILENTCAST_CONFIG%\spellbook.yml          # Custom path
 ```
 
 :::
 
-## Basic Configuration Structure
+## 🏗️ Configuration Structure
 
-Here's a complete example with all available options:
+### Overview
+
+```mermaid
+graph LR
+    A[Spellbook] --> B[Hotkeys<br/>Global settings]
+    A --> C[Spells<br/>Keyboard shortcuts]
+    A --> D[Grimoire<br/>Action definitions]
+    A --> E[Daemon<br/>Runtime settings]
+    
+    C --> D
+    
+    style A fill:#f9f,stroke:#333,stroke-width:4px
+    style C fill:#bbf,stroke:#333,stroke-width:2px
+    style D fill:#bfb,stroke:#333,stroke-width:2px
+```
+
+### Complete Configuration Reference
 
 ```yaml
-# spellbook.yml - Your magic configuration
-# This is the main configuration file that works across all platforms
+# ========================================
+# SilentCast Spellbook - Complete Reference
+# ========================================
 
-# Daemon settings control how SilentCast runs
+# Runtime configuration
 daemon:
-  # Start automatically when system boots
-  auto_start: false
-  
-  # Logging level: debug, info, warn, error
-  log_level: info
-  
-  # Watch config file for changes and auto-reload
-  config_watch: true
-  
-  # Check for updates automatically
-  check_updates: true
-  
-  # Update check interval in hours
-  update_interval: 24
+  auto_start: false        # Start with system
+  log_level: info          # debug, info, warn, error
+  config_watch: true       # Auto-reload on changes
+  check_updates: true      # Check for new versions
+  update_interval: 24      # Hours between checks
 
-# Logger configuration for detailed logging
+# Logging configuration
 logger:
-  # Log level: debug, info, warn, error
-  level: info
-  
-  # Log file path (empty = console only)
-  file: "~/.local/share/silentcast/silentcast.log"
-  
-  # Maximum size in MB before rotation
-  max_size: 10
-  
-  # Number of old log files to keep
-  max_backups: 3
-  
-  # Maximum age in days
-  max_age: 7
-  
-  # Compress rotated log files
-  compress: true
+  level: info              # Logging verbosity
+  file: ""                 # Empty = console only
+  max_size: 10             # MB before rotation
+  max_backups: 3           # Rotated files to keep
+  max_age: 7               # Days to keep logs
+  compress: true           # Compress old logs
 
-# Hotkey settings define how shortcuts work
+# Global hotkey settings
 hotkeys:
-  # The magic activation key (prefix)
-  prefix: "alt+space"
-  
-  # Milliseconds to wait after prefix
-  timeout: 1000
-  
-  # Total milliseconds for multi-key sequences
-  sequence_timeout: 2000
-  
-  # Show notification when prefix is pressed
-  show_notification: true
-  
-  # Play sound on successful spell cast
-  play_sound: false
+  prefix: "alt+space"      # Magic activation key
+  timeout: 1000            # ms after prefix
+  sequence_timeout: 2000   # ms for full sequence
+  show_notification: true  # Visual feedback
+  play_sound: false        # Audio feedback
 
-# Spells define your keyboard shortcuts
+# Keyboard spell mappings
 spells:
-  # Single key spells
-  e: "editor"          # Alt+Space, E
-  t: "terminal"        # Alt+Space, T
-  b: "browser"         # Alt+Space, B
-  f: "file_manager"    # Alt+Space, F
+  # Single-key spells
+  e: "editor"              # Open editor
+  t: "terminal"            # Open terminal
+  b: "browser"             # Open browser
   
   # Multi-key sequences (VS Code style)
-  "g,s": "git_status"     # Alt+Space, G, S
-  "g,p": "git_pull"       # Alt+Space, G, P
-  "g,c": "git_commit"     # Alt+Space, G, C
-  "g,d": "git_diff"       # Alt+Space, G, D
+  "g,s": "git_status"      # Git status
+  "g,p": "git_pull"        # Git pull
+  "g,c": "git_commit"      # Git commit
   
-  # Docker sequences
-  "d,u": "docker_up"      # Alt+Space, D, U
-  "d,d": "docker_down"    # Alt+Space, D, D
-  "d,l": "docker_logs"    # Alt+Space, D, L
-  "d,p": "docker_ps"      # Alt+Space, D, P
-  
-  # Custom sequences
-  "w,s": "web_server"     # Alt+Space, W, S
-  "t,r": "test_run"       # Alt+Space, T, R
-  "b,d": "build_deploy"   # Alt+Space, B, D
+  # Nested sequences
+  "d,u": "docker_up"       # Docker up
+  "d,d": "docker_down"     # Docker down
+  "d,l": "docker_logs"     # Docker logs
 
-# Grimoire contains the actual commands/actions
+# Action definitions
 grimoire:
-  # Application launches
+  # Application launch
   editor:
     type: app
     command: "code"
-    description: "Open Visual Studio Code"
-    # Optional: arguments to pass
     args: ["--new-window"]
-    # Optional: working directory
     working_dir: "~/projects"
+    description: "Open VS Code"
     
-  terminal:
-    type: app
-    command: "wt"  # Will be overridden per platform
-    description: "Open terminal emulator"
-    
-  browser:
-    type: app
-    command: "chrome"
-    description: "Open web browser"
-    args: ["--new-window"]
-    
-  file_manager:
-    type: app
-    command: "explorer"  # Will be overridden per platform
-    description: "Open file manager"
-    
-  # Script executions
+  # Script execution
   git_status:
     type: script
     command: "git status"
-    description: "Show git repository status"
-    # Use environment variables
-    working_dir: "${PWD}"
-    # Show output in notification
     show_output: true
-    
-  git_pull:
-    type: script
-    command: "git pull origin main"
-    description: "Pull latest changes from main"
     working_dir: "${PWD}"
-    
-  git_commit:
-    type: script
-    # Multi-line scripts
-    command: |
-      git add -A
-      git commit -m "Quick commit from SilentCast"
-    description: "Stage and commit all changes"
-    
-  docker_up:
-    type: script
-    command: "docker-compose up -d"
-    description: "Start Docker containers"
-    working_dir: "${PWD}"
-    
-  docker_logs:
-    type: script
-    command: "docker-compose logs -f --tail=100"
-    description: "Show Docker logs"
-    # Keep terminal open after execution
-    keep_open: true
-    
-  # Complex example with environment variables
-  web_server:
-    type: script
-    command: "python -m http.server ${PORT:-8000}"
-    description: "Start Python web server"
-    env:
-      PORT: "3000"
-    keep_open: true
+    description: "Show repository status"
     
   # URL opening
   docs:
     type: url
-    command: "https://silentcast.dev/docs"
+    command: "https://silentcast.dev"
     description: "Open documentation"
 ```
 
-## Platform-Specific Overrides
+## 🧙 Spell Patterns
 
-Create platform-specific files to override settings:
+### Single-Key Spells
 
-::: code-group
+The simplest spells - press prefix, then a single key:
 
-```yaml [spellbook.mac.yml]
-# macOS specific overrides
-grimoire:
-  terminal:
-    command: "Terminal"
-    # Or use iTerm2
-    # command: "iTerm"
-    
-  file_manager:
-    command: "Finder"
-    
-  # macOS specific shortcuts
-  spotlight:
-    type: script
-    command: "open -a 'Spotlight'"
-    description: "Open Spotlight search"
-    
-  screenshot:
-    type: script
-    command: "screencapture -i ~/Desktop/screenshot.png"
-    description: "Take interactive screenshot"
-
-# Add macOS specific spells
+```yaml
 spells:
-  "s,s": "screenshot"
-  "s,p": "spotlight"
+  e: "editor"        # Alt+Space → E
+  t: "terminal"      # Alt+Space → T
+  b: "browser"       # Alt+Space → B
+  f: "files"         # Alt+Space → F
+  s: "search"        # Alt+Space → S
 ```
 
-```yaml [spellbook.windows.yml]
-# Windows specific overrides
-grimoire:
-  terminal:
-    command: "wt"  # Windows Terminal
-    # Or use PowerShell
-    # command: "pwsh"
-    # Or classic cmd
-    # command: "cmd"
-    
-  file_manager:
-    command: "explorer"
-    
-  # Windows specific
-  task_manager:
-    type: app
-    command: "taskmgr"
-    description: "Open Task Manager"
-    
-  snipping_tool:
-    type: app
-    command: "SnippingTool"
-    description: "Open Snipping Tool"
+### Multi-Key Sequences
 
+Chain keys for grouped functionality:
+
+```yaml
 spells:
-  "w,t": "task_manager"
-  "s,s": "snipping_tool"
+  # Git commands (g prefix)
+  "g,s": "git_status"       # Alt+Space → G → S
+  "g,p": "git_pull"         # Alt+Space → G → P
+  "g,c": "git_commit"       # Alt+Space → G → C
+  "g,d": "git_diff"         # Alt+Space → G → D
+  "g,l": "git_log"          # Alt+Space → G → L
+  
+  # Docker commands (d prefix)
+  "d,u": "docker_up"        # Alt+Space → D → U
+  "d,d": "docker_down"      # Alt+Space → D → D
+  "d,p": "docker_ps"        # Alt+Space → D → P
+  "d,r": "docker_restart"   # Alt+Space → D → R
+  
+  # Window management (w prefix)
+  "w,m": "window_maximize"  # Alt+Space → W → M
+  "w,c": "window_center"    # Alt+Space → W → C
+  "w,l": "window_left"      # Alt+Space → W → L
+  "w,r": "window_right"     # Alt+Space → W → R
 ```
 
-:::
+### Special Keys
 
-## Advanced Configuration
+Use these modifiers and special keys:
 
-### Environment Variables
+```yaml
+hotkeys:
+  # Modifiers
+  prefix: "ctrl+shift+space"    # Multiple modifiers
+  prefix: "cmd+space"           # macOS Command key
+  prefix: "win+space"           # Windows key
+  
+  # Function keys
+  prefix: "f13"                 # Function keys F1-F24
+  
+  # Special keys
+  prefix: "pause"               # Pause/Break key
+  prefix: "scroll_lock"         # Scroll Lock
+```
 
-Use environment variables in your commands:
+## 📚 Grimoire Entry Types
+
+### Type: `app` - Launch Applications
 
 ```yaml
 grimoire:
-  open_project:
+  # Simple app launch
+  editor:
     type: app
-    command: "${EDITOR:-code}"
-    args: ["${PROJECT_DIR}/src"]
-    working_dir: "${PROJECT_DIR}"
+    command: "code"
+    
+  # With arguments
+  browser_dev:
+    type: app
+    command: "chrome"
+    args: ["--new-window", "--incognito", "https://localhost:3000"]
+    
+  # With working directory
+  project_editor:
+    type: app
+    command: "code"
+    working_dir: "~/projects/myapp"
+    args: ["."]
+    
+  # With environment variables
+  custom_app:
+    type: app
+    command: "myapp"
     env:
       NODE_ENV: "development"
       DEBUG: "true"
+    working_dir: "${PROJECT_ROOT}"
 ```
 
-### Conditional Commands
+### Type: `script` - Execute Commands
 
-Use shell conditionals for smart commands:
+```yaml
+grimoire:
+  # Simple command
+  list_files:
+    type: script
+    command: "ls -la"
+    
+  # Show output in notification
+  git_status:
+    type: script
+    command: "git status --short"
+    show_output: true
+    
+  # Keep terminal open
+  server_logs:
+    type: script
+    command: "tail -f server.log"
+    terminal: true
+    keep_open: true
+    
+  # Multi-line script
+  deploy:
+    type: script
+    command: |
+      echo "Starting deployment..."
+      git pull origin main
+      npm install
+      npm run build
+      echo "Deployment complete!"
+    show_output: true
+    
+  # With timeout
+  long_process:
+    type: script
+    command: "./backup.sh"
+    timeout: 300  # 5 minutes
+    
+  # Custom shell
+  powershell_script:
+    type: script
+    command: "Get-Process | Where CPU -gt 50"
+    shell: "pwsh"
+    show_output: true
+```
+
+### Type: `url` - Open Web Pages
+
+```yaml
+grimoire:
+  # Simple URL
+  docs:
+    type: url
+    command: "https://silentcast.dev"
+    
+  # With parameters
+  search:
+    type: url
+    command: "https://google.com/search?q=${QUERY}"
+    
+  # Local development
+  localhost:
+    type: url
+    command: "http://localhost:${PORT:-3000}"
+```
+
+### Type: `elevated` - Admin/Sudo Commands
+
+```yaml
+grimoire:
+  # Windows admin
+  update_system:
+    type: elevated
+    command: "winget upgrade --all"
+    terminal: true
+    
+  # macOS/Linux sudo
+  install_package:
+    type: elevated
+    command: "apt update && apt upgrade -y"
+    terminal: true
+    keep_open: true
+```
+
+## 🎨 Platform-Specific Configuration
+
+### Configuration Cascade
+
+SilentCast loads configurations in this order:
+1. Base `spellbook.yml`
+2. Platform-specific override (e.g., `spellbook.mac.yml`)
+3. Merge configurations (platform wins conflicts)
+
+### macOS Overrides
+
+```yaml
+# ~/.config/silentcast/spellbook.mac.yml
+grimoire:
+  # Override terminal for macOS
+  terminal:
+    command: "Terminal"    # or "iTerm"
+    
+  # macOS-specific entries
+  finder:
+    type: app
+    command: "Finder"
+    
+  spotlight:
+    type: script
+    command: "open -a Spotlight"
+    
+  screenshot:
+    type: script
+    command: |
+      screencapture -i ~/Desktop/screenshot-$(date +%Y%m%d-%H%M%S).png
+    description: "Interactive screenshot"
+
+# Add macOS-specific spells
+spells:
+  "m,f": "finder"
+  "m,s": "spotlight"
+  "s,s": "screenshot"
+```
+
+### Windows Overrides
+
+```yaml
+# %APPDATA%\SilentCast\spellbook.windows.yml
+grimoire:
+  # Windows-specific terminal
+  terminal:
+    command: "wt"          # Windows Terminal
+    # command: "pwsh"      # PowerShell
+    # command: "cmd"       # Command Prompt
+    
+  # Windows-specific entries
+  explorer:
+    type: app
+    command: "explorer"
+    
+  task_manager:
+    type: app
+    command: "taskmgr"
+    
+  snip:
+    type: app
+    command: "SnippingTool"
+    
+  admin_cmd:
+    type: elevated
+    command: "cmd"
+    args: ["/k", "echo Running as Administrator"]
+
+spells:
+  "w,e": "explorer"
+  "w,t": "task_manager"
+  "s,s": "snip"
+```
+
+### Linux Overrides
+
+```yaml
+# ~/.config/silentcast/spellbook.linux.yml
+grimoire:
+  terminal:
+    command: "gnome-terminal"  # or "konsole", "xterm", etc.
+    
+  file_manager:
+    command: "nautilus"        # or "dolphin", "thunar", etc.
+    
+  screenshot:
+    type: script
+    command: "gnome-screenshot -i"
+    
+  system_monitor:
+    type: app
+    command: "gnome-system-monitor"
+
+spells:
+  "l,s": "system_monitor"
+  "s,s": "screenshot"
+```
+
+## 🔧 Advanced Features
+
+### Environment Variables
+
+Use system and custom environment variables:
+
+```yaml
+grimoire:
+  dev_server:
+    type: script
+    command: "npm run dev"
+    working_dir: "${PROJECT_ROOT}"
+    env:
+      PORT: "${DEV_PORT:-3000}"
+      NODE_ENV: "development"
+      API_URL: "${API_URL:-http://localhost:8080}"
+```
+
+Built-in variables:
+- `${HOME}` - User home directory
+- `${PWD}` - Current working directory
+- `${USER}` - Username
+- `${SILENTCAST_CONFIG}` - Config directory
+- `${SILENTCAST_VERSION}` - Version
+
+### Conditional Logic
+
+Use shell scripting for smart actions:
 
 ```yaml
 grimoire:
@@ -313,229 +477,237 @@ grimoire:
         git status
       else
         echo "Not a git repository"
+        exit 1
       fi
     show_output: true
-```
-
-### Template Variables
-
-SilentCast provides these built-in variables:
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `${HOME}` | User home directory | `/home/user` |
-| `${PWD}` | Current working directory | `/home/user/project` |
-| `${USER}` | Current username | `john` |
-| `${SILENTCAST_CONFIG}` | Config directory | `~/.config/silentcast` |
-| `${SILENTCAST_VERSION}` | SilentCast version | `1.0.0` |
-
-### Action Types
-
-#### Type: `app`
-Launches applications:
-
-```yaml
-grimoire:
-  my_app:
-    type: app
-    command: "code"           # Required: executable name/path
-    args: ["--new-window"]    # Optional: command arguments
-    working_dir: "~/projects" # Optional: working directory
-    env:                      # Optional: environment variables
-      NODE_ENV: "dev"
-```
-
-#### Type: `script`
-Executes shell commands:
-
-```yaml
-grimoire:
-  my_script:
+    
+  os_specific:
     type: script
-    command: "npm run dev"    # Required: shell command
-    working_dir: "${PWD}"     # Optional: working directory
-    show_output: true         # Optional: show output notification
-    keep_open: true          # Optional: keep terminal open
-    shell: "bash"            # Optional: shell to use
+    command: |
+      case "$(uname -s)" in
+        Darwin*) echo "Running on macOS" ;;
+        Linux*)  echo "Running on Linux" ;;
+        CYGWIN*|MINGW*) echo "Running on Windows" ;;
+      esac
 ```
 
-#### Type: `url`
-Opens URLs in default browser:
+### Action Chaining
+
+Execute multiple actions in sequence:
 
 ```yaml
 grimoire:
-  my_url:
-    type: url
-    command: "https://example.com"  # Required: URL to open
-    description: "Open example site"
+  full_deploy:
+    type: script
+    command: |
+      # Stop services
+      docker-compose down
+      
+      # Update code
+      git pull origin main
+      
+      # Rebuild
+      docker-compose build
+      
+      # Run migrations
+      docker-compose run --rm app npm run migrate
+      
+      # Start services
+      docker-compose up -d
+      
+      # Show status
+      docker-compose ps
+    terminal: true
+    keep_open: true
 ```
 
-## Configuration Best Practices
+## 📊 Best Practices
 
-### 1. Organize by Function
+### 1. Logical Grouping
 
-Group related shortcuts:
+Organize spells by function:
 
 ```yaml
 spells:
-  # Editor shortcuts
+  # Applications (single keys)
   e: "editor"
-  "e,s": "editor_settings"
-  "e,p": "editor_plugins"
+  t: "terminal"
+  b: "browser"
   
-  # Git shortcuts
+  # Git operations (g prefix)
   "g,s": "git_status"
   "g,p": "git_pull"
   "g,c": "git_commit"
   
-  # Docker shortcuts
+  # Docker operations (d prefix)
   "d,u": "docker_up"
   "d,d": "docker_down"
+  
+  # System operations (s prefix)
+  "s,r": "system_restart"
+  "s,l": "system_lock"
 ```
 
-### 2. Use Descriptive Names
+### 2. Consistent Naming
 
-Make your grimoire entries self-documenting:
+Use clear, descriptive names:
 
 ```yaml
 grimoire:
-  # Good
-  open_vscode_in_project:
+  # Good - Clear and descriptive
+  open_project_in_vscode:
     type: app
     command: "code"
-    args: ["~/projects/myapp"]
+    working_dir: "~/projects/myapp"
     
-  # Not so good
-  vc:
+  # Bad - Too cryptic
+  opvc:
     type: app
     command: "code"
 ```
 
-### 3. Keep Platform Logic Separate
+### 3. Documentation
 
-Use platform-specific files instead of conditionals:
+Add descriptions to complex entries:
 
 ```yaml
-# In spellbook.yml
 grimoire:
-  terminal:
-    type: app
-    command: "terminal"  # Generic
-    
-# In spellbook.mac.yml
-grimoire:
-  terminal:
-    command: "Terminal"  # macOS specific
-    
-# In spellbook.windows.yml
-grimoire:
-  terminal:
-    command: "wt"       # Windows specific
+  complex_deployment:
+    type: script
+    # This script performs a full deployment:
+    # 1. Backs up the database
+    # 2. Pulls latest code
+    # 3. Runs migrations
+    # 4. Restarts services
+    command: "./deploy.sh"
+    description: "Full production deployment with backup"
+    timeout: 600
 ```
 
-### 4. Document Complex Commands
+### 4. Error Handling
 
-Add comments for non-obvious configurations:
+Add error checking to scripts:
 
 ```yaml
 grimoire:
-  # This command sets up a complete development environment
-  # It starts the database, API server, and frontend
-  dev_setup:
+  safe_deploy:
     type: script
     command: |
-      # Start database
-      docker-compose up -d postgres redis
+      set -e  # Exit on error
       
-      # Wait for database
-      sleep 5
+      echo "Starting deployment..."
       
-      # Run migrations
-      npm run migrate
+      # Check prerequisites
+      if ! command -v docker &> /dev/null; then
+        echo "Error: Docker not found"
+        exit 1
+      fi
       
-      # Start services
-      npm run dev
-    keep_open: true
+      # Continue with deployment
+      docker-compose down
+      git pull || { echo "Git pull failed"; exit 1; }
+      docker-compose up -d
 ```
 
-## Validation and Testing
+## 🧪 Testing & Validation
 
-### Validate Your Configuration
+### Validate Configuration
 
 ```bash
-# Check configuration syntax
+# Check syntax
 silentcast --validate-config
-
-# Test specific configuration file
-silentcast --config ./test-spellbook.yml --validate-config
-
-# Dry run (show what would be executed)
-silentcast --dry-run
-```
-
-### Debug Configuration Loading
-
-```bash
-# Run with debug logging
-silentcast --log-level debug
 
 # Show resolved configuration
 silentcast --show-config
+
+# Test specific config file
+silentcast --config ./test-spellbook.yml --validate-config
 ```
 
-## Migration from Other Tools
+### Test Spells
 
-### From AutoHotkey
+```bash
+# List all spells
+silentcast --list-spells
 
-```autohotkey
-; AutoHotkey
-!Space & e::Run "C:\Program Files\Microsoft VS Code\Code.exe"
+# Test without executing
+silentcast --dry-run --spell=e
+
+# Test specific spell
+silentcast --test-spell --spell=git_status
+
+# Debug mode
+silentcast --debug --no-tray
 ```
 
-Becomes:
+### Monitor Configuration
 
-```yaml
-hotkeys:
-  prefix: "alt+space"
-spells:
-  e: "editor"
-grimoire:
-  editor:
-    type: app
-    command: "code"
+```bash
+# Watch configuration changes
+silentcast --debug 2>&1 | grep "Config"
+
+# Check reload events
+tail -f ~/.config/silentcast/silentcast.log | grep "reload"
 ```
 
-### From Keyboard Maestro
-
-Convert Keyboard Maestro macros to SilentCast spells by mapping triggers to spells and actions to grimoire entries.
-
-## Troubleshooting
+## 🔍 Troubleshooting
 
 ### Configuration Not Loading
 
-1. Check file location: `silentcast --show-config-path`
-2. Validate syntax: `silentcast --validate-config`
-3. Check permissions: `ls -la ~/.config/silentcast/`
+1. **Check file location**:
+   ```bash
+   silentcast --show-config-path
+   ```
 
-### Shortcuts Not Working
+2. **Validate YAML syntax**:
+   ```bash
+   # Online validator
+   cat spellbook.yml | python -c "import yaml,sys; yaml.safe_load(sys.stdin)"
+   ```
 
-1. Verify prefix key: Test with a simple spell first
-2. Check for conflicts: Some shortcuts may be reserved by OS
-3. Review logs: `tail -f ~/.local/share/silentcast/silentcast.log`
+3. **Check permissions**:
+   ```bash
+   ls -la ~/.config/silentcast/
+   ```
 
-## Example Configurations
+### Spells Not Working
 
-Complete, working configuration examples are available on the [Configuration Samples](/guide/samples) page:
-- Base configuration with extensive comments
-- Windows-specific configuration examples  
-- macOS-specific configuration examples
-- Test configurations and custom key examples
+1. **Test prefix key**: Try a simple spell first
+2. **Check conflicts**: Some keys may be reserved by OS
+3. **Enable debug logging**:
+   ```yaml
+   daemon:
+     log_level: debug
+   ```
+4. **Monitor logs**:
+   ```bash
+   tail -f ~/.config/silentcast/silentcast.log
+   ```
 
-These samples can be copied directly to your configuration directory and customized for your needs.
+### Platform Issues
 
-## Next Steps
+- **macOS**: Check accessibility permissions
+- **Windows**: Run as administrator for elevated actions
+- **Linux**: Check if running under Wayland (limited hotkey support)
 
-- Review [Configuration Samples](/guide/samples) for complete examples
-- Learn about [advanced shortcuts](/guide/shortcuts)
-- Set up [automation scripts](/guide/scripts)
-- Configure [platform-specific features](/guide/platforms)
+## 📖 Example Configurations
+
+Find complete examples in the repository:
+
+- [Basic spellbook](https://github.com/SphereStacking/silentcast/blob/main/examples/config/basic_spellbook.yml)
+- [Developer spellbook](https://github.com/SphereStacking/silentcast/blob/main/examples/config/developer_spellbook.yml)
+- [Power user spellbook](https://github.com/SphereStacking/silentcast/blob/main/examples/config/power_user_spellbook.yml)
+- [Platform examples](https://github.com/SphereStacking/silentcast/tree/main/examples/config)
+
+## 🚀 Next Steps
+
+- [Learn about spell patterns](./spells.md) - Master keyboard combinations
+- [Explore scripting](./scripts.md) - Advanced automation
+- [Platform features](./platforms.md) - OS-specific capabilities
+- [CLI reference](./cli-reference.md) - Command-line options
+
+---
+
+<div align="center">
+  <p><strong>Happy spell casting! 🪄</strong></p>
+</div>
