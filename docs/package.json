@@ -1,6 +1,6 @@
 {
   "name": "silentcast-docs",
-  "version": "0.1.0-alpha.8",
+  "version": "0.1.0-alpha.10",
   "description": "Documentation for SilentCast - Silent Hotkey Task Runner",
   "scripts": {
     "docs:dev": "vitepress dev",
