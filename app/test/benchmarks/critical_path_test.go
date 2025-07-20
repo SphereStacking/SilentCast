@@ -23,7 +23,7 @@ func BenchmarkCriticalActionExecution(b *testing.B) {
 			
 			cfg := &config.ActionConfig{
 				Type:    "script",
-				Command: "echo 'test'",
+				Command: "echo test",
 			}
 			
 			executor := script.NewScriptExecutor(cfg)
@@ -42,7 +42,7 @@ func BenchmarkCriticalActionExecution(b *testing.B) {
 			
 			cfg := &config.ActionConfig{
 				Type:       "script",
-				Command:    "echo 'test output line 1\ntest output line 2\ntest output line 3'",
+				Command:    "echo \"test output line 1\ntest output line 2\ntest output line 3\"",
 				ShowOutput: true,
 			}
 			
@@ -62,7 +62,7 @@ func BenchmarkCriticalActionExecution(b *testing.B) {
 			
 			cfg := &config.ActionConfig{
 				Type:    "script",
-				Command: "echo 'parallel test'",
+				Command: "echo \"parallel test\"",
 			}
 			
 			ctx := context.Background()
