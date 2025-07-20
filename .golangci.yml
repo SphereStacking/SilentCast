@@ -1,0 +1,159 @@
+run:
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  
+linters:
+  enable:
+    # Default linters
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    
+    # Additional security and quality linters
+    - gosec
+    - gocyclo
+    - dupl
+    - goconst
+    - gofmt
+    - goimports
+    - gomoddirectives
+    - gomodguard
+    - goprintffuncname
+    - misspell
+    - nolintlint
+    - revive
+    - unconvert
+    - unparam
+    - whitespace
+    - exportloopref
+    - gocognit
+    - godot
+    - godox
+    - gomnd
+    - nestif
+    - prealloc
+    - predeclared
+    - rowserrcheck
+    - sqlclosecheck
+    - thelper
+    - tparallel
+    - wastedassign
+
+  disable:
+    - deadcode    # deprecated
+    - varcheck    # deprecated
+    - structcheck # deprecated
+    - scopelint   # deprecated
+    - golint      # deprecated
+    - interfacer  # deprecated
+    - maligned    # deprecated
+
+linters-settings:
+  gocyclo:
+    min-complexity: 15
+    
+  dupl:
+    threshold: 100
+    
+  gosec:
+    severity: "low"
+    confidence: "low"
+    excludes:
+      - G104  # Audit errors not checked
+      - G204  # Subprocess launched with function call as argument or cmd arguments
+    
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+    
+  misspell:
+    locale: US
+    
+  revive:
+    rules:
+      - name: exported
+        arguments: [false]
+      - name: package-comments
+        disabled: true
+      - name: var-naming
+        arguments: [["ID"], []]
+        
+  gocognit:
+    min-complexity: 20
+    
+  nestif:
+    min-complexity: 5
+    
+  gomnd:
+    ignored-numbers: [0,1,2,8,10,16,24,32,64,100,1024]
+    ignored-functions: 
+      - args.Error
+      - strconv.FormatInt
+      - strconv.ParseInt
+      - make
+      
+  gomoddirectives:
+    replace-local: false
+    
+  thelper:
+    test:
+      first: true
+      name: true
+      begin: true
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gomnd
+        - goconst
+        - dupl
+    
+    # Exclude some specific issues
+    - text: "should have a package comment"
+      linters:
+        - revive
+        
+    # Allow complex test functions
+    - path: _test\.go
+      text: "cognitive complexity"
+      linters:
+        - gocognit
+        
+    # Allow long test functions
+    - path: _test\.go
+      text: "cyclomatic complexity"
+      linters:
+        - gocyclo
+
+    # Platform-specific files may have different complexity
+    - path: "_windows.go|_darwin.go|_linux.go"
+      linters:
+        - gocyclo
+        - gocognit
+
+severity:
+  default-severity: error
+  case-sensitive: false
+  rules:
+    - linters:
+        - dupl
+        - goconst
+        - gomnd
+      severity: warning
+    - linters:
+        - revive
+        - godot
+        - misspell
+      severity: info

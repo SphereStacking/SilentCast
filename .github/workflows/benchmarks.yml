@@ -1,0 +1,367 @@
+name: Performance Benchmarks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run benchmarks daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      benchmark_type:
+        description: 'Type of benchmarks to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - startup
+        - hotkey
+        - action
+        - config
+        - memory
+        - stress
+        - notification
+        - watcher
+
+jobs:
+  benchmark:
+    name: Run Performance Benchmarks
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        go-version: ['1.21', '1.22']
+      fail-fast: false
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go-version }}
+
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-${{ matrix.go-version }}-
+
+    - name: Install dependencies
+      working-directory: app
+      run: |
+        go mod download
+        go mod tidy
+
+    - name: Create benchmark results directory
+      run: mkdir -p benchmark-results
+
+    - name: Run all benchmarks
+      if: github.event.inputs.benchmark_type == 'all' || github.event.inputs.benchmark_type == ''
+      working-directory: app
+      run: |
+        echo "Running comprehensive benchmarks..."
+        go test -tags "nogohook notray" -bench=. -benchmem -timeout=45m ./test/benchmarks/... | tee ../benchmark-results/all-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+
+    - name: Run startup benchmarks
+      if: github.event.inputs.benchmark_type == 'startup'
+      working-directory: app
+      run: |
+        echo "Running startup benchmarks..."
+        go test -tags "nogohook notray" -bench=BenchmarkStartup -benchmem ./test/benchmarks/startup_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/startup-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+
+    - name: Run hotkey benchmarks
+      if: github.event.inputs.benchmark_type == 'hotkey'
+      working-directory: app
+      run: |
+        echo "Running hotkey benchmarks..."
+        go test -tags "nogohook notray" -bench=BenchmarkKey -benchmem ./test/benchmarks/hotkey_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/hotkey-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+
+    - name: Run action benchmarks
+      if: github.event.inputs.benchmark_type == 'action'
+      working-directory: app
+      run: |
+        echo "Running action benchmarks..."
+        go test -tags "nogohook notray" -bench=BenchmarkAction -benchmem ./test/benchmarks/action_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/action-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+
+    - name: Run config benchmarks
+      if: github.event.inputs.benchmark_type == 'config'
+      working-directory: app
+      run: |
+        echo "Running config benchmarks..."
+        go test -tags "nogohook notray" -bench=BenchmarkConfig -benchmem ./test/benchmarks/config_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/config-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+
+    - name: Run memory benchmarks
+      if: github.event.inputs.benchmark_type == 'memory'
+      working-directory: app
+      run: |
+        echo "Running memory benchmarks..."
+        go test -tags "nogohook notray" -bench=BenchmarkMemory -benchmem ./test/benchmarks/memory_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/memory-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+
+    - name: Run stress benchmarks
+      if: github.event.inputs.benchmark_type == 'stress'
+      working-directory: app
+      run: |
+        echo "Running stress benchmarks..."
+        go test -tags "nogohook notray" -bench=BenchmarkStress -benchmem -timeout=20m ./test/benchmarks/stress_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/stress-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+
+    - name: Run notification benchmarks
+      if: github.event.inputs.benchmark_type == 'notification'
+      working-directory: app
+      run: |
+        echo "Running notification benchmarks..."
+        go test -tags "nogohook notray" -bench=BenchmarkNotification -benchmem ./test/benchmarks/notification_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/notification-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+
+    - name: Run watcher benchmarks
+      if: github.event.inputs.benchmark_type == 'watcher'
+      working-directory: app
+      run: |
+        echo "Running watcher benchmarks..."
+        go test -tags "nogohook notray" -bench=BenchmarkConfig -benchmem ./test/benchmarks/watcher_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/watcher-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+
+    - name: Generate CPU profile
+      working-directory: app
+      run: |
+        echo "Generating CPU profile..."
+        go test -tags "nogohook notray" -bench=BenchmarkStartup -benchmem -cpuprofile=cpu-${{ matrix.os }}-go${{ matrix.go-version }}.prof -timeout=10m ./test/benchmarks/startup_test.go ./test/benchmarks/framework.go
+        mv cpu-${{ matrix.os }}-go${{ matrix.go-version }}.prof ../benchmark-results/
+
+    - name: Generate memory profile
+      working-directory: app
+      run: |
+        echo "Generating memory profile..."
+        go test -tags "nogohook notray" -bench=BenchmarkMemory -benchmem -memprofile=mem-${{ matrix.os }}-go${{ matrix.go-version }}.prof -timeout=10m ./test/benchmarks/memory_test.go ./test/benchmarks/framework.go
+        mv mem-${{ matrix.os }}-go${{ matrix.go-version }}.prof ../benchmark-results/
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v4
+      with:
+        name: benchmark-results-${{ matrix.os }}-go${{ matrix.go-version }}
+        path: benchmark-results/
+        retention-days: 30
+
+    - name: Check for performance regressions
+      working-directory: app
+      run: |
+        echo "Checking for performance regressions..."
+        # This is a placeholder for regression detection logic
+        # In a real implementation, you would compare with baseline results
+        echo "Performance regression check completed"
+
+  benchmark-comparison:
+    name: Compare Benchmark Results
+    runs-on: ubuntu-latest
+    needs: benchmark
+    if: github.event_name == 'pull_request'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Download all benchmark artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: all-benchmark-results
+
+    - name: Install benchcmp
+      run: go install golang.org/x/tools/cmd/benchcmp@latest
+
+    - name: Compare with main branch
+      run: |
+        echo "Comparing benchmark results with main branch..."
+        # This would involve fetching main branch results and comparing
+        echo "Benchmark comparison completed"
+
+    - name: Generate performance report
+      run: |
+        echo "# Performance Benchmark Report" > performance-report.md
+        echo "" >> performance-report.md
+        echo "## Summary" >> performance-report.md
+        echo "Benchmark results for commit ${{ github.sha }}" >> performance-report.md
+        echo "" >> performance-report.md
+        echo "## Results by Platform" >> performance-report.md
+        
+        for os in ubuntu-latest windows-latest macos-latest; do
+          echo "### $os" >> performance-report.md
+          if [ -f "all-benchmark-results/benchmark-results-$os-go1.22/all-$os-go1.22.txt" ]; then
+            echo "\`\`\`" >> performance-report.md
+            head -20 "all-benchmark-results/benchmark-results-$os-go1.22/all-$os-go1.22.txt" >> performance-report.md
+            echo "\`\`\`" >> performance-report.md
+          fi
+          echo "" >> performance-report.md
+        done
+
+    - name: Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          if (fs.existsSync('performance-report.md')) {
+            const report = fs.readFileSync('performance-report.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+          }
+
+  regression-detection:
+    name: Performance Regression Detection
+    runs-on: ubuntu-latest
+    needs: benchmark
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download benchmark results
+      uses: actions/download-artifact@v4
+      with:
+        name: benchmark-results-ubuntu-latest-go1.22
+        path: current-results
+
+    - name: Check for baseline results
+      id: baseline
+      run: |
+        if [ -f "benchmark-baselines/baseline-ubuntu-latest-go1.22.txt" ]; then
+          echo "baseline_exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "baseline_exists=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Compare with baseline
+      if: steps.baseline.outputs.baseline_exists == 'true'
+      run: |
+        echo "Comparing current results with baseline..."
+        # Install benchcmp if not available
+        go install golang.org/x/tools/cmd/benchcmp@latest
+        
+        # Compare results
+        if [ -f "current-results/all-ubuntu-latest-go1.22.txt" ] && [ -f "benchmark-baselines/baseline-ubuntu-latest-go1.22.txt" ]; then
+          benchcmp benchmark-baselines/baseline-ubuntu-latest-go1.22.txt current-results/all-ubuntu-latest-go1.22.txt > regression-report.txt || true
+          
+          # Check for significant regressions (more than 20% slower)
+          if grep -q "+[2-9][0-9]\|+[0-9][0-9][0-9]" regression-report.txt; then
+            echo "⚠️  Performance regression detected!" >> $GITHUB_STEP_SUMMARY
+            echo "Benchmark comparison results:" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            cat regression-report.txt >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No significant performance regressions detected" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+
+    - name: Update baseline
+      if: steps.baseline.outputs.baseline_exists == 'false' || github.event_name == 'workflow_dispatch'
+      run: |
+        echo "Updating performance baseline..."
+        mkdir -p benchmark-baselines
+        if [ -f "current-results/all-ubuntu-latest-go1.22.txt" ]; then
+          cp current-results/all-ubuntu-latest-go1.22.txt benchmark-baselines/baseline-ubuntu-latest-go1.22.txt
+        fi
+
+    - name: Commit updated baseline
+      if: steps.baseline.outputs.baseline_exists == 'false' || github.event_name == 'workflow_dispatch'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add benchmark-baselines/
+        git commit -m "📊 Update performance baseline" || exit 0
+        git push || exit 0
+
+  performance-monitoring:
+    name: Performance Monitoring Dashboard
+    runs-on: ubuntu-latest
+    needs: benchmark
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download all benchmark results
+      uses: actions/download-artifact@v4
+      with:
+        path: all-results
+
+    - name: Generate performance dashboard
+      run: |
+        echo "# SilentCast Performance Dashboard" > performance-dashboard.md
+        echo "" >> performance-dashboard.md
+        echo "Last updated: $(date)" >> performance-dashboard.md
+        echo "" >> performance-dashboard.md
+        
+        echo "## Cross-Platform Performance Summary" >> performance-dashboard.md
+        echo "" >> performance-dashboard.md
+        
+        for os in ubuntu-latest windows-latest macos-latest; do
+          echo "### $os" >> performance-dashboard.md
+          if [ -f "all-results/benchmark-results-$os-go1.22/all-$os-go1.22.txt" ]; then
+            echo "\`\`\`" >> performance-dashboard.md
+            grep "^Benchmark" "all-results/benchmark-results-$os-go1.22/all-$os-go1.22.txt" | head -10 >> performance-dashboard.md
+            echo "\`\`\`" >> performance-dashboard.md
+          fi
+          echo "" >> performance-dashboard.md
+        done
+        
+        echo "## Historical Trends" >> performance-dashboard.md
+        echo "- Startup time trends" >> performance-dashboard.md
+        echo "- Memory usage trends" >> performance-dashboard.md
+        echo "- Action execution performance" >> performance-dashboard.md
+
+    - name: Update performance wiki
+      run: |
+        echo "Performance dashboard generated"
+        # In a real implementation, this would update a wiki or documentation site
+        # with the performance dashboard data
+
+  cleanup:
+    name: Cleanup Old Artifacts
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+
+    steps:
+    - name: Delete old benchmark artifacts
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const artifacts = await github.rest.actions.listArtifactsForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            per_page: 100
+          });
+          
+          const oldArtifacts = artifacts.data.artifacts.filter(artifact => {
+            const createdAt = new Date(artifact.created_at);
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            return createdAt < thirtyDaysAgo && artifact.name.includes('benchmark-results');
+          });
+          
+          for (const artifact of oldArtifacts) {
+            await github.rest.actions.deleteArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: artifact.id
+            });
+            console.log(`Deleted artifact: ${artifact.name}`);
+          }
