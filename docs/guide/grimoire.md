@@ -1,23 +1,23 @@
-# Actions Guide
+# Grimoire Guide
 
-Learn how to define powerful actions in your grimoire. From launching applications to running complex scripts, SilentCast can execute virtually any task with a simple keyboard shortcut.
+Learn how to define powerful grimoire entries in your spellbook. From launching applications to running complex scripts, SilentCast can execute virtually any task with a simple spell.
 
-## Understanding Actions
+## Understanding Grimoire Entries
 
-In SilentCast, **actions** are defined in the `grimoire` section of your configuration. Each action has a type that determines how it's executed.
+In SilentCast, **grimoire entries** are defined in the `grimoire` section of your configuration. Each grimoire entry has a type that determines how it's executed.
 
-### Action Anatomy
+### Grimoire Entry Anatomy
 
 ```yaml
 grimoire:
-  action_name:              # Unique identifier
-    type: app              # Action type: app, script, or url
+  grimoire_entry_name:      # Unique identifier
+    type: app              # Entry type: app, script, or url
     command: "code"        # What to execute
     description: "..."     # Human-readable description
     # Optional parameters depending on type
 ```
 
-## Action Types
+## Grimoire Entry Types
 
 ### Type: `app` - Application Launcher
 
@@ -362,7 +362,7 @@ grimoire:
 | `shell` | string | Shell interpreter | System default |
 | `show_output` | boolean | Show output in notification | `false` |
 | `keep_open` | boolean | Keep terminal open after execution | `false` |
-| `timeout` | integer | Maximum execution time (seconds) | `30` |
+| `timeout` | integer | Maximum execution time (seconds) | `0` (no timeout) |
 
 ### URL-Specific Parameters
 

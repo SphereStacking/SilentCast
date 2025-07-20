@@ -315,6 +315,225 @@ grimoire:
     show_output: true
 ```
 
+## Script Timeouts
+
+### Basic Timeout Configuration
+
+Set a maximum execution time for scripts to prevent hanging processes:
+
+```yaml
+grimoire:
+  quick_task:
+    type: script
+    command: "echo 'Quick task'"
+    timeout: 10  # 10 seconds timeout
+    
+  long_running_task:
+    type: script
+    command: "./build.sh && ./test.sh"
+    timeout: 300  # 5 minutes timeout
+    
+  no_timeout_task:
+    type: script
+    command: "tail -f /var/log/app.log"
+    timeout: 0  # No timeout (default)
+```
+
+### Timeout Behavior
+
+When a script exceeds its timeout:
+1. The process receives SIGTERM (or equivalent on Windows) for graceful shutdown
+2. A configurable grace period allows the process to clean up
+3. If the process doesn't exit within the grace period, SIGKILL is sent
+4. User receives a timeout notification
+5. Exit code indicates timeout occurred
+
+```yaml
+grimoire:
+  test_with_timeout:
+    type: script
+    command: "npm test"
+    timeout: 60  # 1 minute timeout
+    show_output: true  # Will show partial output before timeout
+    description: "Run tests with timeout"
+```
+
+### Timeout with Different Execution Modes
+
+```yaml
+grimoire:
+  # Timeout applies to script execution
+  background_with_timeout:
+    type: script
+    command: "sleep 30 && echo 'Done'"
+    timeout: 10  # Will timeout after 10 seconds
+    
+  # Terminal launch timeout only
+  terminal_with_timeout:
+    type: script
+    command: "npm run dev"
+    terminal: true
+    timeout: 5  # Only applies to terminal launch, not the script
+    
+  # Keep open with timeout
+  monitor_with_timeout:
+    type: script
+    command: "watch -n 1 df -h"
+    keep_open: true
+    timeout: 5  # Only applies to terminal launch
+```
+
+### Best Practices for Timeouts
+
+1. **Set reasonable timeouts**: Consider worst-case execution time
+2. **Use timeouts for CI/CD**: Prevent hanging builds
+3. **No timeout for monitors**: Long-running processes like logs
+4. **Test timeout values**: Ensure they work in production
+5. **Handle signals gracefully**: Implement SIGTERM handlers for clean shutdown
+6. **Configure grace periods**: Allow enough time for cleanup operations
+
+## Graceful Shutdown
+
+SilentCast implements graceful process termination when scripts timeout, giving processes a chance to clean up before being forcefully terminated.
+
+### How Graceful Shutdown Works
+
+1. **Timeout Exceeded**: When a script runs longer than its configured timeout
+2. **SIGTERM Sent**: The process receives a termination signal (SIGTERM on Unix, taskkill on Windows)
+3. **Grace Period**: The process has a configurable grace period to clean up and exit
+4. **Force Termination**: If the process doesn't exit within the grace period, SIGKILL is sent
+
+### Configuring Grace Period
+
+```yaml
+grimoire:
+  database_backup:
+    type: script
+    command: "pg_dump mydb > backup.sql"
+    timeout: 30              # 30 seconds to complete
+    grace_period: 10         # 10 seconds for graceful shutdown
+    show_output: true
+    description: "Database backup with graceful shutdown"
+    
+  quick_task:
+    type: script
+    command: "curl -X POST https://api.example.com/webhook"
+    timeout: 5               # 5 seconds timeout
+    grace_period: 2          # Only 2 seconds grace (quick cleanup)
+    
+  default_grace:
+    type: script
+    command: "./long-process.sh"
+    timeout: 60              # 1 minute timeout
+    grace_period: 0          # Use default 5 seconds
+```
+
+### Signal Handling Examples
+
+#### Bash/Shell Script
+```bash
+#!/bin/bash
+# Handle SIGTERM for graceful shutdown
+cleanup() {
+    echo "Received shutdown signal, cleaning up..."
+    # Save state, close connections, etc.
+    rm -f /tmp/process.lock
+    echo "Cleanup complete"
+    exit 0
+}
+
+trap cleanup SIGTERM SIGINT
+
+# Main process
+echo "Process started"
+while true; do
+    # Do work
+    sleep 1
+done
+```
+
+#### Python Script
+```python
+import signal
+import sys
+import time
+
+def signal_handler(signum, frame):
+    print("Received shutdown signal, cleaning up...")
+    # Perform cleanup
+    save_state()
+    close_connections()
+    print("Cleanup complete")
+    sys.exit(0)
+
+# Register signal handlers
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
+
+# Main process
+print("Process started")
+while True:
+    # Do work
+    time.sleep(1)
+```
+
+#### Node.js Script
+```javascript
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('Received SIGTERM, shutting down gracefully');
+    server.close(() => {
+        console.log('HTTP server closed');
+        database.close(() => {
+            console.log('Database connection closed');
+            process.exit(0);
+        });
+    });
+});
+
+// Main process
+console.log('Server started');
+```
+
+### Platform Differences
+
+#### Unix/Linux/macOS
+- Uses SIGTERM for graceful shutdown
+- Falls back to SIGKILL after grace period
+- Process groups are used to terminate child processes
+
+#### Windows
+- Uses `taskkill` command for graceful termination
+- Falls back to `taskkill /F` for force termination
+- `/T` flag terminates process trees
+
+### Best Practices
+
+1. **Always implement signal handlers** in long-running scripts
+2. **Set appropriate grace periods** based on cleanup requirements
+3. **Log shutdown progress** to help debug timeout issues
+4. **Test signal handling** independently from SilentCast
+5. **Avoid blocking operations** in signal handlers
+6. **Save state frequently** to minimize data loss
+
+```yaml
+grimoire:
+  deployment:
+    type: script
+    command: |
+      echo "Starting deployment..."
+      
+      # Each step has its own timeout
+      timeout 30 npm test || exit 1
+      timeout 60 npm run build || exit 1
+      timeout 120 ./deploy.sh || exit 1
+      
+      echo "Deployment complete!"
+    timeout: 240  # Overall 4-minute timeout
+    show_output: true
+    description: "Deploy with cascading timeouts"
+```
+
 ## Interactive Scripts
 
 ### User Input

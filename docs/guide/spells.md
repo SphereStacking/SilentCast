@@ -1,10 +1,10 @@
-# Shortcuts Guide
+# Spells Guide
 
-Master the art of keyboard magic with SilentCast! This guide covers everything from basic shortcuts to advanced multi-key sequences.
+Master the art of keyboard magic with SilentCast! This guide covers everything from basic spells to advanced multi-key sequences.
 
-## Understanding SilentCast Shortcuts
+## Understanding SilentCast Spells
 
-SilentCast uses a **prefix-based system** inspired by tools like tmux and Emacs. You activate SilentCast with a prefix key, then cast your spell (type your shortcut).
+SilentCast uses a **prefix-based system** inspired by tools like tmux and Emacs. You activate SilentCast with a prefix key, then cast your spell.
 
 ### The Magic Formula
 
@@ -14,11 +14,11 @@ SilentCast uses a **prefix-based system** inspired by tools like tmux and Emacs.
 
 Example: `Alt+Space` → `e` → VS Code opens
 
-## Types of Shortcuts
+## Types of Spells
 
-### 1. Single Key Shortcuts
+### 1. Single Key Spells
 
-The simplest and fastest shortcuts:
+The simplest and fastest spells:
 
 ```yaml
 spells:
@@ -30,9 +30,9 @@ spells:
 
 **Best for**: Frequently used applications
 
-### 2. Multi-Key Sequences
+### 2. Multi-Key Sequence Spells
 
-VS Code-style sequential shortcuts:
+VS Code-style sequential spells:
 
 ```yaml
 spells:
