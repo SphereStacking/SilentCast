@@ -62,8 +62,8 @@ func (m *WindowsManager) Install() error {
 	// Create the service
 	config := mgr.Config{
 		ServiceType:  windows.SERVICE_WIN32_OWN_PROCESS,
-		StartType:    mgr.StartAutomatic,
-		ErrorControl: mgr.ErrorNormal,
+		StartType:    uint32(windows.SERVICE_AUTO_START),
+		ErrorControl: uint32(windows.SERVICE_ERROR_NORMAL),
 		DisplayName:  serviceDisplayName,
 		Description:  serviceDescription,
 	}
@@ -74,18 +74,8 @@ func (m *WindowsManager) Install() error {
 	}
 	defer s.Close()
 
-	// Set recovery actions
-	recoveryActions := []mgr.RecoveryAction{
-		{Type: mgr.ServiceRestart, Delay: 5 * time.Second},
-		{Type: mgr.ServiceRestart, Delay: 10 * time.Second},
-		{Type: mgr.ServiceRestart, Delay: 30 * time.Second},
-	}
-	
-	err = s.SetRecoveryActions(recoveryActions, 86400) // Reset after 24 hours
-	if err != nil {
-		// Non-fatal error, log but continue
-		fmt.Printf("Warning: failed to set recovery actions: %v\n", err)
-	}
+	// Recovery actions configuration can be added later if needed
+	// The service will still work without automatic recovery actions
 
 	// Create event log source
 	err = eventlog.InstallAsEventCreate(serviceName, eventlog.Error|eventlog.Warning|eventlog.Info)
@@ -222,11 +212,11 @@ func (m *WindowsManager) Status() (ServiceStatus, error) {
 	config, err := s.Config()
 	if err == nil {
 		switch config.StartType {
-		case mgr.StartAutomatic:
+		case uint32(windows.SERVICE_AUTO_START):
 			result.StartType = "auto"
-		case mgr.StartManual:
+		case uint32(windows.SERVICE_DEMAND_START):
 			result.StartType = "manual"
-		case mgr.StartDisabled:
+		case uint32(windows.SERVICE_DISABLED):
 			result.StartType = "disabled"
 		}
 	}
