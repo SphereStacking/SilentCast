@@ -4,6 +4,7 @@ package updater
 
 import (
 	"os"
+	"os/exec"
 	"time"
 )
 
@@ -46,5 +47,28 @@ func (w *windowsPlatformUpdater) ReplaceExecutable(src, dst string) error {
 
 func (w *windowsPlatformUpdater) MakeExecutable(path string) error {
 	// Windows doesn't need chmod
+	return nil
+}
+
+func (w *windowsPlatformUpdater) RestartApplication() error {
+	// Get current executable path
+	exe, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	// Prepare command
+	cmd := exec.Command(exe, os.Args[1:]...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
+	// Start the new process
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	// Exit current process
+	os.Exit(0)
 	return nil
 }

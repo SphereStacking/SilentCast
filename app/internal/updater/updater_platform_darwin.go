@@ -2,7 +2,10 @@
 
 package updater
 
-import "os"
+import (
+	"os"
+	"syscall"
+)
 
 func init() {
 	platformUpdaterFactory = func() PlatformUpdater {
@@ -24,4 +27,18 @@ func (d *darwinPlatformUpdater) ReplaceExecutable(src, dst string) error {
 
 func (d *darwinPlatformUpdater) MakeExecutable(path string) error {
 	return os.Chmod(path, 0o755)
+}
+
+func (d *darwinPlatformUpdater) RestartApplication() error {
+	// Get current executable path
+	exe, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	// Prepare command arguments (same as current process)
+	args := os.Args
+
+	// Use exec to replace the current process
+	return syscall.Exec(exe, args, os.Environ())
 }
