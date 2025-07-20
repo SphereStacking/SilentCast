@@ -161,6 +161,166 @@ grimoire:
 	}
 }
 
+func TestActionConfig_NewFields(t *testing.T) {
+	tests := []struct {
+		name   string
+		config string
+		check  func(*Config) bool
+	}{
+		{
+			name: "show_output field",
+			config: `
+spells:
+  g: "git_status"
+
+grimoire:
+  git_status:
+    type: script
+    command: "git status"
+    show_output: true
+`,
+			check: func(cfg *Config) bool {
+				return cfg.Actions["git_status"].ShowOutput == true
+			},
+		},
+		{
+			name: "keep_open field",
+			config: `
+spells:
+  l: "log_tail"
+
+grimoire:
+  log_tail:
+    type: script
+    command: "tail -f /var/log/system.log"
+    keep_open: true
+`,
+			check: func(cfg *Config) bool {
+				return cfg.Actions["log_tail"].KeepOpen == true
+			},
+		},
+		{
+			name: "timeout field",
+			config: `
+spells:
+  s: "slow_script"
+
+grimoire:
+  slow_script:
+    type: script
+    command: "sleep 100"
+    timeout: 30
+`,
+			check: func(cfg *Config) bool {
+				return cfg.Actions["slow_script"].Timeout == 30
+			},
+		},
+		{
+			name: "shell field",
+			config: `
+spells:
+  p: "powershell"
+
+grimoire:
+  powershell:
+    type: script
+    command: "Get-Process"
+    shell: "powershell"
+`,
+			check: func(cfg *Config) bool {
+				return cfg.Actions["powershell"].Shell == "powershell"
+			},
+		},
+		{
+			name: "admin field",
+			config: `
+spells:
+  a: "admin_task"
+
+grimoire:
+  admin_task:
+    type: script
+    command: "netstat -an"
+    admin: true
+`,
+			check: func(cfg *Config) bool {
+				return cfg.Actions["admin_task"].Admin == true
+			},
+		},
+		{
+			name: "terminal field",
+			config: `
+spells:
+  i: "interactive"
+
+grimoire:
+  interactive:
+    type: script
+    command: "python"
+    terminal: true
+`,
+			check: func(cfg *Config) bool {
+				return cfg.Actions["interactive"].Terminal == true
+			},
+		},
+		{
+			name: "all fields combined",
+			config: `
+spells:
+  f: "full_action"
+
+grimoire:
+  full_action:
+    type: script
+    command: "complex_script.sh"
+    args: ["--verbose"]
+    env:
+      DEBUG: "true"
+    working_dir: "/tmp"
+    show_output: true
+    keep_open: true
+    timeout: 60
+    shell: "bash"
+    admin: true
+    terminal: true
+`,
+			check: func(cfg *Config) bool {
+				action := cfg.Actions["full_action"]
+				return action.ShowOutput == true &&
+					action.KeepOpen == true &&
+					action.Timeout == 60 &&
+					action.Shell == "bash" &&
+					action.Admin == true &&
+					action.Terminal == true &&
+					len(action.Args) == 1 &&
+					action.Args[0] == "--verbose" &&
+					action.Env["DEBUG"] == "true" &&
+					action.WorkingDir == "/tmp"
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tempDir := t.TempDir()
+			err := os.WriteFile(filepath.Join(tempDir, ConfigName+".yml"), []byte(tt.config), 0o600)
+			if err != nil {
+				t.Fatalf("Failed to write config: %v", err)
+			}
+
+			loader := NewLoader(tempDir)
+			cfg, err := loader.Load()
+			if err != nil {
+				t.Fatalf("Failed to load config: %v", err)
+			}
+
+			if !tt.check(cfg) {
+				t.Errorf("Field check failed for %s", tt.name)
+			}
+		})
+	}
+}
+
 func TestLoader_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
