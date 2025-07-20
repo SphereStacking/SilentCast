@@ -24,19 +24,27 @@ func NewCommandRegistry(flags *CommandFlags) *CommandRegistry {
 func NewCommandRegistryWithService(flags *CommandFlags, onRun func() error) *CommandRegistry {
 	registry := commands.NewRegistry()
 
+	// Helper functions for config path
+	configPathFunc := func() string {
+		return getConfigPath()
+	}
+	searchPathsFunc := func() []string {
+		return getConfigSearchPaths()
+	}
+
 	// Register all commands
 	registry.RegisterAll(
 		commands.NewVersionCommand(version.GetVersionString()),
-		commands.NewValidateConfigCommand(getConfigPath),
-		commands.NewShowConfigCommand(getConfigPath, getConfigSearchPaths),
-		commands.NewShowConfigPathCommand(getConfigPath, getConfigSearchPaths),
-		commands.NewListSpellsCommand(getConfigPath),
-		commands.NewTestHotkeyCommand(getConfigPath),
-		commands.NewExportConfigCommand(getConfigPath, getConfigSearchPaths),
-		commands.NewImportConfigCommand(getConfigPath, getConfigSearchPaths),
-		commands.NewCheckUpdateCommand(getConfigPath),
-		commands.NewSelfUpdateCommand(getConfigPath),
-		commands.NewUpdateStatusCommand(getConfigPath),
+		commands.NewValidateConfigCommand(configPathFunc),
+		commands.NewShowConfigCommand(configPathFunc, searchPathsFunc),
+		commands.NewShowConfigPathCommand(configPathFunc, searchPathsFunc),
+		commands.NewListSpellsCommand(configPathFunc),
+		commands.NewTestHotkeyCommand(configPathFunc),
+		commands.NewExportConfigCommand(configPathFunc, searchPathsFunc),
+		commands.NewImportConfigCommand(configPathFunc, searchPathsFunc),
+		commands.NewCheckUpdateCommand(configPathFunc),
+		commands.NewSelfUpdateCommand(configPathFunc),
+		commands.NewUpdateStatusCommand(configPathFunc),
 		// Service commands (Windows only)
 		commands.NewServiceInstallCommand(onRun),
 		commands.NewServiceUninstallCommand(),
