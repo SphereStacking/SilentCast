@@ -46,14 +46,14 @@ func (m *WindowsManager) Install() error {
 		return fmt.Errorf("failed to get executable path: %w", err)
 	}
 
-	mgr, err := mgr.Connect()
+	manager, err := mgr.Connect()
 	if err != nil {
 		return fmt.Errorf("failed to connect to service manager: %w", err)
 	}
-	defer mgr.Disconnect()
+	defer manager.Disconnect()
 
 	// Check if service already exists
-	s, err := mgr.OpenService(serviceName)
+	s, err := manager.OpenService(serviceName)
 	if err == nil {
 		s.Close()
 		return fmt.Errorf("service %s already exists", serviceName)
@@ -68,7 +68,7 @@ func (m *WindowsManager) Install() error {
 		Description:  serviceDescription,
 	}
 
-	s, err = mgr.CreateService(serviceName, exepath, config)
+	s, err = manager.CreateService(serviceName, exepath, config)
 	if err != nil {
 		return fmt.Errorf("failed to create service: %w", err)
 	}
@@ -89,13 +89,13 @@ func (m *WindowsManager) Install() error {
 
 // Uninstall removes the Windows service
 func (m *WindowsManager) Uninstall() error {
-	mgr, err := mgr.Connect()
+	manager, err := mgr.Connect()
 	if err != nil {
 		return fmt.Errorf("failed to connect to service manager: %w", err)
 	}
-	defer mgr.Disconnect()
+	defer manager.Disconnect()
 
-	s, err := mgr.OpenService(serviceName)
+	s, err := manager.OpenService(serviceName)
 	if err != nil {
 		return fmt.Errorf("service %s not found", serviceName)
 	}
@@ -126,13 +126,13 @@ func (m *WindowsManager) Uninstall() error {
 
 // Start starts the Windows service
 func (m *WindowsManager) Start() error {
-	mgr, err := mgr.Connect()
+	manager, err := mgr.Connect()
 	if err != nil {
 		return fmt.Errorf("failed to connect to service manager: %w", err)
 	}
-	defer mgr.Disconnect()
+	defer manager.Disconnect()
 
-	s, err := mgr.OpenService(serviceName)
+	s, err := manager.OpenService(serviceName)
 	if err != nil {
 		return fmt.Errorf("service %s not found", serviceName)
 	}
@@ -148,13 +148,13 @@ func (m *WindowsManager) Start() error {
 
 // Stop stops the Windows service
 func (m *WindowsManager) Stop() error {
-	mgr, err := mgr.Connect()
+	manager, err := mgr.Connect()
 	if err != nil {
 		return fmt.Errorf("failed to connect to service manager: %w", err)
 	}
-	defer mgr.Disconnect()
+	defer manager.Disconnect()
 
-	s, err := mgr.OpenService(serviceName)
+	s, err := manager.OpenService(serviceName)
 	if err != nil {
 		return fmt.Errorf("service %s not found", serviceName)
 	}
@@ -194,13 +194,13 @@ func (m *WindowsManager) Status() (ServiceStatus, error) {
 		Running:   false,
 	}
 
-	mgr, err := mgr.Connect()
+	manager, err := mgr.Connect()
 	if err != nil {
 		return result, fmt.Errorf("failed to connect to service manager: %w", err)
 	}
-	defer mgr.Disconnect()
+	defer manager.Disconnect()
 
-	s, err := mgr.OpenService(serviceName)
+	s, err := manager.OpenService(serviceName)
 	if err != nil {
 		result.Message = "Service not installed"
 		return result, nil
@@ -247,13 +247,13 @@ func (m *WindowsManager) Status() (ServiceStatus, error) {
 
 // Run executes the service
 func (m *WindowsManager) Run() error {
-	// Check if running interactively
-	isIntSess, err := svc.IsAnInteractiveSession()
+	// Check if running as a Windows service
+	isWindowsService, err := svc.IsWindowsService()
 	if err != nil {
-		return fmt.Errorf("failed to determine if we are running in an interactive session: %w", err)
+		return fmt.Errorf("failed to determine if we are running as a Windows service: %w", err)
 	}
 
-	if isIntSess {
+	if !isWindowsService {
 		// Running interactively, just run the main function
 		return m.onRun()
 	}
