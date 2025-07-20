@@ -1,0 +1,106 @@
+# Example configuration demonstrating URL grimoire entries
+
+daemon:
+  log_level: info
+
+hotkeys:
+  prefix: "alt+space"
+  timeout: 1000
+  sequence_timeout: 2000
+
+spells:
+  # Development resources
+  "d,g": "dev_github"
+  "d,d": "dev_docs"
+  "d,s": "dev_stackoverflow"
+  
+  # Project links
+  "p,h": "project_home"
+  "p,i": "project_issues"
+  "p,w": "project_wiki"
+  
+  # Quick searches
+  "s,g": "search_google"
+  "s,d": "search_duckduckgo"
+  
+  # Social media
+  "m,t": "media_twitter"
+  "m,l": "media_linkedin"
+  
+  # Tools
+  "t,m": "tool_mail"
+  "t,c": "tool_calendar"
+  
+  # New test spell  
+  "t,e": "test_editor"
+
+grimoire:
+  # Development resources
+  dev_github:
+    type: url
+    command: "https://github.com"
+    description: "Open GitHub"
+    
+  dev_docs:
+    type: url
+    command: "https://devdocs.io"
+    description: "Open DevDocs"
+    
+  dev_stackoverflow:
+    type: url
+    command: "https://stackoverflow.com"
+    description: "Open Stack Overflow"
+    
+  # Project specific links
+  project_home:
+    type: url
+    command: "https://github.com/SphereStacking/SilentCast"
+    description: "Open SilentCast repository"
+    
+  project_issues:
+    type: url
+    command: "https://github.com/SphereStacking/SilentCast/issues"
+    description: "Open project issues"
+    
+  project_wiki:
+    type: url
+    command: "https://github.com/SphereStacking/SilentCast/wiki"
+    description: "Open project wiki"
+    
+  # Search engines (you can add search queries)
+  search_google:
+    type: url
+    command: "https://www.google.com"
+    description: "Open Google Search"
+    
+  search_duckduckgo:
+    type: url
+    command: "https://duckduckgo.com"
+    description: "Open DuckDuckGo"
+    
+  # Social media
+  media_twitter:
+    type: url
+    command: "https://twitter.com"
+    description: "Open Twitter/X"
+    
+  media_linkedin:
+    type: url
+    command: "https://linkedin.com"
+    description: "Open LinkedIn"
+    
+  # Email and calendar
+  tool_mail:
+    type: url
+    command: "mailto:"  # Opens default email client
+    description: "Open email client"
+    
+  tool_calendar:
+    type: url
+    command: "https://calendar.google.com"
+    description: "Open Google Calendar"
+
+  test_editor:
+    type: url
+    command: "https://code.visualstudio.com"
+    description: "Open VS Code website"

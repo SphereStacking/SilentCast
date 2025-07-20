@@ -1,0 +1,75 @@
+# Force Terminal Execution Example
+# This example demonstrates the force_terminal option for scripts
+
+hotkeys:
+  prefix: "alt+space"
+
+spells:
+  f,t: force_terminal_demo
+  f,i: interactive_script
+  f,o: force_terminal_with_output
+  f,k: force_terminal_keep_open
+
+grimoire:
+  # Basic force terminal - opens terminal even in GUI/tray mode
+  force_terminal_demo:
+    type: script
+    command: |
+      echo "This script is forced to run in terminal"
+      echo "Even when SilentCast is running in GUI/tray mode"
+      echo "Press any key to continue..."
+      read -n 1
+    force_terminal: true
+    description: "Force Terminal Demo"
+
+  # Interactive script that needs user input
+  interactive_script:
+    type: script
+    command: |
+      echo "What's your name?"
+      read name
+      echo "Hello, $name! Nice to meet you."
+      echo "What's your favorite color?"
+      read color
+      echo "Great choice! $color is a beautiful color."
+    force_terminal: true
+    keep_open: true
+    description: "Interactive Script Example"
+
+  # Force terminal with output capture for notifications
+  force_terminal_with_output:
+    type: script
+    command: |
+      echo "This script runs in terminal AND captures output"
+      echo "You'll see it in the terminal and get a notification"
+      date
+      echo "Current directory: $(pwd)"
+      echo "Script completed successfully"
+    force_terminal: true
+    show_output: true
+    description: "Force Terminal with Output Capture"
+
+  # Force terminal that stays open after completion
+  force_terminal_keep_open:
+    type: script
+    command: |
+      echo "=== System Information ==="
+      echo "OS: $(uname -s)"
+      echo "Kernel: $(uname -r)"
+      echo "Hostname: $(hostname)"
+      echo "Current User: $(whoami)"
+      echo "Current Directory: $(pwd)"
+      echo ""
+      echo "=== Recent Log Entries ==="
+      tail -5 /var/log/syslog 2>/dev/null || echo "No syslog access"
+      echo ""
+      echo "Terminal will stay open for review..."
+    force_terminal: true
+    keep_open: true
+    description: "System Info (Terminal Stays Open)"
+
+notification:
+  enable_timeout: true
+  enable_warning: true
+  sound: true
+  max_output_length: 2048

@@ -1,0 +1,102 @@
+# Browser Detection Example Configuration
+# This example demonstrates browser detection and selection features
+
+hotkeys:
+  prefix: alt+space
+  timeout: 1000
+  sequence_timeout: 2000
+
+spells:
+  # Browser-related shortcuts
+  b,c: open_chrome       # Open URL in Chrome
+  b,f: open_firefox      # Open URL in Firefox  
+  b,e: open_edge         # Open URL in Edge
+  b,d: open_default      # Open URL in default browser
+  b,l: list_browsers     # List installed browsers
+  b,t: browser_test      # Test browser detection
+
+grimoire:
+  # Open URL in specific browsers
+  open_chrome:
+    type: url
+    url: "https://www.google.com"
+    browser: "chrome"
+    description: "Open Google in Chrome"
+
+  open_firefox:
+    type: url
+    url: "https://www.mozilla.org"
+    browser: "firefox"
+    description: "Open Mozilla in Firefox"
+
+  open_edge:
+    type: url
+    url: "https://www.microsoft.com"
+    browser: "edge"
+    description: "Open Microsoft in Edge"
+
+  # Open URL in system default browser
+  open_default:
+    type: url
+    url: "https://github.com/SphereStacking/silentcast"
+    description: "Open project page in default browser"
+    # No browser specified = use system default
+
+  # List installed browsers
+  list_browsers:
+    type: script
+    command: |
+      echo "Detecting installed browsers..."
+      # This would be replaced with actual browser detection logic
+      # For now, showing what the detection would report
+      echo ""
+      echo "Installed browsers:"
+      echo "  - Google Chrome (/usr/bin/google-chrome) [default]"
+      echo "  - Mozilla Firefox (/usr/bin/firefox)"
+      echo "  - Microsoft Edge (/usr/bin/edge)"
+    description: "List all installed browsers"
+    show_output: true
+    terminal: true
+
+  # Test browser detection functionality
+  browser_test:
+    type: script
+    command: |
+      echo "Testing browser detection..."
+      echo ""
+      # Test opening URL in different browsers
+      echo "1. Opening test page in default browser..."
+      xdg-open "https://www.example.com" 2>/dev/null || open "https://www.example.com" 2>/dev/null || start "https://www.example.com"
+      
+      echo "2. Browser detection complete!"
+    description: "Test browser detection"
+    show_output: true
+
+  # Browser preferences example
+  open_with_preference:
+    type: url
+    url: "https://www.example.com"
+    browser_preference:  # Try browsers in order
+      - "firefox"
+      - "chrome"
+      - "edge"
+    description: "Open with browser preference list"
+
+  # Advanced browser options
+  open_incognito:
+    type: url
+    url: "https://www.example.com"
+    browser: "chrome"
+    browser_args: ["--incognito"]
+    description: "Open in Chrome incognito mode"
+
+  open_new_window:
+    type: url
+    url: "https://www.example.com" 
+    browser: "firefox"
+    browser_args: ["--new-window"]
+    description: "Open in new Firefox window"
+
+# Platform-specific browser configurations
+# Create spellbook.windows.yml, spellbook.darwin.yml, or spellbook.linux.yml
+# for platform-specific browser paths and options

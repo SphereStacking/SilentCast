@@ -1,0 +1,176 @@
+# Example configuration demonstrating admin/elevated privilege grimoire entries
+
+daemon:
+  log_level: info
+
+hotkeys:
+  prefix: "alt+space"
+  timeout: 1000
+
+spells:
+  # System administration
+  "a,h": "admin_hosts"
+  "a,n": "admin_network"
+  "a,s": "admin_services"
+  "a,f": "admin_firewall"
+  
+  # Package management
+  "p,u": "package_update"
+  "p,i": "package_install"
+  "p,c": "package_clean"
+  
+  # System maintenance
+  "m,d": "maintenance_disk"
+  "m,l": "maintenance_logs"
+  "m,r": "maintenance_restart"
+
+grimoire:
+  # System administration tasks requiring admin/root
+  admin_hosts:
+    type: script
+    command: |
+      echo "=== Current hosts file ==="
+      cat /etc/hosts
+    admin: true  # Requires elevated privileges
+    terminal: true
+    keep_open: true
+    description: "View system hosts file"
+    
+  admin_network:
+    type: script
+    command: "netstat -an | head -50"
+    admin: true
+    show_output: true
+    description: "Show network connections"
+    
+  admin_services:
+    type: script
+    command: |
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        launchctl list | head -30
+      elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        systemctl status
+      else
+        sc query
+      fi
+    admin: true
+    terminal: true
+    keep_open: true
+    shell: "bash"
+    description: "List system services"
+    
+  admin_firewall:
+    type: script
+    command: |
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        pfctl -s rules
+      elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        iptables -L -n
+      else
+        netsh advfirewall show allprofiles
+      fi
+    admin: true
+    show_output: true
+    shell: "bash"
+    description: "Show firewall rules"
+    
+  # Package management (platform-specific)
+  package_update:
+    type: script
+    command: |
+      if command -v apt-get &> /dev/null; then
+        apt-get update
+      elif command -v yum &> /dev/null; then
+        yum check-update
+      elif command -v brew &> /dev/null; then
+        brew update
+      else
+        echo "No supported package manager found"
+      fi
+    admin: true
+    terminal: true
+    keep_open: true
+    timeout: 300  # 5 minutes
+    shell: "bash"
+    description: "Update package lists"
+    
+  package_install:
+    type: script
+    command: "echo 'Add your package install command here'"
+    admin: true
+    terminal: true
+    keep_open: true
+    description: "Install packages (customize command)"
+    
+  package_clean:
+    type: script
+    command: |
+      if command -v apt-get &> /dev/null; then
+        apt-get autoremove && apt-get clean
+      elif command -v yum &> /dev/null; then
+        yum clean all
+      elif command -v brew &> /dev/null; then
+        brew cleanup
+      fi
+    admin: true
+    show_output: true
+    shell: "bash"
+    description: "Clean package cache"
+    
+  # System maintenance
+  maintenance_disk:
+    type: script
+    command: |
+      echo "=== Disk Usage ==="
+      df -h
+      echo -e "\n=== Large Directories ==="
+      du -sh /* 2>/dev/null | sort -hr | head -20
+    admin: true
+    terminal: true
+    keep_open: true
+    shell: "bash"
+    description: "Check disk usage"
+    
+  maintenance_logs:
+    type: script
+    command: |
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        log show --last 1h --predicate 'eventType == logEvent'
+      elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        journalctl -xe -n 100
+      else
+        Get-EventLog -LogName System -Newest 100
+      fi
+    admin: true
+    terminal: true
+    keep_open: true
+    shell: "bash"
+    description: "View system logs"
+    
+  maintenance_restart:
+    type: script
+    command: |
+      echo "System will restart in 60 seconds..."
+      echo "Press Ctrl+C to cancel"
+      sleep 60
+      if [[ "$OSTYPE" == "darwin"* ]] || [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        shutdown -r now
+      else
+        shutdown /r /t 0
+      fi
+    admin: true
+    terminal: true
+    timeout: 70
+    shell: "bash"
+    description: "Restart system (60s delay)"
+
+# Platform-specific admin notes:
+# - Windows: Uses UAC elevation via PowerShell Start-Process -Verb RunAs
+# - macOS: Uses osascript with administrator privileges
+# - Linux: Uses pkexec, gksudo, or sudo with graphical prompts
+#
+# Security considerations:
+# - Admin grimoire entries always require user confirmation
+# - Elevation prompts cannot be bypassed
+# - Consider using show_output for quick admin tasks
+# - Use terminal + keep_open for interactive admin sessions

@@ -1,0 +1,101 @@
+# Timeout Notifications Example Configuration
+# This example demonstrates timeout notification features
+
+# Global notification settings
+notification:
+  enable_timeout: true       # Enable timeout notifications (default: true)
+  enable_warning: true       # Enable warning before timeout (default: true)
+  sound: true               # Play sound for notifications (default: true)
+  max_output_length: 1024   # Max output length in notifications (default: 1024)
+
+hotkeys:
+  prefix: alt+space
+  timeout: 1000              # 1 second after prefix key
+  sequence_timeout: 2000     # 2 seconds for full sequence
+
+spells:
+  # Basic timeout examples
+  t,1: timeout_basic         # Basic timeout test
+  t,2: timeout_warning       # Timeout with warning
+  t,3: timeout_graceful      # Graceful shutdown test
+  t,4: timeout_no_notify     # Timeout without notification
+  t,5: timeout_custom_shell  # Custom shell with timeout
+
+grimoire:
+  # Basic timeout - command will be killed after 3 seconds
+  timeout_basic:
+    type: script
+    command: "sleep 10"
+    description: "Basic timeout test (3s)"
+    timeout: 3
+    show_output: true
+
+  # Timeout with warning notification
+  timeout_warning:
+    type: script
+    command: "for i in {1..10}; do echo \"Processing step $i...\"; sleep 1; done"
+    description: "Timeout with warning (5s timeout, 2s warning)"
+    timeout: 5
+    timeout_warning: 2      # Warn 2 seconds before timeout
+    show_output: true
+
+  # Graceful shutdown test
+  timeout_graceful:
+    type: script
+    command: |
+      echo "Starting long-running process..."
+      trap 'echo "Received termination signal, cleaning up..."; exit 0' TERM
+      for i in {1..20}; do
+        echo "Working... ($i/20)"
+        sleep 1
+      done
+    description: "Graceful shutdown test"
+    timeout: 5
+    grace_period: 3         # Allow 3 seconds for graceful shutdown
+    timeout_warning: 2      # Warn 2 seconds before timeout
+    show_output: true
+
+  # Timeout without notification (silent timeout)
+  timeout_no_notify:
+    type: script
+    command: "sleep 10"
+    description: "Silent timeout (no notification)"
+    timeout: 2
+    # show_output is false, so no timeout notification will be shown
+
+  # Custom shell with timeout
+  timeout_custom_shell:
+    type: script
+    command: |
+      Write-Host "Starting PowerShell script..."
+      1..10 | ForEach-Object {
+        Write-Host "Step $_"
+        Start-Sleep -Seconds 1
+      }
+    shell: powershell
+    description: "PowerShell script with timeout"
+    timeout: 5
+    timeout_warning: 2
+    show_output: true
+
+  # Long-running compilation with timeout
+  timeout_compilation:
+    type: script
+    command: "make build-all"
+    description: "Build all platforms (10 min timeout)"
+    timeout: 600            # 10 minutes
+    timeout_warning: 60     # Warn 1 minute before timeout
+    grace_period: 30        # Allow 30 seconds for cleanup
+    show_output: true
+
+  # Download with timeout
+  timeout_download:
+    type: script
+    command: "curl -L https://github.com/SphereStacking/silentcast/releases/download/v1.0.0/silentcast.tar.gz -o download.tar.gz"
+    description: "Download with timeout"
+    timeout: 30             # 30 seconds timeout
+    timeout_warning: 10     # Warn 10 seconds before
+    show_output: true
+
+# Platform-specific timeout examples
+# Create a spellbook.windows.yml or spellbook.darwin.yml file with platform-specific commands

@@ -1,0 +1,156 @@
+# Example configuration demonstrating URL grimoire entries
+
+daemon:
+  log_level: info
+
+hotkeys:
+  prefix: "alt+space"
+  timeout: 1000
+
+spells:
+  # Development resources
+  "d,g": "dev_github"
+  "d,d": "dev_docs"
+  "d,s": "dev_stackoverflow"
+  
+  # Project links
+  "p,h": "project_home"
+  "p,i": "project_issues"
+  "p,w": "project_wiki"
+  
+  # Quick searches
+  "s,g": "search_google"
+  "s,d": "search_duckduckgo"
+  
+  # Social media
+  "m,t": "media_twitter"
+  "m,l": "media_linkedin"
+  
+  # Tools
+  "t,m": "tool_mail"
+  "t,c": "tool_calendar"
+
+grimoire:
+  # Development resources
+  dev_github:
+    type: url
+    command: "https://github.com"
+    description: "Open GitHub"
+    
+  dev_docs:
+    type: url
+    command: "https://devdocs.io"
+    description: "Open DevDocs"
+    
+  dev_stackoverflow:
+    type: url
+    command: "https://stackoverflow.com"
+    description: "Open Stack Overflow"
+    
+  # Project specific links
+  project_home:
+    type: url
+    command: "https://github.com/SphereStacking/SilentCast"
+    description: "Open SilentCast repository"
+    
+  project_issues:
+    type: url
+    command: "https://github.com/SphereStacking/SilentCast/issues"
+    description: "Open project issues"
+    
+  project_wiki:
+    type: url
+    command: "https://github.com/SphereStacking/SilentCast/wiki"
+    description: "Open project wiki"
+    
+  # Search engines (you can add search queries)
+  search_google:
+    type: url
+    command: "https://www.google.com"
+    description: "Open Google Search"
+    
+  search_duckduckgo:
+    type: url
+    command: "https://duckduckgo.com"
+    description: "Open DuckDuckGo"
+    
+  # Social media
+  media_twitter:
+    type: url
+    command: "https://twitter.com"
+    description: "Open Twitter/X"
+    
+  media_linkedin:
+    type: url
+    command: "https://linkedin.com"
+    description: "Open LinkedIn"
+    
+  # Email and calendar
+  tool_mail:
+    type: url
+    command: "mailto:"  # Opens default email client
+    description: "Open email client"
+    
+  tool_calendar:
+    type: url
+    command: "https://calendar.google.com"
+    description: "Open Google Calendar"
+
+# Advanced URL examples
+advanced_urls:
+  # URL with query parameters
+  search_with_query:
+    type: url
+    command: "https://www.google.com/search?q=SilentCast+hotkey+manager"
+    description: "Search for SilentCast"
+    
+  # File URL (opens local HTML file)
+  local_docs:
+    type: url
+    command: "file:///home/user/docs/index.html"
+    description: "Open local documentation"
+    
+  # FTP URL
+  ftp_server:
+    type: url
+    command: "ftp://ftp.example.com"
+    description: "Open FTP server"
+    
+  # URL without scheme (https:// will be added automatically)
+  auto_https:
+    type: url
+    command: "github.com/SphereStacking/SilentCast"
+    description: "Auto-adds https://"
+
+# Environment variable examples
+env_urls:
+  # URLs can use environment variables
+  user_github:
+    type: url
+    command: "https://github.com/$USER"
+    description: "Open your GitHub profile"
+    
+  # Multiple variables
+  project_url:
+    type: url
+    command: "https://$DOMAIN/projects/$PROJECT_NAME"
+    description: "Open project URL (requires DOMAIN and PROJECT_NAME env vars)"
+    
+  # With braces syntax
+  api_endpoint:
+    type: url
+    command: "https://${API_HOST}/v1/docs"
+    description: "Open API documentation"
+    
+  # Home directory
+  local_file:
+    type: url
+    command: "file://$HOME/Documents/index.html"
+    description: "Open local file from home directory"
+
+# Notes:
+# - URL type grimoire entries open in the default browser
+# - Supported schemes: http, https, file, ftp, mailto
+# - URLs without scheme default to https://
+# - Browser selection is handled by the OS
+# - Environment variables are expanded using $VAR or ${VAR} syntax

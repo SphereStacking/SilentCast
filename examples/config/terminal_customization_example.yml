@@ -1,0 +1,151 @@
+# Terminal Customization Example
+# This example demonstrates how to customize terminal window appearance
+
+hotkeys:
+  prefix: "alt+space"
+
+spells:
+  t,l: large_terminal
+  t,s: small_terminal  
+  t,f: fullscreen_terminal
+  t,c: colored_terminal
+  t,p: positioned_terminal
+
+grimoire:
+  # Large terminal window with custom size
+  large_terminal:
+    type: script
+    command: |
+      echo "This is running in a large terminal window"
+      echo "Window size: 120x40"
+      echo "Font size: 16"
+      ls -la
+    force_terminal: true
+    keep_open: true
+    description: "Large Terminal Window"
+    terminal_customization:
+      width: 120        # 120 columns
+      height: 40        # 40 rows
+      font_size: 16     # 16pt font
+      theme: "gruvbox"  # Color theme (terminal dependent)
+
+  # Small terminal for quick commands
+  small_terminal:
+    type: script
+    command: |
+      echo "Compact terminal window"
+      date
+      whoami
+    force_terminal: true
+    keep_open: true
+    description: "Small Terminal Window"
+    terminal_customization:
+      width: 60         # 60 columns
+      height: 20        # 20 rows
+      x: 100            # X position in pixels
+      y: 100            # Y position in pixels
+      font_size: 12     # Smaller font
+
+  # Fullscreen terminal for intensive work
+  fullscreen_terminal:
+    type: script
+    command: |
+      echo "Fullscreen terminal for focused work"
+      echo "Perfect for development tasks"
+      htop 2>/dev/null || top
+    force_terminal: true
+    keep_open: true
+    description: "Fullscreen Terminal"
+    terminal_customization:
+      fullscreen: true
+      font_size: 14
+
+  # Colored terminal with custom theme
+  colored_terminal:
+    type: script
+    command: |
+      echo "Custom colored terminal"
+      echo "Background and text colors customized"
+      echo "Theme: Dark mode with green text"
+      tree . 2>/dev/null || ls -la
+    force_terminal: true
+    keep_open: true
+    description: "Custom Colors Terminal"
+    terminal_customization:
+      width: 100
+      height: 30
+      theme: "campbell"     # Windows Terminal theme
+      background: "#1e1e1e" # Dark background
+      foreground: "#00ff00" # Green text
+      font_size: 14
+
+  # Positioned terminal for multiple windows
+  positioned_terminal:
+    type: script
+    command: |
+      echo "Terminal positioned at specific coordinates"
+      echo "Useful for multi-monitor setups"
+      echo "Position: (300, 200)"
+      ps aux | head -20
+    force_terminal: true
+    keep_open: true
+    description: "Positioned Terminal"
+    terminal_customization:
+      width: 80
+      height: 25
+      x: 300            # X position
+      y: 200            # Y position
+      always_on_top: true  # Keep on top (if supported)
+
+# Additional examples for different platforms
+platform_examples:
+  # Windows Terminal specific features
+  windows_terminal:
+    type: script
+    command: echo "Windows Terminal with profile"
+    force_terminal: true
+    terminal_customization:
+      width: 120
+      height: 30
+      theme: "One Half Dark"  # Windows Terminal color scheme
+      maximized: false
+
+  # macOS Terminal.app specific
+  macos_terminal:
+    type: script
+    command: echo "macOS Terminal with settings"
+    force_terminal: true
+    terminal_customization:
+      width: 100
+      height: 35
+      font_size: 14
+      background: "#000000"
+      foreground: "#ffffff"
+
+  # Linux GNOME Terminal specific
+  gnome_terminal:
+    type: script
+    command: echo "GNOME Terminal customized"
+    force_terminal: true
+    terminal_customization:
+      width: 80
+      height: 24
+      maximized: false
+      theme: "Tango"  # GNOME Terminal profile
+
+  # Alacritty cross-platform
+  alacritty_terminal:
+    type: script
+    command: echo "Alacritty with custom config"
+    force_terminal: true
+    terminal_customization:
+      width: 100
+      height: 30
+      x: 200
+      y: 100
+      theme: "gruvbox_dark"  # Alacritty color scheme
+
+notification:
+  enable_timeout: true
+  enable_warning: true
+  sound: true

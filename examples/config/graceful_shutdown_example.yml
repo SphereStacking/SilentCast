@@ -1,0 +1,120 @@
+# Graceful Shutdown Configuration Example
+# This configuration demonstrates the graceful shutdown feature for script timeouts
+
+# Main application configuration
+app:
+  name: "SilentCast Graceful Shutdown Example"
+  log_level: debug
+  config_cascade: true
+
+# Hotkey configuration
+hotkeys:
+  prefix: "alt+space"
+  timeout: 1000
+  sequence_timeout: 2000
+
+# Grimoire (action definitions)
+grimoire:
+  # Example 1: Script with default grace period (5 seconds)
+  database_backup:
+    type: script
+    command: "pg_dump mydb > backup.sql && echo 'Backup complete'"
+    timeout: 30              # 30 seconds to complete
+    grace_period: 0          # Use default 5 seconds
+    show_output: true
+    description: "Database backup with graceful shutdown"
+    
+  # Example 2: Script with custom grace period
+  server_stop:
+    type: script
+    command: "systemctl stop myservice"
+    timeout: 10              # 10 seconds to complete
+    grace_period: 15         # 15 seconds grace period for clean shutdown
+    show_output: true
+    admin: true              # Requires admin privileges
+    description: "Stop server with extended grace period"
+    
+  # Example 3: Quick script with short grace period
+  cache_clear:
+    type: script
+    command: "redis-cli FLUSHALL"
+    timeout: 5               # 5 seconds timeout
+    grace_period: 2          # Only 2 seconds grace period
+    show_output: true
+    description: "Clear Redis cache quickly"
+    
+  # Example 4: Script that handles SIGTERM gracefully
+  graceful_worker:
+    type: script
+    command: |
+      sh -c '
+        cleanup() {
+          echo "Received SIGTERM, cleaning up..."
+          # Simulate cleanup work
+          sleep 2
+          echo "Cleanup complete, exiting gracefully"
+          exit 0
+        }
+        trap cleanup TERM
+        
+        echo "Worker started, processing..."
+        # Simulate long-running work
+        for i in $(seq 1 100); do
+          echo "Processing item $i"
+          sleep 0.5
+        done
+        echo "Work complete"
+      '
+    timeout: 10              # Will timeout after 10 seconds
+    grace_period: 5          # Gives 5 seconds for cleanup
+    show_output: true
+    description: "Worker with SIGTERM handler"
+    
+  # Example 5: Script with no grace period (immediate kill)
+  force_kill_example:
+    type: script
+    command: "sleep 60"
+    timeout: 2               # 2 seconds timeout
+    grace_period: -1         # Negative means skip grace period, kill immediately
+    show_output: false
+    description: "Force kill example (not recommended)"
+
+# Spell mappings
+spells:
+  d,b: database_backup       # alt+space, d, b
+  s,s: server_stop          # alt+space, s, s
+  c,c: cache_clear          # alt+space, c, c
+  g,w: graceful_worker      # alt+space, g, w
+  f,k: force_kill_example   # alt+space, f, k
+
+# Notes:
+# - Default grace_period is 5 seconds if not specified (or 0)
+# - Grace period gives the process time to handle SIGTERM before SIGKILL
+# - On Unix systems, SIGTERM is sent first, then SIGKILL after grace period
+# - On Windows, taskkill is used first, then taskkill /F after grace period
+# - Scripts should handle SIGTERM/SIGINT for graceful shutdown
+# - Set grace_period to -1 to skip graceful shutdown (not recommended)
+#
+# Best practices:
+# 1. Always give processes time to clean up (use appropriate grace_period)
+# 2. Handle signals in your scripts for graceful shutdown
+# 3. Use show_output to monitor shutdown behavior
+# 4. Test your scripts' signal handling independently
+#
+# Signal handling example for different languages:
+#
+# Bash/Shell:
+#   trap 'echo "Shutting down..."; cleanup; exit 0' TERM INT
+#
+# Python:
+#   import signal
+#   def handler(signum, frame):
+#       cleanup()
+#       sys.exit(0)
+#   signal.signal(signal.SIGTERM, handler)
+#
+# Node.js:
+#   process.on('SIGTERM', () => {
+#       cleanup();
+#       process.exit(0);
+#   });

@@ -1,0 +1,92 @@
+# Timeout Configuration Example
+# This example demonstrates how to use timeout functionality in SilentCast
+
+# Daemon settings
+daemon:
+  auto_start: false
+  log_level: "info"
+  config_watch: true
+
+# Hotkey settings
+hotkeys:
+  prefix: "alt+space"
+  timeout: 1000 # Milliseconds to wait after prefix key
+  sequence_timeout: 2000 # Total timeout for the entire sequence
+
+# Spells (keyboard shortcuts)
+spells:
+  # Quick commands
+  "q,1": quick_command
+  "q,2": quick_with_timeout
+  
+  # Long running commands
+  "l,1": long_without_timeout
+  "l,2": long_with_timeout
+  "l,3": long_with_short_timeout
+  
+  # Terminal commands
+  "t,1": terminal_with_timeout
+  "t,2": keep_open_with_timeout
+
+# Grimoire (action definitions)
+grimoire:
+  # Quick command - completes immediately
+  quick_command:
+    type: script
+    command: "echo 'This command executes quickly'"
+    description: "Quick Echo"
+    show_output: true
+    timeout: 10 # 10 seconds - will not timeout
+  
+  # Quick command with conservative timeout
+  quick_with_timeout:
+    type: script
+    command: "date && sleep 2 && date"
+    description: "Date with 2s delay"
+    show_output: true
+    timeout: 5 # 5 seconds - plenty of time
+  
+  # Long running command without timeout
+  long_without_timeout:
+    type: script
+    command: "for i in {1..30}; do echo \"Processing $i/30...\"; sleep 1; done"
+    description: "30 Second Process (No Timeout)"
+    show_output: true
+    timeout: 0 # No timeout - will run to completion
+  
+  # Long running command with adequate timeout
+  long_with_timeout:
+    type: script
+    command: "for i in {1..10}; do echo \"Step $i/10\"; sleep 1; done"
+    description: "10 Second Process"
+    show_output: true
+    timeout: 15 # 15 seconds - will complete successfully
+  
+  # Long running command that will timeout
+  long_with_short_timeout:
+    type: script
+    command: "echo 'Starting long process...'; sleep 10; echo 'This will not be shown'"
+    description: "Process that times out"
+    show_output: true
+    timeout: 3 # 3 seconds - will timeout before completion
+  
+  # Terminal execution with timeout
+  # Note: Timeout only applies to launching the terminal, not the script execution
+  terminal_with_timeout:
+    type: script
+    command: "echo 'Running in terminal'; sleep 5; echo 'Done'"
+    description: "Terminal with timeout"
+    terminal: true
+    timeout: 2 # Only affects terminal launch
+  
+  # Keep open with timeout
+  keep_open_with_timeout:
+    type: script
+    command: "echo 'This terminal will stay open'; date"
+    description: "Keep Open Example"
+    keep_open: true
+    timeout: 5 # Only affects terminal launch
+
+# Platform-specific timeout examples
+# Create a file named spellbook.windows.yml or spellbook.darwin.yml
+# with platform-specific commands that use appropriate sleep/timeout commands

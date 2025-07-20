@@ -1,0 +1,98 @@
+# Example configuration demonstrating keep_open functionality
+
+daemon:
+  log_level: info
+
+hotkeys:
+  prefix: "alt+space"
+  timeout: 1000
+
+spells:
+  # Quick info commands that close immediately
+  "q,d": "quick_date"
+  "q,p": "quick_pwd"
+  
+  # Long running commands that keep terminal open
+  "l,l": "list_logs"
+  "l,w": "watch_logs"
+  "l,s": "server_status"
+  
+  # Build and test commands
+  "b,t": "build_and_test"
+  "b,d": "build_debug"
+
+grimoire:
+  # Quick commands - terminal closes after execution
+  quick_date:
+    type: script
+    command: "date"
+    terminal: true
+    keep_open: false  # Explicitly close after execution
+    description: "Show current date and close"
+    
+  quick_pwd:
+    type: script
+    command: "pwd && ls -la"
+    terminal: true
+    # keep_open defaults to false when not specified
+    description: "Show current directory and close"
+    
+  # Long running commands - terminal stays open
+  list_logs:
+    type: script
+    command: "tail -n 50 /var/log/system.log"
+    terminal: true
+    keep_open: true   # Keep terminal open to read logs
+    description: "Show last 50 log lines"
+    
+  watch_logs:
+    type: script
+    command: "tail -f /var/log/system.log"
+    terminal: true
+    keep_open: true   # Essential for continuous monitoring
+    description: "Watch logs in real-time"
+    
+  server_status:
+    type: script
+    command: |
+      echo "=== Server Status ==="
+      echo "CPU Usage:"
+      top -l 1 | grep "CPU usage"
+      echo -e "\nMemory Usage:"
+      vm_stat | grep -E "Pages (free|active|inactive|speculative|wired)"
+      echo -e "\nDisk Usage:"
+      df -h /
+      echo -e "\nNetwork:"
+      netstat -i
+    terminal: true
+    keep_open: true   # Keep open to review all stats
+    shell: "bash"     # Use bash for better formatting
+    description: "Comprehensive server status"
+    
+  # Build commands with different behaviors
+  build_and_test:
+    type: script
+    command: "make build && make test"
+    working_dir: "$HOME/project"
+    terminal: true
+    keep_open: true   # Keep open to see test results
+    timeout: 300      # 5 minute timeout
+    description: "Build project and run tests"
+    
+  build_debug:
+    type: script
+    command: |
+      echo "Starting debug build..."
+      make clean
+      make build-debug VERBOSE=1
+      echo -e "\nBuild complete. Check output above for any warnings."
+    working_dir: "$HOME/project"
+    terminal: true
+    keep_open: true   # Keep open to analyze build output
+    shell: "bash"
+    description: "Verbose debug build"
+
+# Platform-specific notes:
+# - Windows: Uses 'cmd /k' to keep terminal open, 'cmd /c' to close
+# - macOS: Adds 'read' command after execution when keep_open=true
+# - Linux: Uses terminal-specific flags (--hold, -hold) when available

@@ -1,0 +1,251 @@
+# Custom Shell Support Example Configuration
+# This example demonstrates using different shells and interpreters
+
+hotkeys:
+  prefix: alt+space
+  timeout: 1000
+  sequence_timeout: 2000
+
+spells:
+  # Shell examples
+  s,b: shell_bash        # Bash shell
+  s,z: shell_zsh         # Zsh shell
+  s,p: shell_powershell  # PowerShell
+  s,c: shell_cmd         # Windows CMD
+  
+  # Interpreter examples
+  p,y: python_hello      # Python script
+  p,i: python_info       # Python system info
+  n,j: node_hello        # Node.js script
+  n,i: node_info         # Node.js info
+  r,b: ruby_hello        # Ruby script
+  
+  # Advanced examples
+  a,1: multi_language    # Multiple languages
+  a,2: shebang_detect    # Shebang detection
+  a,3: shell_features    # Shell-specific features
+  
+  # Interactive shells
+  i,p: python_repl       # Python REPL
+  i,n: node_repl         # Node REPL
+  i,s: custom_shell      # Custom shell
+
+grimoire:
+  # Basic shell examples
+  shell_bash:
+    type: script
+    command: |
+      echo "Running in Bash"
+      echo "Bash version: $BASH_VERSION"
+      echo "Current directory: $(pwd)"
+    shell: "bash"
+    description: "Bash shell example"
+    show_output: true
+
+  shell_zsh:
+    type: script
+    command: |
+      echo "Running in Zsh"
+      echo "Zsh version: $ZSH_VERSION"
+      echo "Current user: $USER"
+    shell: "zsh"
+    description: "Zsh shell example"
+    show_output: true
+
+  shell_powershell:
+    type: script
+    command: |
+      Write-Host "Running in PowerShell"
+      Write-Host "PowerShell version: $($PSVersionTable.PSVersion)"
+      Write-Host "Computer name: $env:COMPUTERNAME"
+    shell: "powershell"
+    description: "PowerShell example"
+    show_output: true
+
+  shell_cmd:
+    type: script
+    command: |
+      echo Running in CMD
+      echo Current directory: %CD%
+      echo Current user: %USERNAME%
+    shell: "cmd"
+    description: "Windows CMD example"
+    show_output: true
+
+  # Python examples
+  python_hello:
+    type: script
+    command: |
+      print("Hello from Python!")
+      print("Simple calculation: 2 + 2 =", 2 + 2)
+    shell: "python"
+    description: "Simple Python script"
+    show_output: true
+
+  python_info:
+    type: script
+    command: |
+      import sys
+      import platform
+      import os
+      
+      print(f"Python version: {sys.version}")
+      print(f"Platform: {platform.platform()}")
+      print(f"Current directory: {os.getcwd()}")
+      print(f"Environment: {', '.join(k for k in os.environ if k.startswith('PYTHON'))}")
+    shell: "python"
+    description: "Python system information"
+    show_output: true
+
+  # Node.js examples
+  node_hello:
+    type: script
+    command: |
+      console.log('Hello from Node.js!');
+      console.log('Simple calculation: 2 + 2 =', 2 + 2);
+    shell: "node"
+    description: "Simple Node.js script"
+    show_output: true
+
+  node_info:
+    type: script
+    command: |
+      console.log(`Node.js version: ${process.version}`);
+      console.log(`Platform: ${process.platform}`);
+      console.log(`Architecture: ${process.arch}`);
+      console.log(`Current directory: ${process.cwd()}`);
+      console.log(`Memory usage: ${JSON.stringify(process.memoryUsage(), null, 2)}`);
+    shell: "node"
+    description: "Node.js system information"
+    show_output: true
+
+  # Ruby example
+  ruby_hello:
+    type: script
+    command: |
+      puts "Hello from Ruby!"
+      puts "Ruby version: #{RUBY_VERSION}"
+      puts "Platform: #{RUBY_PLATFORM}"
+      puts "Current time: #{Time.now}"
+    shell: "ruby"
+    description: "Ruby script example"
+    show_output: true
+
+  # Advanced examples
+  multi_language:
+    type: script
+    command: |
+      echo "=== Shell Script ==="
+      echo "Starting multi-language demo"
+      
+      echo -e "\n=== Python ==="
+      python -c "print('Hello from Python')"
+      
+      echo -e "\n=== Node.js ==="
+      node -e "console.log('Hello from Node.js')"
+      
+      echo -e "\n=== Ruby ==="
+      ruby -e "puts 'Hello from Ruby'"
+    shell: "bash"
+    description: "Multiple languages in one script"
+    show_output: true
+
+  shebang_detect:
+    type: script
+    command: |
+      #!/usr/bin/env python3
+      # This script will be executed with Python due to shebang
+      
+      import sys
+      print("Shebang detection works!")
+      print(f"Executed with: {sys.executable}")
+    description: "Automatic shebang detection"
+    show_output: true
+
+  shell_features:
+    type: script
+    command: |
+      # Bash-specific features
+      
+      # Arrays
+      fruits=("apple" "banana" "orange" "grape")
+      echo "Fruits array: ${fruits[@]}"
+      echo "Number of fruits: ${#fruits[@]}"
+      
+      # Associative arrays (requires bash 4+)
+      declare -A colors
+      colors[apple]="red"
+      colors[banana]="yellow"
+      colors[orange]="orange"
+      
+      echo -e "\nFruit colors:"
+      for fruit in "${!colors[@]}"; do
+        echo "  $fruit is ${colors[$fruit]}"
+      done
+      
+      # Functions
+      greet() {
+        local name=$1
+        echo "Hello, $name!"
+      }
+      
+      greet "SilentCast User"
+    shell: "bash"
+    description: "Bash-specific features"
+    show_output: true
+
+  # Interactive shells
+  python_repl:
+    type: script
+    command: "python"
+    terminal: true
+    description: "Python interactive shell"
+
+  node_repl:
+    type: script
+    command: "node"
+    terminal: true
+    description: "Node.js interactive shell"
+
+  custom_shell:
+    type: script
+    command: "${SHELL:-/bin/bash}"
+    terminal: true
+    keep_open: true
+    description: "Your default shell"
+
+  # Shell with environment variables
+  shell_with_env:
+    type: script
+    command: |
+      echo "Custom environment variables:"
+      echo "MY_VAR: $MY_VAR"
+      echo "ANOTHER_VAR: $ANOTHER_VAR"
+    shell: "bash"
+    env:
+      MY_VAR: "Hello from environment"
+      ANOTHER_VAR: "Custom value"
+    description: "Shell with custom environment"
+    show_output: true
+
+  # Error handling example
+  shell_error_handling:
+    type: script
+    command: |
+      set -e  # Exit on error
+      
+      echo "This will run"
+      
+      # This would cause the script to exit
+      # false
+      
+      echo "This will also run"
+    shell: "bash"
+    description: "Shell error handling"
+    show_output: true
+
+# Platform-specific shells
+# Create platform-specific files:
+# - spellbook.windows.yml  (PowerShell, CMD)
+# - spellbook.darwin.yml   (zsh, bash)
+# - spellbook.linux.yml    (bash, zsh, fish)

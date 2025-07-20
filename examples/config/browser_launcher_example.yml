@@ -1,0 +1,181 @@
+# Browser Launcher Example Configuration
+# This example demonstrates the browser launcher features
+
+hotkeys:
+  prefix: alt+space
+  timeout: 1000
+  sequence_timeout: 2000
+
+spells:
+  # Quick access to common sites
+  g,g: google           # Google search
+  g,h: github           # GitHub
+  g,m: gmail            # Gmail
+  g,y: youtube          # YouTube
+  
+  # Development shortcuts
+  d,l: dev_local        # Local development
+  d,s: dev_staging      # Staging server
+  d,d: dev_docs         # Documentation
+  
+  # Browser-specific launches
+  b,c: browser_chrome   # Force Chrome
+  b,f: browser_firefox  # Force Firefox
+  b,p: browser_private  # Private browsing
+
+grimoire:
+  # Basic URL opening (uses default browser)
+  google:
+    type: url
+    url: "https://www.google.com"
+    description: "Open Google"
+
+  github:
+    type: url
+    url: "https://github.com"
+    description: "Open GitHub"
+
+  gmail:
+    type: url
+    url: "https://mail.google.com"
+    description: "Open Gmail"
+
+  youtube:
+    type: url
+    url: "https://www.youtube.com"
+    description: "Open YouTube"
+
+  # Development URLs with specific browsers
+  dev_local:
+    type: url
+    url: "localhost:3000"  # Automatically uses http://
+    browser: "chrome"
+    browser_args: ["--disable-web-security", "--user-data-dir=/tmp/chrome-dev"]
+    description: "Local development server"
+
+  dev_staging:
+    type: url
+    url: "https://staging.example.com"
+    browser_preference: ["firefox", "chrome"]  # Try Firefox first
+    incognito: true  # Use private browsing
+    description: "Staging server (private)"
+
+  dev_docs:
+    type: url
+    url: "http://localhost:5173"  # VitePress docs
+    new_window: true
+    description: "Local documentation"
+
+  # Force specific browsers
+  browser_chrome:
+    type: url
+    url: "https://www.google.com/chrome/"
+    browser: "chrome"
+    new_window: true
+    description: "Open in Chrome (new window)"
+
+  browser_firefox:
+    type: url
+    url: "https://www.mozilla.org/firefox/"
+    browser: "firefox"
+    new_window: true
+    description: "Open in Firefox (new window)"
+
+  browser_private:
+    type: url
+    url: "https://duckduckgo.com"
+    browser_preference: ["firefox", "chrome", "edge"]
+    incognito: true
+    description: "Private browsing mode"
+
+  # Advanced browser configurations
+  chrome_guest:
+    type: url
+    url: "https://example.com"
+    browser: "chrome"
+    browser_args: ["--guest"]  # Guest mode
+    description: "Chrome guest mode"
+
+  firefox_safe_mode:
+    type: url
+    url: "https://example.com"
+    browser: "firefox"
+    browser_args: ["--safe-mode"]
+    description: "Firefox safe mode"
+
+  chrome_kiosk:
+    type: url
+    url: "https://dashboard.example.com"
+    browser: "chrome"
+    browser_args: ["--kiosk", "--disable-pinch", "--overscroll-history-navigation=0"]
+    description: "Chrome kiosk mode"
+
+  # Multiple URLs in sequence
+  open_dev_tools:
+    type: script
+    command: |
+      echo "Opening development tools..."
+      # Note: This would be replaced with actual URL action calls
+    description: "Open multiple dev tools"
+    
+  # Browser detection test
+  test_browsers:
+    type: script
+    command: |
+      echo "Testing browser detection..."
+      echo "This would show detected browsers"
+    description: "Test browser detection"
+    show_output: true
+    terminal: true
+
+# Special URLs examples
+special_urls:
+  about_blank:
+    type: url
+    url: "about:blank"
+    description: "Empty page"
+    
+  chrome_settings:
+    type: url
+    url: "chrome://settings"
+    browser: "chrome"
+    description: "Chrome settings"
+    
+  firefox_about:
+    type: url
+    url: "about:config"
+    browser: "firefox" 
+    description: "Firefox config"
+    
+  file_url:
+    type: url
+    url: "file:///home/user/index.html"
+    description: "Local file"
+
+# Work vs Personal browser separation
+work_personal:
+  work_email:
+    type: url
+    url: "https://mail.company.com"
+    browser: "chrome"  # Work browser
+    description: "Work email"
+    
+  personal_email:
+    type: url
+    url: "https://mail.google.com"
+    browser: "firefox"  # Personal browser
+    incognito: true
+    description: "Personal email (private)"
+    
+  work_github:
+    type: url
+    url: "https://github.com/company"
+    browser: "chrome"
+    description: "Company GitHub"
+    
+  personal_github:
+    type: url
+    url: "https://github.com/personal"
+    browser: "firefox"
+    incognito: true
+    description: "Personal GitHub (private)"

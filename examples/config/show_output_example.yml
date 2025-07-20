@@ -1,0 +1,98 @@
+# Example configuration demonstrating show_output and other new features
+
+daemon:
+  log_level: info
+
+hotkeys:
+  prefix: "alt+space"
+  timeout: 1000
+  sequence_timeout: 2000
+
+spells:
+  # Git commands with output display
+  "g,s": "git_status"
+  "g,l": "git_log"
+  "g,d": "git_diff"
+  
+  # System commands
+  "s,i": "system_info"
+  "s,p": "process_list"
+  
+  # Development commands
+  "d,t": "run_tests"
+  "d,l": "lint_code"
+  
+  # Interactive commands
+  "i,p": "python_repl"
+  "i,n": "node_repl"
+
+grimoire:
+  # Git commands with output notification
+  git_status:
+    type: script
+    command: "git status --short"
+    show_output: true
+    description: "Show git status"
+    
+  git_log:
+    type: script
+    command: "git log --oneline -10"
+    show_output: true
+    description: "Show recent commits"
+    
+  git_diff:
+    type: script
+    command: "git diff --stat"
+    show_output: true
+    description: "Show file changes"
+    
+  # System information commands
+  system_info:
+    type: script
+    command: "uname -a"
+    show_output: true
+    shell: "bash"
+    description: "Display system information"
+    
+  process_list:
+    type: script
+    command: "ps aux | head -20"
+    show_output: true
+    timeout: 5
+    description: "List top processes"
+    
+  # Development tools with terminal
+  run_tests:
+    type: script
+    command: "go test ./..."
+    working_dir: "$HOME/project"
+    keep_open: true       # Terminal stays open after tests complete
+    terminal: true        # Force terminal execution
+    description: "Run all tests"
+    
+  lint_code:
+    type: script
+    command: "golangci-lint run"
+    show_output: true
+    timeout: 30
+    description: "Run linter"
+    
+  # Interactive REPLs
+  python_repl:
+    type: script
+    command: "python3"
+    terminal: true
+    keep_open: true
+    description: "Python interactive shell"
+    
+  node_repl:
+    type: script
+    command: "node"
+    terminal: true
+    keep_open: true
+    description: "Node.js interactive shell"
+
+# Platform-specific overrides can be added in:
+# - spellbook.windows.yml
+# - spellbook.mac.yml
+# - spellbook.linux.yml

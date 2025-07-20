@@ -1,0 +1,88 @@
+# Performance optimization configuration example
+# This file demonstrates performance tuning options for SilentCast
+
+# Basic spells configuration
+spells:
+  e: editor
+  t: terminal
+
+grimoire:
+  editor:
+    type: app
+    command: code
+    description: "Open VS Code"
+    
+  terminal:
+    type: app
+    command: gnome-terminal
+    description: "Open terminal"
+
+# Performance optimization settings
+performance:
+  # Enable performance optimizations (default: true)
+  enable_optimization: true
+  
+  # Buffer size for pooled byte slices (default: 1024)
+  # Larger buffers reduce allocations for large operations
+  buffer_size: 2048
+  
+  # Garbage collection target percentage (default: 100)
+  # Lower values = more frequent GC, higher values = less frequent GC
+  # Adjust based on memory vs CPU trade-offs
+  gc_percent: 75
+  
+  # Maximum idle time for pooled resources (default: 5m)
+  # Resources idle longer than this will be cleaned up
+  max_idle_time: 10m
+  
+  # Enable performance profiling server (default: false)
+  # WARNING: Only enable for debugging, not in production
+  enable_profiling: false
+  
+  # Profiling server configuration (only used if enable_profiling: true)
+  profile_host: localhost
+  profile_port: 6060
+
+# Daemon configuration optimized for performance
+daemon:
+  auto_start: true
+  log_level: warn  # Reduce logging overhead
+  config_watch: true
+
+# Logger configuration for minimal overhead
+logger:
+  level: warn       # Less verbose logging
+  file: silentcast.log
+  max_size: 10      # MB
+  max_backups: 3
+  max_age: 7        # days
+  compress: true
+
+# Hotkey configuration optimized for responsiveness
+hotkeys:
+  prefix: "alt+space"
+  timeout: 500ms    # Faster timeout for better responsiveness
+  
+# Notification configuration optimized for performance
+notification:
+  enable_timeout: true
+  enable_warning: true
+  sound: false      # Disable sound for better performance
+  max_output_length: 512  # Smaller output limit
+
+# Example performance monitoring setup:
+# 
+# To monitor performance:
+# 1. Set enable_profiling: true
+# 2. Start SilentCast
+# 3. Open http://localhost:6060/debug/pprof/ in browser
+# 4. Use go tool pprof for detailed analysis:
+#    go tool pprof http://localhost:6060/debug/pprof/profile
+#    go tool pprof http://localhost:6060/debug/pprof/heap
+#
+# Performance tuning guidelines:
+# - Lower gc_percent (50-75) for memory-constrained systems
+# - Higher gc_percent (150-200) for CPU-constrained systems
+# - Increase buffer_size for applications processing large files
+# - Decrease max_idle_time for systems with limited memory
+# - Set log level to 'error' or 'warn' in production for best performance
