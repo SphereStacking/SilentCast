@@ -4,7 +4,7 @@ dist: app/dist
 
 before:
   hooks:
-    - cd app && go mod tidy
+    - sh -c "cd app && go mod tidy"
 
 builds:
   - id: silentcast
