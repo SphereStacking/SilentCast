@@ -2,9 +2,9 @@ version: 2
 
 dist: app/dist
 
-before:
-  hooks:
-    - sh -c "cd app && go mod tidy"
+# before:
+#   hooks:
+#     - sh -c "cd app && go mod tidy"
 
 builds:
   - id: silentcast
