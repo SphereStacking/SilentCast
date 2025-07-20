@@ -28,6 +28,55 @@ import (
 	"github.com/SphereStacking/silentcast/pkg/logger"
 )
 
+// Helper functions inlined to ensure they're available during GoReleaser build
+
+// getConfigPath returns the configuration directory path
+func getConfigPath() string {
+	// Check for environment variable
+	if path := os.Getenv("SILENTCAST_CONFIG"); path != "" {
+		return path
+	}
+
+	// Check current directory
+	if _, err := os.Stat(config.ConfigName + ".yml"); err == nil {
+		return "."
+	}
+
+	// Use user config directory
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		// Fallback to current directory
+		return "."
+	}
+
+	return filepath.Join(configDir, config.AppName)
+}
+
+// getConfigSearchPaths returns all paths where config files are searched
+func getConfigSearchPaths() []string {
+	var paths []string
+
+	// 1. Environment variable
+	if envPath := os.Getenv("SILENTCAST_CONFIG"); envPath != "" {
+		paths = append(paths, envPath)
+	}
+
+	// 2. Current directory
+	paths = append(paths, ".")
+
+	// 3. User config directory
+	if configDir, err := os.UserConfigDir(); err == nil {
+		paths = append(paths, filepath.Join(configDir, config.AppName))
+	}
+
+	// 4. System config directory (Unix-like systems)
+	if runtime.GOOS != "windows" {
+		paths = append(paths, "/etc/"+config.AppName)
+	}
+
+	return paths
+}
+
 // Version information is now managed by the version package
 
 func main() {
