@@ -3,17 +3,20 @@ package config
 import (
 	"time"
 
+	"github.com/SphereStacking/silentcast/internal/terminal"
 	"gopkg.in/yaml.v3"
 )
 
 // Config represents the main configuration structure
 type Config struct {
-	Daemon    DaemonConfig            `yaml:"daemon"`
-	Hotkeys   HotkeyConfig            `yaml:"hotkeys"`
-	Shortcuts map[string]string       `yaml:"spells"`   // YAMLでは"spells"だがコードではShortcuts
-	Actions   map[string]ActionConfig `yaml:"grimoire"` // YAMLでは"grimoire"だがコードではActions
-	Logger    LoggerConfig            `yaml:"logger"`
-	Updater   UpdaterConfig           `yaml:"updater"`
+	Daemon       DaemonConfig            `yaml:"daemon"`
+	Hotkeys      HotkeyConfig            `yaml:"hotkeys"`
+	Shortcuts    map[string]string       `yaml:"spells"`   // YAMLでは"spells"だがコードではShortcuts
+	Actions      map[string]ActionConfig `yaml:"grimoire"` // YAMLでは"grimoire"だがコードではActions
+	Logger       LoggerConfig            `yaml:"logger"`
+	Updater      UpdaterConfig           `yaml:"updater"`
+	Notification NotificationConfig      `yaml:"notification"`
+	Performance  PerformanceConfig       `yaml:"performance"`
 
 	// Internal fields (not from YAML)
 	prefixExplicitlySet bool `yaml:"-"`
@@ -73,6 +76,14 @@ type UpdaterConfig struct {
 	Prerelease    bool   `yaml:"prerelease"`     // Include pre-release versions
 }
 
+// NotificationConfig contains notification-related settings
+type NotificationConfig struct {
+	EnableTimeout   bool `yaml:"enable_timeout,omitempty"`    // Enable timeout notifications (default: true)
+	EnableWarning   bool `yaml:"enable_warning,omitempty"`    // Enable warning before timeout (default: true)
+	Sound           bool `yaml:"sound,omitempty"`             // Play sound for notifications (default: true)
+	MaxOutputLength int  `yaml:"max_output_length,omitempty"` // Max output length in notifications (default: 1024)
+}
+
 // HotkeyConfig contains hotkey-related settings
 type HotkeyConfig struct {
 	Prefix          string   `yaml:"prefix"`
@@ -100,10 +111,27 @@ func (d Duration) ToDuration() time.Duration {
 
 // ActionConfig represents an action that can be executed
 type ActionConfig struct {
-	Type        string            `yaml:"type"`    // "app" or "script"
+	Type        string            `yaml:"type"`    // "app", "script", or "url"
 	Command     string            `yaml:"command"` // Path or command
 	Args        []string          `yaml:"args,omitempty"`
 	Env         map[string]string `yaml:"env,omitempty"`
 	WorkingDir  string            `yaml:"working_dir,omitempty"`
 	Description string            `yaml:"description,omitempty"`
+
+	// Output control
+	ShowOutput bool `yaml:"show_output,omitempty"` // Show command output as notification
+	KeepOpen   bool `yaml:"keep_open,omitempty"`   // Keep terminal open after execution
+
+	// Execution control
+	Timeout        int    `yaml:"timeout,omitempty"`         // Timeout in seconds (0 = no timeout)
+	GracePeriod    int    `yaml:"grace_period,omitempty"`    // Grace period before SIGKILL in seconds (default: 5)
+	TimeoutWarning int    `yaml:"timeout_warning,omitempty"` // Warning before timeout in seconds (0 = no warning)
+	Shell          string `yaml:"shell,omitempty"`           // Custom shell to use
+	Interpreter    bool   `yaml:"interpreter,omitempty"`     // Run directly in interpreter mode (bypass shell)
+	Admin          bool   `yaml:"admin,omitempty"`           // Run with elevated privileges
+	Terminal       bool   `yaml:"terminal,omitempty"`        // Force run in terminal
+	ForceTerminal  bool   `yaml:"force_terminal,omitempty"`  // Force terminal even in GUI/tray mode
+	
+	// Terminal customization
+	TerminalCustomization *terminal.Customization `yaml:"terminal_customization,omitempty"` // Visual customization for terminal window
 }

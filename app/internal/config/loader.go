@@ -1,12 +1,13 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"time"
 
 	"gopkg.in/yaml.v3"
+	
+	appErrors "github.com/SphereStacking/silentcast/internal/errors"
 )
 
 // Loader handles configuration loading and merging
@@ -29,6 +30,48 @@ func NewLoader(basePath string) *Loader {
 	}
 }
 
+// Validate checks if the configuration files are valid
+func (l *Loader) Validate() ([]string, error) {
+	// Load configuration without defaults for validation
+	cfg := &Config{
+		Shortcuts: make(map[string]string),
+		Actions:   make(map[string]ActionConfig),
+	}
+
+	hasConfig := false
+
+	// Load each config file and merge
+	for _, path := range l.configPaths {
+		if err := l.loadFile(path, cfg); err != nil {
+			if !os.IsNotExist(err) {
+				return nil, appErrors.Wrap(appErrors.ErrorTypeConfig, "failed to load configuration file", err).
+					WithContext("path", path).
+					WithContext("operation", "validation")
+			}
+			// File doesn't exist, skip it
+			continue
+		}
+		hasConfig = true
+	}
+
+	if !hasConfig {
+		return nil, appErrors.ErrConfigNotFound.WithContext("searched_paths", l.configPaths).
+			WithContext("operation", "validation")
+	}
+
+	// Use the new comprehensive validator
+	validator := NewValidator()
+	validationErrors := validator.Validate(cfg)
+
+	// Convert to string slice for backward compatibility
+	var errors []string
+	for _, e := range validationErrors {
+		errors = append(errors, e.Error())
+	}
+
+	return errors, nil
+}
+
 // Load reads and merges configuration files
 func (l *Loader) Load() (*Config, error) {
 	// Start with empty config, defaults will be applied after loading
@@ -43,7 +86,9 @@ func (l *Loader) Load() (*Config, error) {
 	for _, path := range l.configPaths {
 		if err := l.loadFile(path, cfg); err != nil {
 			if !os.IsNotExist(err) {
-				return nil, fmt.Errorf("failed to load %s: %w", path, err)
+				return nil, appErrors.Wrap(appErrors.ErrorTypeConfig, "failed to load configuration file", err).
+					WithContext("path", path).
+					WithContext("operation", "load")
 			}
 			// File doesn't exist, skip it
 			continue
@@ -58,9 +103,43 @@ func (l *Loader) Load() (*Config, error) {
 
 	// Validate the configuration
 	if err := l.validate(cfg); err != nil {
-		return nil, fmt.Errorf("configuration validation failed: %w", err)
+		return nil, appErrors.Wrap(appErrors.ErrorTypeValidation, "configuration validation failed", err).
+			WithContext("config_paths", l.configPaths)
 	}
 
+	return cfg, nil
+}
+
+// LoadRaw loads configuration without validation or defaults (for export)
+func (l *Loader) LoadRaw() (*Config, error) {
+	// Start with empty config
+	cfg := &Config{
+		Shortcuts: make(map[string]string),
+		Actions:   make(map[string]ActionConfig),
+	}
+
+	hasConfig := false
+
+	// Load each config file and merge
+	for _, path := range l.configPaths {
+		if err := l.loadFile(path, cfg); err != nil {
+			if !os.IsNotExist(err) {
+				return nil, appErrors.Wrap(appErrors.ErrorTypeConfig, "failed to load configuration file", err).
+					WithContext("path", path).
+					WithContext("operation", "load_raw")
+			}
+			// File doesn't exist, skip it
+			continue
+		}
+		hasConfig = true
+	}
+
+	if !hasConfig {
+		return nil, appErrors.ErrConfigNotFound.WithContext("searched_paths", l.configPaths).
+			WithContext("operation", "load_raw")
+	}
+
+	// Don't apply defaults or validate - return raw config
 	return cfg, nil
 }
 
@@ -108,7 +187,8 @@ func (l *Loader) loadFile(path string, cfg *Config) error {
 	// Map custom keys to standard keys if needed
 	mappedData, hasPrefix, err := MapCustomKeys(data)
 	if err != nil {
-		return fmt.Errorf("failed to map custom keys: %w", err)
+		return appErrors.Wrap(appErrors.ErrorTypeConfig, "failed to map custom keys", err).
+			WithContext("path", path)
 	}
 
 	// Create a temporary config to load into
@@ -119,7 +199,8 @@ func (l *Loader) loadFile(path string, cfg *Config) error {
 	}
 
 	if err := yaml.Unmarshal(mappedData, temp); err != nil {
-		return fmt.Errorf("failed to parse YAML: %w", err)
+		return appErrors.Wrap(appErrors.ErrorTypeConfig, "failed to parse YAML", err).
+			WithContext("path", path)
 	}
 
 	// Merge the configurations
@@ -191,43 +272,15 @@ func (l *Loader) merge(dst, src *Config) {
 
 // validate checks if the configuration is valid
 func (l *Loader) validate(cfg *Config) error {
-	// Check if any configuration was loaded
-	// Allow empty config for now
+	// Use the new comprehensive validator
+	validator := NewValidator()
+	errors := validator.Validate(cfg)
 
-	// Validate prefix key - empty is allowed if explicitly set
-	if cfg.Hotkeys.Prefix == "" && !cfg.prefixExplicitlySet {
-		return fmt.Errorf("hotkeys.prefix is required")
-	}
-
-	// Validate spells reference existing grimoire entries
-	for spell, action := range cfg.Shortcuts {
-		if _, exists := cfg.Actions[action]; !exists {
-			return fmt.Errorf("spell '%s' references non-existent grimoire action '%s'", spell, action)
-		}
-	}
-
-	// Validate grimoire entries
-	for name, action := range cfg.Actions {
-		if action.Type == "" {
-			return fmt.Errorf("grimoire action '%s' missing type", name)
-		}
-		if action.Type != "app" && action.Type != "script" {
-			return fmt.Errorf("grimoire action '%s' has invalid type '%s' (must be 'app' or 'script')", name, action.Type)
-		}
-		if action.Command == "" {
-			return fmt.Errorf("grimoire action '%s' missing command", name)
-		}
-	}
-
-	// Validate log level
-	validLogLevels := map[string]bool{
-		"debug": true,
-		"info":  true,
-		"warn":  true,
-		"error": true,
-	}
-	if !validLogLevels[cfg.Daemon.LogLevel] {
-		return fmt.Errorf("invalid log level '%s'", cfg.Daemon.LogLevel)
+	if len(errors) > 0 {
+		// Return the first error for backward compatibility
+		// In the future, we might want to return all errors
+		return appErrors.NewValidationError("config", errors[0].Error()).
+			WithContext("total_errors", len(errors))
 	}
 
 	return nil
