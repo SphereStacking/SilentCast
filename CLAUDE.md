@@ -2,6 +2,21 @@
 
 This file provides guidance for Claude Code (claude.ai/code) when working with this repository's code.
 
+## 📋 Task Management (IMPORTANT)
+
+This project uses a ticket-based task management system. **Always check tickets before starting work!**
+
+### Quick Commands
+```bash
+./ticket              # Check current status
+./ticket list         # List all tickets  
+./ticket show T001    # Show ticket details
+./ticket new          # Create new ticket
+./ticket status T001 in_progress  # Update status
+```
+
+**See `.ticket/CLAUDE.md` for complete ticket system documentation.**
+
 ## 🎯 Project Overview
 
 **SilentCast** is a hotkey-driven task runner that executes tasks via keyboard shortcuts.
@@ -9,10 +24,27 @@ This file provides guidance for Claude Code (claude.ai/code) when working with t
 - Supports VS Code-style sequential key input (e.g., `g,s` for git status)
 - Cross-platform support (Windows/macOS)
 
-### Magic Terminology
-- **Spells**: Keyboard shortcuts (`e` = editor, `g,s` = git status)
-- **Grimoire**: Action definitions (what spells execute)
-- **Spellbook**: Configuration file (`spellbook.yml`)
+### Magic Terminology (Important!)
+
+**Consistent terminology throughout the project:**
+
+- **Spells**: Keyboard shortcuts/hotkey combinations that trigger actions
+  - Example: `e` = editor, `g,s` = git status  
+  - YAML config key: `spells:`
+  - NOT called: "shortcuts", "hotkeys", "keys"
+
+- **Grimoire**: Action definitions that define what spells execute
+  - Contains the actual commands/applications to run
+  - YAML config key: `grimoire:`
+  - NOT called: "actions", "commands", "tasks"
+
+- **Spellbook**: The configuration file itself (`spellbook.yml`)
+  - NOT called: "config", "settings"
+
+- **Grimoire Entries**: Individual action definitions within the grimoire
+  - NOT called: "actions"
+
+**NOTE**: This magic terminology is core to the project's identity and must be used consistently across all documentation, code comments, and user-facing text.
 
 ## 📁 Project Structure
 
@@ -196,6 +228,185 @@ type Manager interface {
     RequestPermission(PermissionType) error
 }
 ```
+
+## 🧪 Test-Driven Development (TDD) Guidelines
+
+This project follows the **Red-Green-Refactor** TDD methodology based on [t-wada's approach](https://github.com/twada-js/tdd-cycle). All new features and bug fixes should be implemented using this cycle.
+
+### TDD Cycle (10 minutes max)
+
+#### 1. 🔴 Red Phase (2-3 minutes)
+- Write a **single, minimal failing test** for the next small functionality
+- Test should clearly express the intended behavior
+- Run tests to confirm it fails for the right reason
+- **Don't write multiple tests at once**
+
+```go
+func TestSpellParser_ParseSimpleSpell(t *testing.T) {
+    parser := NewSpellParser()
+    
+    // Red: This should fail initially
+    result, err := parser.Parse("e")
+    
+    assert.NoError(t, err)
+    assert.Equal(t, Spell{Key: "e", Type: "simple"}, result)
+}
+```
+
+#### 2. 🟢 Green Phase (3-5 minutes)
+- Write the **minimal code** to make the test pass
+- Don't worry about code quality yet
+- Focus on making the test green as quickly as possible
+- **Avoid over-engineering**
+
+```go
+func (p *SpellParser) Parse(input string) (Spell, error) {
+    // Minimal implementation to pass the test
+    if input == "e" {
+        return Spell{Key: "e", Type: "simple"}, nil
+    }
+    return Spell{}, errors.New("not implemented")
+}
+```
+
+#### 3. 🔵 Refactor Phase (3-5 minutes)
+- Improve code quality while keeping tests green
+- Extract functions, improve naming, remove duplication
+- **Never change test behavior during refactor**
+- Run tests frequently to ensure they stay green
+
+```go
+func (p *SpellParser) Parse(input string) (Spell, error) {
+    if p.isSimpleSpell(input) {
+        return p.createSimpleSpell(input), nil
+    }
+    return Spell{}, fmt.Errorf("unsupported spell format: %s", input)
+}
+```
+
+### TDD Benefits
+
+1. **High Test Coverage**: Naturally achieves 90%+ coverage
+2. **Better Design**: Tests guide interface design
+3. **Regression Safety**: Immediate feedback on breaking changes
+4. **Living Documentation**: Tests document expected behavior
+
+### TDD Implementation Rules
+
+#### ✅ Do:
+- Write tests first, before any production code
+- Keep cycles short (10 minutes maximum)
+- Write only enough code to pass the current test
+- Refactor continuously while keeping tests green
+- Focus on one small behavior at a time
+
+#### ❌ Don't:
+- Write multiple tests before making them pass
+- Write production code without a failing test
+- Skip the refactor phase
+- Change test expectations during refactor
+- Try to implement complex functionality in one cycle
+
+### Example TDD Session
+
+```go
+// Cycle 1: Red - Test for basic spell parsing
+func TestSpellParser_ParseSingleKey(t *testing.T) {
+    parser := NewSpellParser()
+    spell, err := parser.Parse("e")
+    
+    assert.NoError(t, err)
+    assert.Equal(t, "e", spell.Key)
+}
+
+// Cycle 1: Green - Minimal implementation
+func (p *SpellParser) Parse(input string) (Spell, error) {
+    return Spell{Key: input}, nil
+}
+
+// Cycle 2: Red - Test for sequence parsing
+func TestSpellParser_ParseSequence(t *testing.T) {
+    parser := NewSpellParser()
+    spell, err := parser.Parse("g,s")
+    
+    assert.NoError(t, err)
+    assert.Equal(t, []string{"g", "s"}, spell.Sequence)
+}
+
+// Cycle 2: Green - Extend implementation
+func (p *SpellParser) Parse(input string) (Spell, error) {
+    if strings.Contains(input, ",") {
+        return Spell{Sequence: strings.Split(input, ",")}, nil
+    }
+    return Spell{Key: input}, nil
+}
+
+// Cycle 3: Refactor - Improve structure
+func (p *SpellParser) Parse(input string) (Spell, error) {
+    if p.isSequence(input) {
+        return p.parseSequence(input)
+    }
+    return p.parseSingleKey(input)
+}
+```
+
+### TDD with Go Specific Patterns
+
+#### Table-Driven Tests in TDD
+```go
+// Red: Write failing table test
+func TestSpellParser_Parse(t *testing.T) {
+    tests := []struct {
+        name  string
+        input string
+        want  Spell
+    }{
+        {"single key", "e", Spell{Key: "e"}},
+        // Add one test case at a time during TDD cycles
+    }
+    
+    parser := NewSpellParser()
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            got, err := parser.Parse(tt.input)
+            assert.NoError(t, err)
+            assert.Equal(t, tt.want, got)
+        })
+    }
+}
+```
+
+#### Mock Interfaces in TDD
+```go
+// Red: Test with mock first
+func TestActionExecutor_Execute(t *testing.T) {
+    mockLauncher := &MockLauncher{}
+    executor := NewActionExecutor(mockLauncher)
+    
+    mockLauncher.On("Launch", "editor").Return(nil)
+    
+    err := executor.Execute(Action{Type: "app", Target: "editor"})
+    
+    assert.NoError(t, err)
+    mockLauncher.AssertExpectations(t)
+}
+```
+
+### Integration with Existing Codebase
+
+When working with existing code that wasn't written with TDD:
+
+1. **Add tests before modifying**: Write tests for existing behavior first
+2. **Use characterization tests**: Capture current behavior, then refactor
+3. **Extract testable units**: Break large functions into smaller, testable pieces
+4. **Apply TDD to new features**: All new functionality should follow TDD strictly
+
+### Measuring TDD Success
+
+- **Coverage**: Should naturally reach 90%+ without explicit effort
+- **Test quality**: Tests should be readable and express business requirements
+- **Design quality**: Code should have good separation of concerns
+- **Confidence**: Developers should feel safe making changes
 
 ## 🔗 Related Documentation
 

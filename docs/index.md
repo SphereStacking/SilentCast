@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "SilentCast"
   text: "Silent Hotkey Task Runner"
-  tagline: Execute tasks instantly with keyboard shortcuts. Works on Windows and macOS. Lightweight and developer-friendly.
+  tagline: Execute tasks instantly with spells. Works on Windows and macOS. Lightweight and developer-friendly.
   pretext:
     text: "⚠️ Currently in Development"
     color: "warning"
@@ -22,9 +22,9 @@ hero:
 features:
   - icon: 🎯
     title: Global Hotkeys
-    details: System-wide keyboard shortcuts that work in any application. No need to focus a specific window.
-    link: /guide/shortcuts
-    linkText: Learn about shortcuts
+    details: System-wide spells that work in any application. No need to focus a specific window.
+    link: /guide/spells
+    linkText: Learn about spells
     
   - icon: ⚡
     title: Fast and Lightweight
@@ -41,8 +41,8 @@ features:
   - icon: 🎨
     title: Multi-Key Sequences
     details: Support for VS Code-style key sequences like 'g,s' for git status. Configurable timeouts.
-    link: /guide/shortcuts#sequences
-    linkText: Sequence shortcuts
+    link: /guide/spells#sequences
+    linkText: Sequence spells
     
   - icon: 🛠️
     title: Developer Focused
@@ -55,6 +55,18 @@ features:
     details: Launch applications with arguments, execute scripts, set working directories, and use environment variables.
     link: /guide/scripts
     linkText: Automation guide
+    
+  - icon: 🛠️
+    title: CLI Tools
+    details: Comprehensive command-line interface for testing, debugging, validation, and automation workflows.
+    link: /guide/cli-reference
+    linkText: CLI reference
+    
+  - icon: 🔄
+    title: Live Reload
+    details: Configuration changes are detected and applied automatically. No need to restart the application.
+    link: /guide/configuration#live-reload
+    linkText: Configuration guide
 ---
 
 :::warning Development Status
@@ -80,20 +92,23 @@ spells:
   e: "editor"          # Alt+Space, E -> Open editor
   t: "terminal"        # Alt+Space, T -> Open terminal
   
-  # Multi-key sequences (VS Code style)
+  # Multi-key sequences (use comma to separate keys)
   "g,s": "git_status"  # Alt+Space, G, S -> Git status
-  "d,b": "docker_build" # Alt+Space, D, B -> Docker build
-
+  "g,l": "git_log"     # Alt+Space, G, L -> Git log
+  "e,d": "edit_docs"   # Alt+Space, E, D -> Edit documentation
+  
+  # NOTE: Use "e,d" not "ed" for sequences!
+  
 grimoire:
   editor:
     type: app
     command: "code"
     description: "Open VS Code"
   
-  git_status:
+  terminal:
     type: script
-    command: "git status"
-    description: "Show git status"
+    command: "cmd"
+    description: "Open terminal"
 ```
 
 ```bash [Installation]
@@ -114,10 +129,19 @@ silentcast
 # Start without system tray
 silentcast --no-tray
 
-# Use custom config
-silentcast --config ~/my-spellbook.yml
+# Start with debug logging
+silentcast --debug
 
-# Then press Alt+Space and use your shortcuts
+# Validate configuration
+silentcast --validate-config
+
+# Test spells without executing
+silentcast --dry-run --spell=e
+
+# Single execution for automation
+silentcast --once --spell=backup
+
+# Then press Alt+Space and use your spells
 ```
 
 :::
@@ -160,7 +184,7 @@ Runs entirely on your machine. No cloud services, telemetry, or account required
     <div class="absolute inset-[-50%] bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.3)_0%,transparent_70%)] opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-50 group-hover:animate-pulse"></div>
     <div class="relative z-10">
       <h3 class="text-3xl font-bold mb-4 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
-        Start Using Keyboard Shortcuts Today
+        Start Using Spells Today
       </h3>
       <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
         Install SilentCast in seconds and boost your productivity with powerful hotkeys
@@ -173,6 +197,20 @@ Runs entirely on your machine. No cloud services, telemetry, or account required
     </div>
   </div>
 </div>
+
+## Development Status
+
+SilentCast is currently in **alpha development**. All core features are implemented and functional:
+
+- ✅ **Stable**: Global hotkeys, spells, and action execution
+- ✅ **Complete**: App, script, and URL action types
+- ✅ **Working**: Output display, notifications, and platform-specific features
+- ✅ **New**: CLI tools (debug, dry-run, test-spell, validation)
+- ✅ **New**: Live configuration reload and watching
+- ✅ **New**: Single execution mode for automation
+- ⚠️ **Alpha**: Configuration format may change in future versions
+
+For detailed feature implementation status, see the [Feature Status](/features-status) page.
 
 <style>
 /* Hero animations */
