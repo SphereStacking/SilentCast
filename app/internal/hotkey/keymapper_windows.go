@@ -39,36 +39,36 @@ func (w *windowsKeyMapper) GetKeyNameFromRawcode(rawcode uint16) string {
 		23: "i", 36: "j", 37: "k", 38: "l", 50: "m", 49: "n", 24: "o", 25: "p",
 		16: "q", 19: "r", 31: "s", 20: "t", 22: "u", 47: "v", 17: "w", 45: "x",
 		21: "y", 44: "z",
-		
+
 		// Numbers
 		11: "0", 2: "1", 3: "2", 4: "3", 5: "4", 6: "5", 7: "6", 8: "7", 9: "8", 10: "9",
-		
+
 		// Function keys
 		59: "f1", 60: "f2", 61: "f3", 62: "f4", 63: "f5", 64: "f6",
 		65: "f7", 66: "f8", 67: "f9", 68: "f10", 87: "f11", 88: "f12",
-		
+
 		// Special keys
 		57: "space", 28: "enter", 15: "tab", 1: "esc", 14: "backspace",
 		83: "delete", 82: "insert", 71: "home", 79: "end", 73: "pageup", 81: "pagedown",
 		72: "up", 80: "down", 75: "left", 77: "right",
-		
+
 		// Numpad
 		69: "numlock", 53: "divide", 55: "multiply", 74: "subtract", 78: "add",
 		96: "numpad0", 79: "numpad1", 80: "numpad2", 81: "numpad3",
 		75: "numpad4", 76: "numpad5", 77: "numpad6", 71: "numpad7",
 		72: "numpad8", 73: "numpad9",
-		
+
 		// Others
 		58: "capslock", 70: "scrolllock", 119: "pause",
 		12: "minus", 13: "equal", 26: "leftbracket", 27: "rightbracket",
 		39: "semicolon", 40: "apostrophe", 41: "grave", 43: "backslash",
 		51: "comma", 52: "period", 53: "slash",
 	}
-	
+
 	if name, ok := keyMap[rawcode]; ok {
 		return name
 	}
-	
+
 	return ""
 }
 
@@ -83,10 +83,10 @@ func (w *windowsKeyMapper) IsModifierKey(rawcode uint16) (string, bool) {
 		91:  "win",   // Left Windows
 		92:  "win",   // Right Windows
 	}
-	
+
 	if name, ok := modifierMap[rawcode]; ok {
 		return name, true
 	}
-	
+
 	return "", false
 }
