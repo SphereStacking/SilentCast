@@ -1,0 +1,76 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T005
+title: "GUIモードでスクリプト出力が表示されない問題を修正"
+type: bug
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels:
+  - bug
+  - critical
+  - user-experience
+  - phase2
+  - core-features
+
+description: |
+  GUIモードで実行されるスクリプトで、echoやgit statusなどのコマンド出力が完全に破棄される問題。
+  ユーザーがコマンドの実行結果を確認できない重要な問題です。
+  
+  ## 現在の動作
+  - GUIモードで実行時、すべてのスクリプト出力が破棄される
+  - ユーザーはコマンドが正常に実行されたか確認できない
+  - コマンド出力のフィードバックがない
+  
+  ## 期待する動作
+  - スクリプト出力をキャプチャしてユーザーに表示
+  - 異なる表示方法のオプション（通知、ポップアップ、コンソール）
+  - 標準出力と標準エラー出力の両方をサポート
+  
+  ## 根本原因
+  現在の実装では、GUIモードでスクリプト実行時にコマンド出力をキャプチャしていない。
+  
+  ## 影響
+  - ユーザーがコマンドの結果を確認できない
+  - デバッグが困難
+  - ユーザー体験の悪化
+  
+tasks:
+  - [ ] 現在のスクリプト実行フローを分析
+  - [ ] 出力キャプチャ機構を実装
+  - [ ] show_output設定オプションを追加
+  - [ ] 出力表示用通知システムを作成
+  - [ ] 様々なコマンドタイプでテスト
+  - [ ] ドキュメントを更新
+  
+acceptance_criteria:
+  - スクリプト出力がユーザーに表示される
+  - 標準出力と標準エラー出力の両方がキャプチャされる
+  - 出力が通知経由で表示可能
+  - 長い出力が適切に処理される
+  - パフォーマンスの劣化がない
+
+dependencies: []  # List of ticket IDs this depends on
+
+related:
+  - T015  # show_output implementation
+  - T016  # output formatter
+  - T017  # Windows notification
+  - T018  # macOS notification  # List of related ticket IDs
+
+files:
+  - app/internal/action/script.go
+  - app/internal/action/executor.go
+  - app/internal/output/interface.go
+  - app/internal/notify/interface.go  # List of files to be modified/created
+
+time_estimate: 16h
+time_spent: 0h
+
+notes: |
+  これはアルファ版でユーザーから報告された最も重要な問題です。
+  この修正により、ユーザー体験が大幅に改善され、ツールが本来の
+  目的で実際に使用できるようになります。

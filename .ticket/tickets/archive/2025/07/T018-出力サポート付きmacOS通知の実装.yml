@@ -1,0 +1,76 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T018
+title: "出力サポート付きmacOS通知の実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels: [feature, core-features, phase2, platform-specific, notifications, macos]
+
+description: |
+  コマンド出力表示をサポートするmacOS固有の通知を実装する。
+  
+  このチケットでは、以下の機能を持つSystemNotifierインターフェースの
+  macOS実装の作成に焦点を当てる：
+  - NSUserNotificationまたはUNUserNotificationを使用した通知タイトルとメッセージの表示
+  - show_output有効時のコマンド出力表示サポート
+  - macOS通知APIの適切なエラーハンドリング
+  - macOS通知センターとの統合
+  
+  実装は設定に応じてコマンド出力をキャプチャし通知に表示するため、
+  バッファ出力システムと統合される必要がある。通知にmacOS許可要件に
+  特別な注意を払う必要がある。
+  
+tasks:
+  - [ ] macOS通知APIの調査（NSUserNotification/UNUserNotification）
+  - [ ] SystemNotifierインターフェースに準拠するDarwinNotifier構造体の実装
+  - [ ] タイトルと本文を含むネイティブmacOS通知のサポート追加
+  - [ ] 通知権限と許可の処理
+  - [ ] BufferedOutputと統合してコマンド出力をキャプチャ
+  - [ ] macOS通知用出力フォーマットの実装
+  - [ ] 該当する場合の通知アクションのサポート追加
+  - [ ] Handle macOS version compatibility (10.14+)
+  - [ ] Add unit tests for macOS notifier
+  - [ ] Test integration with show_output configuration
+  - [ ] Document macOS-specific notification behavior and permissions
+  
+acceptance_criteria:
+  - macOS users see native notifications when actions complete
+  - Command output is displayed in notifications when show_output is true
+  - Notifications have proper titles based on action names
+  - Long output is truncated appropriately for notification format
+  - Notification permissions are requested if not granted
+  - Works on macOS 10.14 (Mojave) and later versions
+  - Notifications appear in Notification Center
+  - Unit tests pass for all notification scenarios
+  - Integration tests verify output capture and display
+
+dependencies: [T012]  # Depends on SystemNotifier interface
+
+related: [T015]  # Related to show_output implementation
+
+files:
+  - app/internal/notify/darwin.go (create)
+  - app/internal/notify/darwin_test.go (create)
+  - app/internal/notify/factory.go (modify)
+  - app/internal/action/executor.go (modify)
+  - go.mod (modify - add macOS notification library if needed)
+
+time_estimate: 8h
+time_spent: 0h
+
+notes: |
+  Key implementation details:
+  - Use github.com/gen2brain/beeep or native CGO bindings for macOS notifications
+  - Implement in app/internal/notify/darwin.go
+  - Follow the SystemNotifier interface from notify/interface.go
+  - Use BufferedOutput to capture command output
+  - Handle macOS notification permission requirements
+  - Consider using osascript as fallback for older macOS versions
+  - Format output appropriately for notification constraints
+  - Ensure proper app bundle identifier for notifications
+  - Handle cases where notifications are disabled in System Preferences

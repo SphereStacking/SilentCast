@@ -1,0 +1,120 @@
+# T061: Create troubleshooting guide
+
+id: T061
+title: "トラブルシューティングガイドの作成"
+type: docs
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-20"
+assignee: null
+labels: ["docs", "troubleshooting", "support", "debugging"]
+
+description: |
+  ユーザーがSilentCastの一般的な問題を診断し解決するための包括的な
+  トラブルシューティングガイドを作成します。このガイドには一般的な問題の
+  ステップバイステップ解決策、デバッグ技法、プラットフォーム固有の
+  トラブルシューティング手順が含まれます。
+
+  ガイドはインストール問題、設定問題、ホットキー競合、パーミッションエラー、
+  パフォーマンス問題をカバーし、各シナリオに対して明確な解決策と回避策を
+  提供します。
+  
+tasks:
+  - [ ] 一般的なユーザー問題とサポートリクエストを調査
+  - [ ] インストールトラブルシューティングセクションを作成
+  - [ ] 設定検証とエラー解決を文書化
+  - [ ] ホットキーとキー検出トラブルシューティングを追加
+  - [ ] パーミッションとセキュリティトラブルシューティングガイドを作成
+  - [ ] アプリケーション起動とスクリプト実行問題を文書化
+  - [ ] システムトレイと通知トラブルシューティングを追加
+  - [ ] パフォーマンスとリソース使用量診断を作成
+  - [ ] プラットフォーム固有トラブルシューティングセクションを追加
+  - [ ] デバッグツールとログ分析を文書化
+  - [ ] 簡易解決策用FAQセクションを作成
+  - [ ] 連絡先とサポート情報を追加
+  
+acceptance_criteria:
+  - トラブルシューティングガイドがすべての主要問題カテゴリをカバー
+  - 解決策がテストされ動作することが検証済み
+  - ガイドに簡易修正と詳細な診断の両方が含まれている
+  - プラットフォーム固有の問題が適切に対応されている
+  - デバッグ手順が明確で実行可能
+  - ガイドが簡単に検索できよく整理されている
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: ["T060"]  # Documentation updates
+
+files: 
+  - "docs/troubleshooting/"
+  - "docs/troubleshooting/index.md"
+  - "docs/troubleshooting/installation.md"
+  - "docs/troubleshooting/configuration.md"
+  - "docs/troubleshooting/hotkeys.md"
+  - "docs/troubleshooting/permissions.md"
+  - "docs/troubleshooting/actions.md"
+  - "docs/troubleshooting/performance.md"
+  - "docs/troubleshooting/platform-specific.md"
+  - "docs/troubleshooting/debugging.md"
+  - "docs/troubleshooting/faq.md"
+  - "docs/troubleshooting/support.md"
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  トラブルシューティングガイド構造：
+  
+  1. クイックスタートトラブルシューティング：
+     - 一般的な問題と即座解決策
+     - インストール検証手順
+     - 基本設定検証
+  
+  2. インストール問題：
+     - CGOビルド問題とスタブモード代替手段
+     - インストール中のパーミッション問題
+     - パスと環境変数問題
+     - プラットフォーム固有のインストール失敗
+  
+  3. 設定問題：
+     - YAML構文エラーと検証失敗
+     - ファイル監視と自動再読み込み問題
+     - カスケードローディング問題
+     - 無効なアクション設定
+  
+  4. ホットキーと入力問題：
+     - ホットキー登録失敗
+     - キーシーケンス検出問題
+     - 他のアプリケーションとの競合
+     - プラットフォーム固有のキーマッピング問題
+  
+  5. パーミッションとセキュリティ：
+     - macOSアクセシビリティパーミッションセットアップ
+     - Windows UACと昇格問題
+     - Linuxデスクトップ環境互換性
+     - セキュリティソフトウェアの干渉
+  
+  6. アクション実行問題：
+     - アプリケーション起動失敗
+     - スクリプト実行エラー
+     - URL開く問題
+     - パス解決問題
+  
+  7. パフォーマンスとシステム問題：
+     - 高CPUまたはメモリ使用量
+     - 遅い応答時間
+     - システムトレイ問題
+     - 通知表示問題
+  
+  8. プラットフォーム固有トラブルシューティング：
+     - Windows: レジストリ、UAC、Windows Defender
+     - macOS: Gatekeeper、SIP、パーミッション
+     - Linux: デスクトップ環境、パーミッション
+  
+  デバッグツールと技法：
+  - デバッグログを有効化しログ分析
+  - 設定検証ツール
+  - システム監視と診断
+  - 手動テスト手順
+  - コミュニティサポートと問題報告

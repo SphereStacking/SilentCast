@@ -1,0 +1,70 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T006
+title: "設定キー名の混乱を修正 (spells/grimoire vs shortcuts/actions)"
+type: bug
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels:
+  - bug
+  - documentation
+  - configuration
+  - consistency
+
+description: |
+  コードベースとドキュメントで設定キー名について混乱が生じています。
+  実装では正しく'spells'と'grimoire'を使用していますが、一部のドキュメントで
+  誤って'shortcuts'と'actions'と記載されています。
+  
+  ## 現在の状況
+  - 実装: 'spells' / 'grimoire' を使用（正しい）
+  - 一部のドキュメント: 'shortcuts' / 'actions' を使用（間違い）
+  - これによりユーザーと開発者に混乱が生じている
+  
+  ## 魔法用語（正しい）
+  - **Spells（呪文）**: キーボードショートカット（例：'e' = エディタ、'g,s' = git status）
+  - **Grimoire（魔法書）**: アクション定義（呪文が実行する内容）
+  - **Spellbook（呪文書）**: 設定ファイル（spellbook.yml）
+  
+  ## 影響
+  - ドキュメント読解時のユーザー混乱
+  - 一貫性のないメンタルモデル
+  - 設定エラーの可能性
+  
+tasks:
+  - [ ] 間違った用語を使用しているドキュメントファイルを監査
+  - [ ] 正しい魔法用語を使用するようドキュメントを更新
+  - [ ] 設定ファイルの例を確認
+  - [ ] 必要に応じてコードコメントを更新
+  - [ ] ドキュメントに用語集を作成
+  - [ ] コードで間違った用語が使用されていないことを確認
+  
+acceptance_criteria:
+  - すべてのドキュメントで'spells'と'grimoire'が一貫して使用される
+  - 設定の文脈で'shortcuts'や'actions'への言及がない
+  - 明確な用語集が存在する
+  - 設定例で正しい用語が使用されている
+  - コードとドキュメントが一致している
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files:
+  - docs/**/*.md
+  - examples/config/*.yml
+  - README.md
+  - app/README.md
+  - CLAUDE.md  # List of files to be modified/created
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  これはユーザーの理解に影響するドキュメントの一貫性の問題です。
+  魔法をテーマとした用語はプロジェクトのアイデンティティの重要な部分であり、
+  全体を通して一貫して使用されるべきです。

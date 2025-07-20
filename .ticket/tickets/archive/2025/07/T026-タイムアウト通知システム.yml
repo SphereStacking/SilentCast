@@ -1,0 +1,58 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T026
+title: "タイムアウト通知システムの追加"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, core-features, phase2, timeout]
+
+description: |
+  タイムアウトによりスクリプトが終了された際にユーザーに通知するための
+  タイムアウトイベントの通知サポートを追加します。これは既存の通知システムと
+  統合し、何が起こったか、どのアクションが影響を受けたかについての
+  明確で実用的なメッセージを提供します。
+  
+tasks:
+  - [ ] 通知タイプにタイムアウトイベントを追加
+  - [ ] notifyパッケージでタイムアウト通知を実装
+  - [ ] 通知にアクション名とタイムアウト期間を含める
+  - [ ] タイムアウト接近時のオプション通知を追加 (警告)
+  - [ ] スクリプトエグゼキューターとタイムアウト通知を統合
+  - [ ] タイムアウト通知を有効/無効にする設定オプションを追加
+  - [ ] すべてのプラットフォーム(Windows、macOS、Linux)で通知をテスト
+  
+acceptance_criteria:
+  - スクリプトがタイムアウトした際にユーザーが明確な通知を受け取る
+  - 通知にアクション名とタイムアウト期間が含まれる
+  - タイムアウト前のオプション警告通知 (例: 10秒前)
+  - サポートされているすべてのプラットフォームで通知が動作する
+  - 設定により通知を無効にできる
+  - 通知メッセージがユーザーフレンドリーで情報提供的である
+  - 既存の通知システムとの統合がシームレスである
+
+dependencies: [T024]  # 基本的なタイムアウト実装に依存
+
+related: [T024, T025]  # 関連するチケットIDのリスト
+
+files:
+  - app/internal/notify/interface.go
+  - app/internal/notify/system_default.go
+  - app/internal/notify/windows.go
+  - app/internal/notify/darwin.go
+  - app/internal/notify/linux.go
+  - app/internal/action/script.go
+  - app/internal/config/types.go
+
+time_estimate: 3h
+time_spent: 0h
+
+notes: |
+  このチケットはT024が最初に完了することに依存しています。通知システムは
+  タイムアウトイベントについてユーザーに明確なフィードバックを提供し、
+  アクションが終了された理由と、必要に応じてタイムアウトを調整する
+  方法を理解するのに役立ちます。

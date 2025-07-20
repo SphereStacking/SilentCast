@@ -1,0 +1,63 @@
+# チケットテンプレート
+# 新しいチケット用にこのファイルをコピーして項目を記入
+
+id: T007
+title: "TestIsNewerVersionテスト失敗を修正"
+type: bug
+priority: low
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels:
+  - bug
+  - testing
+  - updater
+
+description: |
+  app/internal/updater/updater_test.goのTestIsNewerVersionテストが
+  バージョン比較ロジックの誤りにより失敗している。テストはv1.10.0が
+  v1.9.0より新しいことを期待しているが、現在の文字列比較ではv1.10.0を古いと判定する。
+  
+  ## 根本原因
+  バージョン比較が意味的バージョン比較ではなく単純な文字列比較を使用している。
+  これにより"1.10.0" < "1.9.0"がアルファベット順で判定される。
+  
+  ## 例
+  - 現在: "v1.10.0" < "v1.9.0"（間違い）
+  - 期待: v1.10.0 > v1.9.0（正しい）
+  
+  ## 影響
+  - テストスイートが失敗する
+  - バージョン更新が正しく動作しない可能性
+  - ユーザーが新しいバージョンを取得できない可能性
+  
+tasks:
+  - [ ] 適切な意味的バージョン比較を実装
+  - [ ] 既存のsemverライブラリを使用するかカスタムロジックを実装
+  - [ ] 失敗しているテストを修正
+  - [ ] より包括的なバージョン比較テストを追加
+  - [ ] エッジケース（プレリリース、ビルドメタデータ）をテスト
+  
+acceptance_criteria:
+  - TestIsNewerVersionが成功する
+  - 意味的バージョン比較が正しく動作する
+  - v1.10.0 > v1.9.0がtrueを返す
+  - すべてのバージョン比較エッジケースが処理される
+  - アップデータ機能にリグレッションがない
+
+dependencies: []  # このチケットが依存するチケットIDのリスト
+
+related: []  # 関連するチケットIDのリスト
+
+files:
+  - app/internal/updater/updater.go
+  - app/internal/updater/updater_test.go  # 変更・作成予定のファイルリスト
+
+time_estimate: 3h
+time_spent: 0h
+
+notes: |
+  ゼロから実装する代わりに、適切な意味的バージョン比較のために
+  golang.org/x/mod/semver または github.com/Masterminds/semver の
+  使用を検討すること。

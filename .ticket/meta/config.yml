@@ -1,0 +1,51 @@
+# SilentCast Ticket Management System Configuration
+
+version: "1.0"
+project: "SilentCast"
+created: "2025-01-17"
+
+# Ticket ID configuration
+id_format: "T{number:03d}"  # T001, T002, etc.
+next_id: 76
+
+# Status workflow
+statuses:
+  - todo
+  - in_progress
+  - review
+  - testing
+  - completed
+  - blocked
+
+# Priority levels
+priorities:
+  - critical
+  - high
+  - medium
+  - low
+
+# Ticket types
+types:
+  - feature
+  - bug
+  - refactor
+  - docs
+  - test
+  - chore
+
+# File path conventions
+paths:
+  active: "tickets/{id}-{slug}.yml"
+  archive: "tickets/archive/{year}/{month}/{id}-{slug}.yml"
+
+# Notification settings
+notifications:
+  on_status_change: true
+  on_assignment: true
+  on_comment: false
+
+# Report settings
+reports:
+  default_format: markdown
+  include_completed: false
+  group_by: phase

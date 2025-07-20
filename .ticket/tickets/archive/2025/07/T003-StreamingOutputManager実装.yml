@@ -1,0 +1,61 @@
+id: T003
+title: "StreamingOutputManagerの実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-01-17"
+updated: "2025-07-18"
+assignee: null
+labels:
+  - foundation
+  - core
+  - output-management
+  - cross-platform
+
+description: |
+  指定された宛先にリアルタイムで出力をストリーミングするStreamingOutputManagerを
+  実装します。これは、ユーザーが長時間実行されるコマンドのライブ出力を見る必要がある
+  keep_open機能にとって重要です。
+  
+  実装では以下を行う必要があります:
+  - Stream output without buffering
+  - Support multiple simultaneous streams
+  - Handle backpressure appropriately
+  - Provide graceful shutdown
+  
+tasks:
+  - [ ] Create app/internal/output/streaming.go
+  - [ ] Implement StreamingOutputManager struct
+  - [ ] Implement StartCapture() method
+  - [ ] Implement Stream() method
+  - [ ] Implement Stop() method
+  - [ ] Add stream management (add/remove destinations)
+  - [ ] Create unit tests
+  
+acceptance_criteria:
+  - Implements OutputManager interface
+  - Real-time streaming with minimal latency
+  - Handles multiple destinations
+  - Graceful shutdown of streams
+  - No memory leaks
+  - Good test coverage
+
+dependencies:
+  - T001  # OutputManager interface
+
+related:
+  - T002  # BufferedOutputManager (alternative approach)
+  - T004  # TeeOutputManager (can combine both)
+  - T014  # keep_open feature will use this
+
+files:
+  - app/internal/output/streaming.go
+  - app/internal/output/streaming_test.go
+
+time_estimate: 6h
+time_spent: 0h
+
+notes: |
+  This is essential for interactive commands and monitoring tools.
+  Consider using io.MultiWriter for efficient streaming to multiple
+  destinations.

@@ -1,0 +1,58 @@
+# Feature Ticket Template
+
+id: T000
+title: ""
+type: feature
+priority: medium
+status: todo
+created: ""
+updated: ""
+assignee: null
+labels:
+  - feature
+
+description: |
+  ## Problem Statement
+  What problem does this feature solve?
+  
+  ## Proposed Solution
+  How will this feature solve the problem?
+  
+  ## Implementation Details
+  Technical details about the implementation.
+  
+tasks:
+  - [ ] Design the interface/API
+  - [ ] Implement core functionality
+  - [ ] Write unit tests
+  - [ ] Update documentation
+  - [ ] Integration testing
+  
+acceptance_criteria:
+  - Feature works as specified
+  - All tests pass
+  - Documentation is complete
+  - Code review approved
+
+dependencies: []
+
+related: []
+
+files: []
+
+time_estimate: 0h
+time_spent: 0h
+
+# Feature-specific fields
+user_story: |
+  As a [user type]
+  I want [feature]
+  So that [benefit]
+
+impact:
+  users_affected: "all"  # all, some, few
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  How to test this feature

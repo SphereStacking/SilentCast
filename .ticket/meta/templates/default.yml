@@ -1,0 +1,37 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T000  # Will be auto-assigned
+title: ""
+type: feature  # feature, bug, refactor, docs, test, chore
+priority: medium  # critical, high, medium, low
+status: todo  # todo, in_progress, review, testing, completed, blocked
+created: ""  # Auto-filled
+updated: ""  # Auto-filled
+assignee: null
+labels: []
+
+description: |
+  Detailed description of the ticket.
+  
+tasks:
+  - [ ] Task 1
+  - [ ] Task 2
+  - [ ] Task 3
+  
+acceptance_criteria:
+  - Criteria 1
+  - Criteria 2
+  - Criteria 3
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files: []  # List of files to be modified/created
+
+time_estimate: 0h
+time_spent: 0h
+
+notes: |
+  Additional notes or comments

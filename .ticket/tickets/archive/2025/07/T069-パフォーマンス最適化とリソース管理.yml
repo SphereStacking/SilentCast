@@ -1,0 +1,68 @@
+id: T069
+title: "パフォーマンス最適化とリソース管理"
+type: refactor
+priority: medium
+status: completed
+created: "2025-07-19"
+updated: "2025-07-20"
+assignee: null
+labels:
+  - performance
+  - optimization
+  - resource-management
+
+description: |
+  ## 概要
+  プロジェクト全体のパフォーマンスを分析し、ボトルネックを特定して最適化を行う。
+  また、リソース（メモリ、ゴルーチン、ファイルハンドル）の適切な管理を実装する。
+  
+  ## 対象領域
+  - メモリアロケーションの削減
+  - ゴルーチンリークの防止
+  - ファイルハンドルの適切な管理
+  - CPU使用率の最適化
+  
+tasks:
+  - [ ] プロファイリング環境の構築
+  - [ ] CPUプロファイルの取得と分析
+  - [ ] メモリプロファイルの取得と分析
+  - [ ] ゴルーチンリークの検出
+  - [ ] 不要なアロケーションの削減
+  - [ ] バッファプールの導入検討
+  - [ ] 並行処理の最適化
+  - [ ] コンテキストの適切な使用
+  - [ ] リソースの遅延解放の修正
+  - [ ] ベンチマークの作成と継続的な監視
+  
+acceptance_criteria:
+  - メモリ使用量が20%以上削減
+  - CPU使用率が最適化されている
+  - ゴルーチンリークが0件
+  - 全リソースが適切に解放されている
+  - パフォーマンスベンチマークの文書化
+
+dependencies: [T064, T062]
+
+related: [T064, T062]
+
+files:
+  - app/internal/**/*.go
+  - app/cmd/**/*.go
+  - app/test/benchmarks/**/*.go
+  - docs/performance/**/*.md
+
+time_estimate: 8h
+time_spent: 0h
+
+notes: |
+  ## 重点領域
+  - ホットキー監視ループ
+  - 設定ファイル監視
+  - アクション実行
+  - 通知システム
+  
+  ## ツール
+  - pprof
+  - go test -bench
+  - race detector
+  - memory sanitizer

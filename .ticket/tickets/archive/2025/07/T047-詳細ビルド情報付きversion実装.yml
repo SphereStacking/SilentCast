@@ -1,0 +1,56 @@
+id: T047
+title: "詳細ビルド情報付き--versionの実装"
+type: feature
+priority: low
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: 
+  - feature
+  - phase4
+  - cli
+  - debug
+
+description: |
+  包括的なビルドとランタイム情報を表示するように--versionコマンドを拡張します。
+  これにより、デバッグ、サポートリクエスト、使用されている正確なバージョンと
+  ビルド設定の理解に役立ちます。
+  
+tasks:
+  - [ ] Add --version flag to CLI argument parsing
+  - [ ] Implement build info collection using ldflags
+  - [ ] Show version number, build time, and git commit hash
+  - [ ] Display Go version and build configuration
+  - [ ] Include platform and architecture information
+  - [ ] Add build tags and CGO status information
+  - [ ] Format output for both human-readable and machine-parseable formats
+  - [ ] Update Makefile to inject build information during compilation
+  
+acceptance_criteria:
+  - Command shows semantic version number
+  - Displays build timestamp and git commit hash
+  - Shows Go version used for compilation
+  - Includes platform, OS, and architecture details
+  - Displays build tags (nogohook, notray, etc.) used
+  - Shows CGO enabled/disabled status
+  - Output is well-formatted and easy to read
+  - Supports both text and JSON output formats
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files: 
+  - app/cmd/silentcast/main.go
+  - app/internal/version/
+  - Makefile
+  - app/Makefile
+
+time_estimate: 2h
+time_spent: 0h
+
+notes: |
+  サポートとデバッグ目的に有用だが低優先度。
+  バージョン情報を処理するための新しいinternal/versionパッケージを作成すべき。
+  ビルド情報の注入にはMakefileビルドプロセスの更新が必要。

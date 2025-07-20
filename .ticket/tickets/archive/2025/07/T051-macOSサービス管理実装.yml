@@ -1,0 +1,68 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T051
+title: "macOSサービス管理の実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-17"
+updated: "2025-07-19"
+assignee: null
+labels:
+  - feature
+  - phase5
+  - service-management
+
+description: |
+  ## 問題の説明
+  SilentCastは自動起動とシステム統合のためにmacOSサービス（LaunchAgent/LaunchDaemon）として実行する必要があります。
+  
+  ## 提案される解決策
+  ユーザーレベルサービス用のLaunchAgentとシステムレベルサービス用のLaunchDaemonを使用してmacOSサービス管理を実装します。
+  
+  ## 実装の詳細
+  - LaunchAgent/LaunchDaemonのplistファイルを作成
+  - macOSサービスのインストールと削除を追加
+  - ユーザーレベルとシステムレベルの両方のサービスをサポート
+  - launchctl経由でサービスの開始/停止/再起動操作を処理
+  - macOS権限システムとの適切な統合を確保
+  
+tasks:
+  - [ ] Research macOS LaunchAgent/LaunchDaemon system
+  - [ ] Create plist template files
+  - [ ] Implement service installation/removal
+  - [ ] Add launchctl integration for service control
+  - [ ] Handle macOS permissions and security
+  - [ ] Add CLI commands for service management
+  - [ ] Write integration tests
+  - [ ] Update documentation with service setup
+  
+acceptance_criteria:
+  - Can install SilentCast as macOS LaunchAgent
+  - Service starts automatically on login/boot
+  - Service can be controlled via CLI commands
+  - Proper integration with macOS security model
+  - All tests pass on macOS
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files: []  # List of files to be modified/created
+
+time_estimate: 6h
+time_spent: 0h
+
+user_story: |
+  As a macOS user
+  I want SilentCast to run as a system service
+  So that it's always available and starts automatically
+
+impact:
+  users_affected: "macos users"
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  Test service installation and management on various macOS versions with different security settings

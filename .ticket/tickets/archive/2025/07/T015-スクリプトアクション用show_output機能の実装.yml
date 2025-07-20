@@ -1,0 +1,80 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T015
+title: "スクリプトアクション用show_output機能の実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels:
+  - feature
+  - core-features
+  - phase2
+  - show-output
+  - critical
+
+description: |
+  スクリプト実行結果をキャプチャしてユーザーに表示するshow_output機能を実装する。
+  これにより、ユーザーがコマンドの結果を確認できないという重要な問題を解決する。
+  
+  ## 実装詳細
+  - スクリプト実行からstdoutとstderrの両方をキャプチャ
+  - OutputManagerを使用して出力をバッファリング
+  - 適切な通知システムに出力を送信
+  - 異なる出力サイズを適切に処理
+  
+  ## 設定例
+  ```yaml
+  grimoire:
+    git_status:
+      type: script
+      command: "git status"
+      show_output: true  # 出力表示を有効化
+  ```
+  
+tasks:
+  - [ ] ScriptExecutorをOutputManager使用に更新
+  - [ ] 実行中の出力キャプチャを実装
+  - [ ] show_output設定の処理を追加
+  - [ ] 通知システムとの統合
+  - [ ] 大きな出力の処理（切り詰め/スクロール）
+  - [ ] エラー出力のハイライト機能を追加
+  - [ ] 様々なコマンドタイプでテスト
+  - [ ] パフォーマンスベンチマークの追加
+  - [ ] ドキュメントの更新
+  
+acceptance_criteria:
+  - show_output: trueの場合にスクリプト出力がキャプチャされる
+  - 出力がユーザー通知に表示される
+  - stdoutとstderrの両方がキャプチャされる
+  - 大きな出力が適切に処理される
+  - show_output: falseの場合にパフォーマンス影響がない
+  - 全プラットフォームで動作する
+  - 包括的なテストカバレッジ
+
+dependencies:
+  - T001  # OutputManager interface
+  - T002  # BufferedOutputManager
+  - T012  # SystemNotifier with output support  # List of ticket IDs this depends on
+
+related:
+  - T005  # Fixes the main bug
+  - T016  # Output formatter
+  - T017  # Windows notifications
+  - T018  # macOS notifications
+  - T019  # Linux notifications  # List of related ticket IDs
+
+files:
+  - app/internal/action/script.go
+  - app/internal/action/executor.go
+  - app/internal/action/script_test.go  # List of files to be modified/created
+
+time_estimate: 12h
+time_spent: 0h
+
+notes: |
+  これは最も要求の多い機能である。現バージョンの主要なユーザビリティ問題を
+  直接解決する。他の機能より優先して実装・テストを行うべきである。

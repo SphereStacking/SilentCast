@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/SphereStacking/silentcast/cmd/silentcast/commands"
+	"github.com/SphereStacking/silentcast/internal/commands"
 	"github.com/SphereStacking/silentcast/internal/version"
 )
 

@@ -2,8 +2,6 @@ module github.com/SphereStacking/silentcast
 
 go 1.23.0
 
-toolchain go1.23.11
-
 require (
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/getlantern/systray v1.2.2

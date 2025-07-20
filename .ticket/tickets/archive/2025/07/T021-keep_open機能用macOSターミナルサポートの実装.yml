@@ -1,0 +1,65 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T021
+title: "keep_open機能用macOSターミナルサポートの実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, core-features, phase2, keep-open, terminal, macos, darwin]
+
+description: |
+  keep_open機能用のmacOS固有のターミナルサポートを実装します。
+  この実装では、AppleScriptまたは直接起動を使用して様々なmacOSターミナルアプリケーションを処理します。
+  
+  サポートされるターミナルエミュレーター（優先度順）：
+  1. Terminal.app - デフォルトのmacOSターミナル
+  2. iTerm2.app - 人気のサードパーティ製ターミナル
+  3. Alacritty.app - GPUアクセラレーションターミナル
+  4. Kitty.app - 機能豊富なターミナル
+  5. Warp.app - AI機能を備えたモダンなターミナル
+  
+  実装アプローチ：
+  - Terminal.appとiTerm2にはAppleScriptを使用（より優れた制御）
+  - その他のターミナルには直接アプリ起動
+  - 適切な引数で'open'コマンドを活用
+  - ターミナルウィンドウの作成とコマンド実行を処理
+  
+tasks:
+  - [ ] app/internal/terminal/manager_darwin.goにmacOSターミナルマネージャーを実装
+  - [ ] macOSターミナルアプリケーション検出機能を追加
+  - [ ] Terminal.app用のAppleScriptテンプレートを作成
+  - [ ] iTerm2用のAppleScriptテンプレートを作成
+  - [ ] その他のターミナル用のコマンドビルダーを実装
+  - [ ] ターミナルウィンドウを維持するロジックを追加
+  - [ ] macOS固有のユニットテストを追加
+  - [ ] 様々なターミナルエミュレーターでテスト
+  
+acceptance_criteria:
+  - Terminal.appがAppleScript制御で動作する
+  - iTerm2が適切なウィンドウ処理でサポートされる
+  - その他のターミナルエミュレーターのフォールバックサポート
+  - スクリプト実行後もターミナルウィンドウが開いたままになる
+  - ターミナルが見つからない場合の適切なエラー処理
+  - AppleScriptの実行が信頼できる
+  - すべてのmacOS固有のテストが合格
+
+dependencies: [T023]  # Depends on terminal manager interface
+
+related: [T020, T022]  # Related OS-specific implementations
+
+files:
+  - app/internal/terminal/manager_darwin.go
+  - app/internal/terminal/manager_darwin_test.go
+  - app/internal/terminal/detector_darwin.go
+  - app/internal/terminal/command_builder_darwin.go
+  - app/internal/terminal/applescript_templates.go
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  Additional notes or comments

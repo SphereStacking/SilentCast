@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/SphereStacking/silentcast/cmd/silentcast/commands"
+	"github.com/SphereStacking/silentcast/internal/commands"
 )
 
-// CommandFlags is an alias to commands.Flags for backward compatibility
+// CommandFlags is an alias to internal/commands.Flags
 type CommandFlags = commands.Flags
 
 // ParseFlags parses command-line flags and returns the flags struct

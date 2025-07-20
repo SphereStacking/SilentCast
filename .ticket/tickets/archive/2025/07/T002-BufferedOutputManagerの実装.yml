@@ -1,0 +1,58 @@
+id: T002
+title: "BufferedOutputManagerの実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-17"
+updated: "2025-07-17"
+assignee: null
+labels:
+  - foundation
+  - core
+  - output-management
+  - cross-platform
+
+description: |
+  出力をメモリにキャプチャして保存するBufferedOutputManagerを実装します。
+  これは、コマンド出力をキャプチャして通知に表示するshow_output機能に
+  不可欠です。
+  
+  実装では以下を満たす必要があります：
+  - 過度なメモリ使用なしに効率的に出力をバッファリング
+  - 並列書き込みを安全に処理
+  - バッファリングされたコンテンツを取得するメソッドを提供
+  - バッファのクリアをサポート
+  
+tasks:
+  - [x] app/internal/output/buffered.goを作成
+  - [x] BufferedOutputManager構造体を実装
+  - [x] StartCapture()メソッドを実装
+  - [x] GetOutput()メソッドを実装
+  - [x] Clear()メソッドを実装
+  - [x] mutexでスレッドセーフティを追加
+  - [x] 包括的なユニットテストを作成
+  
+acceptance_criteria:
+  - OutputManagerインターフェースを正しく実装
+  - 並列アクセスに対してスレッドセーフ
+  - 効率的なメモリ使用
+  - 100%のテストカバレッジ
+  - エッジケース（空の出力、大量の出力）を処理
+
+dependencies:
+  - T001  # OutputManagerインターフェースが先に定義されている必要がある
+
+related:
+  - T003  # StreamingOutputManager（代替実装）
+  - T004  # TeeOutputManager（これを出力先として使用可能）
+
+files:
+  - app/internal/output/buffered.go
+  - app/internal/output/buffered_test.go
+
+time_estimate: 4h
+time_spent: 4h
+
+notes: |
+  これはPhase 2のshow_output機能にとって最も重要な実装です。
+  すぐに使用されるため、プロダクションレディである必要があります。
