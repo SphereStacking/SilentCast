@@ -12,9 +12,9 @@ import (
 	hook "github.com/robotn/gohook"
 
 	"github.com/SphereStacking/silentcast/internal/config"
+	appErrors "github.com/SphereStacking/silentcast/internal/errors"
 	"github.com/SphereStacking/silentcast/pkg/logger"
 )
-
 
 // Modifier mask constants from gohook's C header (iohook.h)
 // These are not exposed as Go constants in the gohook package
@@ -24,13 +24,13 @@ const (
 	maskCtrlL  = 1 << 1
 	maskMetaL  = 1 << 2
 	maskAltL   = 1 << 3
-	
+
 	// Right modifiers
 	maskShiftR = 1 << 4
 	maskCtrlR  = 1 << 5
 	maskMetaR  = 1 << 6
 	maskAltR   = 1 << 7
-	
+
 	// Combined masks (left or right)
 	maskShift = maskShiftL | maskShiftR
 	maskCtrl  = maskCtrlL | maskCtrlR
@@ -70,7 +70,10 @@ func NewManager(cfg *config.HotkeyConfig) (*DefaultManager, error) {
 	// Parse prefix key
 	prefixSeq, err := parser.Parse(cfg.Prefix)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse prefix key '%s': %w", cfg.Prefix, err)
+		return nil, appErrors.Wrap(appErrors.ErrorTypeHotkey, "failed to parse prefix key", err).
+			WithContext("prefix_key", cfg.Prefix).
+			WithContext("timeout", cfg.Timeout).
+			WithContext("sequence_timeout", cfg.SequenceTimeout)
 	}
 
 	return &DefaultManager{
@@ -93,7 +96,9 @@ func (m *DefaultManager) Start() error {
 	defer m.mu.Unlock()
 
 	if m.running {
-		return fmt.Errorf("hotkey manager already running")
+		return appErrors.New(appErrors.ErrorTypeHotkey, "hotkey manager already running").
+			WithContext("state", "already_running").
+			WithContext("current_sequences", len(m.sequences))
 	}
 
 	logger.Debug("Starting hotkey manager...")
@@ -119,7 +124,9 @@ func (m *DefaultManager) Stop() error {
 	defer m.mu.Unlock()
 
 	if !m.running {
-		return fmt.Errorf("hotkey manager not running")
+		return appErrors.New(appErrors.ErrorTypeHotkey, "hotkey manager not running").
+			WithContext("state", "not_running").
+			WithContext("current_sequences", len(m.sequences))
 	}
 
 	m.running = false
@@ -138,13 +145,17 @@ func (m *DefaultManager) Register(sequence string, spellName string) error {
 
 	// Validate the sequence
 	if err := m.validator.Register(sequence, spellName); err != nil {
-		return err
+		return appErrors.Wrap(appErrors.ErrorTypeValidation, "sequence validation failed", err).
+			WithContext("sequence", sequence).
+			WithContext("spell_name", spellName)
 	}
 
 	// Parse and normalize the sequence
 	keySeq, err := m.parser.Parse(sequence)
 	if err != nil {
-		return err
+		return appErrors.Wrap(appErrors.ErrorTypeHotkey, "failed to parse hotkey sequence", err).
+			WithContext("sequence", sequence).
+			WithContext("spell_name", spellName)
 	}
 
 	normalized := keySeq.String()
@@ -161,7 +172,8 @@ func (m *DefaultManager) Unregister(sequence string) error {
 	// Parse and normalize the sequence
 	keySeq, err := m.parser.Parse(sequence)
 	if err != nil {
-		return err
+		return appErrors.Wrap(appErrors.ErrorTypeHotkey, "failed to parse hotkey sequence for unregistration", err).
+			WithContext("sequence", sequence)
 	}
 
 	normalized := keySeq.String()
@@ -190,7 +202,7 @@ func (m *DefaultManager) collectEvents() {
 	logger.Debug("Starting gohook event collection...")
 	evChan := hook.Start()
 	defer hook.End()
-	
+
 	logger.Info("🎮 Hotkey listener started successfully")
 
 	for {
@@ -204,18 +216,24 @@ func (m *DefaultManager) collectEvents() {
 				// Convert to readable key name for logging
 				keyName := m.getKeyName(ev)
 				logger.Debug("⌨️  Key pressed: %s (keycode=%d, rawcode=%d, mask=%d)", keyName, ev.Keycode, ev.Rawcode, ev.Mask)
-				
+
 				// Also log modifier states
 				if ev.Mask != 0 {
 					var mods []string
-					if ev.Mask&maskCtrl != 0 { mods = append(mods, "Ctrl") }
-					if ev.Mask&maskShift != 0 { mods = append(mods, "Shift") }
-					if ev.Mask&maskAlt != 0 { mods = append(mods, "Alt") }
+					if ev.Mask&maskCtrl != 0 {
+						mods = append(mods, "Ctrl")
+					}
+					if ev.Mask&maskShift != 0 {
+						mods = append(mods, "Shift")
+					}
+					if ev.Mask&maskAlt != 0 {
+						mods = append(mods, "Alt")
+					}
 					if len(mods) > 0 {
 						logger.Debug("   Active modifiers: %s", strings.Join(mods, "+"))
 					}
 				}
-				
+
 				select {
 				case m.eventChan <- ev:
 				default:
@@ -316,7 +334,7 @@ func (m *DefaultManager) handleKeyEvent(ev hook.Event) {
 func (m *DefaultManager) convertEvent(ev hook.Event) *Key {
 	keyName := ""
 	modifiers := []string{}
-	
+
 	// Check if this is a modifier key itself
 	if modName, isModifier := m.keyMapper.IsModifierKey(ev.Rawcode); isModifier {
 		keyName = modName
@@ -332,16 +350,16 @@ func (m *DefaultManager) convertEvent(ev hook.Event) *Key {
 		if ev.Mask&maskAlt != 0 {
 			modifiers = append(modifiers, "alt")
 		}
-		
+
 		// Try platform-specific mapping first
 		keyName = m.keyMapper.GetKeyNameFromRawcode(ev.Rawcode)
-		
+
 		// Fallback to gohook's built-in conversion
 		if keyName == "" {
 			keyName = hook.RawcodetoKeychar(ev.Rawcode)
 		}
 	}
-	
+
 	if keyName == "" {
 		return nil
 	}
@@ -418,8 +436,7 @@ func (m *DefaultManager) getKeyName(ev hook.Event) string {
 	if key != nil {
 		return key.String()
 	}
-	
+
 	// Fallback to raw keycode
 	return fmt.Sprintf("Unknown(%d)", ev.Keycode)
 }
-
