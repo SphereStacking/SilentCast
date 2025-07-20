@@ -1,4 +1,4 @@
-package action
+package shell
 
 import (
 	"context"
@@ -12,6 +12,9 @@ type ShellExecutor interface {
 
 	// WrapInTerminal wraps a command to run in a new terminal window
 	WrapInTerminal(ctx context.Context, cmd *exec.Cmd) *exec.Cmd
+
+	// WrapInTerminalWithOptions wraps a command with terminal options
+	WrapInTerminalWithOptions(ctx context.Context, cmd *exec.Cmd, keepOpen bool) *exec.Cmd
 
 	// IsInteractiveCommand checks if a command should run in a terminal
 	IsInteractiveCommand(command string) bool

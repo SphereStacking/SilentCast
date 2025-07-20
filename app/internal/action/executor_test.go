@@ -2,8 +2,11 @@ package action
 
 import (
 	"context"
+	"strings"
 	"testing"
 
+	"github.com/SphereStacking/silentcast/internal/action/app"
+	"github.com/SphereStacking/silentcast/internal/action/script"
 	"github.com/SphereStacking/silentcast/internal/config"
 )
 
@@ -43,7 +46,7 @@ func TestManager_Execute(t *testing.T) {
 			name:      "Non-existent spell",
 			spellName: "non_existent",
 			wantErr:   true,
-			errMsg:    "not found in grimoire",
+			errMsg:    "spell not found",
 		},
 		{
 			name:      "Unknown action type",
@@ -69,7 +72,7 @@ func TestManager_Execute(t *testing.T) {
 			}
 
 			if err != nil && tt.errMsg != "" {
-				if !contains(err.Error(), tt.errMsg) {
+				if !strings.Contains(err.Error(), tt.errMsg) {
 					t.Errorf("Expected error containing '%s', got '%s'", tt.errMsg, err.Error())
 				}
 			}
@@ -131,7 +134,7 @@ func TestAppExecutor_Execute(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			executor := NewAppExecutor(&tt.config)
+			executor := app.NewAppExecutor(&tt.config)
 			ctx := context.Background()
 
 			err := executor.Execute(ctx)
@@ -205,7 +208,7 @@ func TestScriptExecutor_Execute(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			executor := NewScriptExecutor(&tt.config)
+			executor := script.NewScriptExecutor(&tt.config)
 			ctx := context.Background()
 
 			err := executor.Execute(ctx)
@@ -225,7 +228,7 @@ func TestExecutor_String(t *testing.T) {
 	}{
 		{
 			name: "App with description",
-			executor: NewAppExecutor(&config.ActionConfig{
+			executor: app.NewAppExecutor(&config.ActionConfig{
 				Type:        "app",
 				Command:     "/usr/bin/app",
 				Description: "My cool app",
@@ -234,7 +237,7 @@ func TestExecutor_String(t *testing.T) {
 		},
 		{
 			name: "App without description",
-			executor: NewAppExecutor(&config.ActionConfig{
+			executor: app.NewAppExecutor(&config.ActionConfig{
 				Type:    "app",
 				Command: "/usr/bin/app",
 			}),
@@ -242,7 +245,7 @@ func TestExecutor_String(t *testing.T) {
 		},
 		{
 			name: "Script with description",
-			executor: NewScriptExecutor(&config.ActionConfig{
+			executor: script.NewScriptExecutor(&config.ActionConfig{
 				Type:        "script",
 				Command:     "git status",
 				Description: "Show git status",
@@ -251,7 +254,7 @@ func TestExecutor_String(t *testing.T) {
 		},
 		{
 			name: "Script without description",
-			executor: NewScriptExecutor(&config.ActionConfig{
+			executor: script.NewScriptExecutor(&config.ActionConfig{
 				Type:    "script",
 				Command: "git status",
 			}),
@@ -268,7 +271,3 @@ func TestExecutor_String(t *testing.T) {
 	}
 }
 
-// Helper function
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(s) > 0 && (s[0:len(substr)] == substr || contains(s[1:], substr)))
-}

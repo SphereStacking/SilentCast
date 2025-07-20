@@ -1,6 +1,6 @@
 //go:build darwin
 
-package action
+package shell
 
 import (
 	"context"
@@ -27,9 +27,20 @@ func (d *darwinShellExecutor) GetShell() (string, string) {
 }
 
 func (d *darwinShellExecutor) WrapInTerminal(ctx context.Context, cmd *exec.Cmd) *exec.Cmd {
+	// macOS: use Terminal.app via AppleScript, default to keep open
+	return d.WrapInTerminalWithOptions(ctx, cmd, true)
+}
+
+func (d *darwinShellExecutor) WrapInTerminalWithOptions(ctx context.Context, cmd *exec.Cmd, keepOpen bool) *exec.Cmd {
 	// macOS: use Terminal.app via AppleScript
-	script := fmt.Sprintf(`tell application "Terminal" to do script "%s"`,
-		strings.ReplaceAll(cmd.String(), `"`, `\"`))
+	cmdStr := strings.ReplaceAll(cmd.String(), `"`, `\"`)
+
+	if keepOpen {
+		// Add a read command to keep terminal open
+		cmdStr = fmt.Sprintf(`%s; echo ""; echo "Press Enter to close..."; read`, cmdStr)
+	}
+
+	script := fmt.Sprintf(`tell application "Terminal" to do script "%s"`, cmdStr)
 	return exec.CommandContext(ctx, "osascript", "-e", script)
 }
 

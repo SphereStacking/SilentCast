@@ -1,6 +1,6 @@
 //go:build !darwin && !windows && !linux
 
-package action
+package shell
 
 import (
 	"context"
