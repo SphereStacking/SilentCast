@@ -1,0 +1,78 @@
+# Feature Ticket Template
+
+id: T053
+title: "Linuxサービス管理の実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels:
+  - feature
+  - phase5
+  - service-management
+  - linux
+
+description: |
+  ## Problem Statement
+  Linux users need a way to automatically start SilentCast at boot and manage it as a system service.
+  Currently, users must manually start the application each time they boot their system.
+  
+  ## Proposed Solution
+  Implement Linux service management that supports both systemd services and XDG autostart.
+  This will provide flexible deployment options for different Linux distributions and user preferences.
+  
+  ## Implementation Details
+  - Add systemd service file generation and installation
+  - Implement XDG autostart .desktop file creation
+  - Add CLI commands for service management (install, uninstall, start, stop, status)
+  - Handle user vs system-wide installation options
+  - Ensure proper permission handling for service operations
+  
+tasks:
+  - [ ] Design service management interface
+  - [ ] Implement systemd service file generation
+  - [ ] Add XDG autostart .desktop file creation
+  - [ ] Create CLI commands for service management
+  - [ ] Add permission handling for service operations
+  - [ ] Write unit tests for service management
+  - [ ] Add integration tests
+  - [ ] Update documentation with service setup instructions
+
+acceptance_criteria:
+  - Users can install SilentCast as a systemd service
+  - Users can enable XDG autostart functionality
+  - CLI commands work for service management operations
+  - Service starts automatically at boot
+  - All tests pass
+  - Documentation includes service setup instructions
+
+dependencies: []
+
+related: []
+
+files:
+  - app/internal/service/
+  - app/internal/service/systemd.go
+  - app/internal/service/xdg.go
+  - app/internal/service/manager.go
+
+time_estimate: 6h
+time_spent: 0h
+
+# Feature-specific fields
+user_story: |
+  As a Linux user
+  I want SilentCast to start automatically when I boot my system
+  So that my hotkeys are always available without manual intervention
+
+impact:
+  users_affected: "all"  # Linux users
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  Test service installation and removal on major Linux distributions.
+  Verify autostart works correctly after reboot.
+  Test both user and system-wide service installation options.

@@ -1,0 +1,60 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T023
+title: "keep_open機能用ターミナルマネージャーの実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, core-features, phase2, keep-open, terminal]
+
+description: |
+  スクリプトアクションのkeep_open機能をサポートするために、ターミナルマネージャーインターフェースと
+  基本実装を実装します。このマネージャーは、異なるプラットフォーム間でのターミナルウィンドウの
+  作成と管理を処理します。
+  
+  ターミナルマネージャーが提供すべき機能:
+  - ターミナル操作のための統一インターフェースを提供
+  - 新しいターミナルウィンドウでのコマンド実行をサポート
+  - コマンド実行後もターミナルウィンドウを開いたままにする
+  - プラットフォーム固有のターミナルエミュレーター検出を処理
+  - 各プラットフォームの一般的なターミナルエミュレーターをサポート
+  - 優先ターミナルが利用できない場合のグレースフルなフォールバックを提供
+  
+tasks:
+  - [ ] app/internal/terminal/interface.goにTerminalManagerインターフェースを設計
+  - [ ] 共通機能を持つ基本ターミナルマネージャーを実装
+  - [ ] ターミナルエミュレーター検出ロジックを追加
+  - [ ] 異なるエミュレーター用のターミナルコマンドビルダーを作成
+  - [ ] エラーハンドリングとフォールバック機構を実装
+  - [ ] ターミナルマネージャーのユニットテストを追加
+  - [ ] keep_open用にターミナルマネージャーを使用するようアクションエグゼキューターを更新
+  
+acceptance_criteria:
+  - TerminalManagerインターフェースが適切に設計され、拡張可能である
+  - 基本実装が共通機能を提供する
+  - ターミナルエミュレーター検出が確実に動作する
+  - ターミナルエミュレーターが利用できない場合の適切なエラーハンドリング
+  - ユニットテストがコア機能をカバーしている
+  - アクションエグゼキューターとの統合が正しく動作する
+
+dependencies: []  # 依存するチケットIDのリスト
+
+related: [T004, T015]  # 関連するチケットIDのリスト
+
+files:
+  - app/internal/terminal/interface.go
+  - app/internal/terminal/manager.go
+  - app/internal/terminal/manager_test.go
+  - app/internal/terminal/detector.go
+  - app/internal/terminal/command_builder.go
+  - app/internal/action/executor.go
+
+time_estimate: 6h
+time_spent: 0h
+
+notes: |
+  追加のメモやコメント

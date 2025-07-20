@@ -1,0 +1,54 @@
+id: T001
+title: "OutputManagerインターフェース定義の作成"
+type: feature
+priority: high
+status: completed
+created: "2025-07-17"
+updated: "2025-07-17"
+assignee: null
+labels:
+  - core
+  - output-management
+  - cross-platform
+  - foundation
+
+description: |
+  アプリケーション内のすべての出力処理の基盤となるOutputManagerインターフェース
+  定義を作成します。このインターフェースは、複数の出力モード（バッファリング、
+  ストリーミング、tee）と出力先（コンソール、通知、ファイル、ウィンドウ）を
+  サポートする必要があります。
+  
+  インターフェースは異なるユースケースに対応できる柔軟性が必要です：
+  - 通知用のスクリプト出力キャプチャ
+  - ターミナルへの出力ストリーミング
+  - 複数の出力先への出力分割
+  
+tasks:
+  - [x] app/internal/output/interface.goを作成
+  - [x] OutputManagerインターフェースを定義
+  - [x] OutputType列挙型（Buffered、Streaming、Tee）を定義
+  - [x] OutputDestination列挙型（Console、Notification、File、Window）を定義
+  
+acceptance_criteria:
+  - インターフェースがGoのベストプラクティスに従っている
+  - すべての操作に明確なメソッドシグネチャ
+  - 包括的なドキュメント
+  - 実装準備完了
+
+dependencies: []
+
+related:
+  - T002  # BufferedOutputManager implementation
+  - T003  # StreamingOutputManager implementation
+  - T004  # TeeOutputManager implementation
+
+files:
+  - app/internal/output/interface.go
+
+time_estimate: 2h
+time_spent: 2h
+
+notes: |
+  これはスクリプト出力がユーザーに表示されないというコアの問題を
+  修正するための基盤です。すべての出力実装はこのインターフェースに
+  依存します。

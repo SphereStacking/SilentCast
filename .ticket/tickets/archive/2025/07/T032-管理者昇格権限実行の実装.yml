@@ -1,0 +1,55 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T032
+title: "管理者昇格権限実行の実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, phase3, advanced-scripts]
+
+description: |
+  スクリプトを管理者/昇格権限で実行するサポートを追加します。 
+  これには、WindowsでのUAC昇格とUnixシステムでのsudo実行が含まれます。 
+  スクリプトは必要に応じて昇格権限を要求できるようにする必要があります。
+  
+tasks:
+  - [ ] Windows UAC昇格機構の実装
+  - [ ] Unix sudo昇格機構の実装
+  - [ ] スクリプト設定に'elevated'フラグを追加
+  - [ ] 昇格プロンプトUI/通知の作成
+  - [ ] 昇格失敗時の適切な処理
+  - [ ] セキュリティ警告と確認の追加
+  - [ ] 昇格機能の包括的なテスト作成
+  - [ ] セキュリティ上の影響をドキュメント化
+  
+acceptance_criteria:
+  - スクリプトが設定で昇格権限を要求できる
+  - Windows: UACプロンプトが表示され正しく動作する
+  - Unix: sudo昇格がパスワードプロンプトで動作する
+  - 昇格前に明確なユーザー通知
+  - 昇格拒否時の適切な処理
+  - 昇格スクリプトのセキュリティ警告
+  - 昇格実行の監査ログ
+
+dependencies: [T023]  # パスワードプロンプト用のターミナルマネージャー
+
+related: []  # List of related ticket IDs
+
+files:
+  - app/internal/action/elevated.go
+  - app/internal/action/elevated_windows.go
+  - app/internal/action/elevated_unix.go
+  - app/internal/action/elevated_test.go
+
+time_estimate: 6h
+time_spent: 0h
+
+notes: |
+  重要なセキュリティ機能 - 慎重な実装が必要です。
+  Windows runas APIとUnix sudo/pkexecの使用を検討してください。
+  パスワードプロンプトを安全に処理する必要があります。
+  昇格はスクリプトごとのオプトインであるべきで、自動的には行わないでください。

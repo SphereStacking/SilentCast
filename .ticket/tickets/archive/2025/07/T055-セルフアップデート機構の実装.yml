@@ -1,0 +1,93 @@
+# Feature Ticket Template
+
+id: T055
+title: "セルフアップデート機構の実装"
+type: feature
+priority: low
+status: completed
+created: "2025-07-18"
+updated: "2025-07-20"
+assignee: null
+labels:
+  - feature
+  - phase5
+  - updater
+  - auto-update
+
+description: |
+  ## 問題説明
+  ユーザーは手動で更新をダウンロードしてインストールする必要があり、これは不便でエラーが発生しやすい。
+  セルフアップデート機構により、更新プロセスが合理化され、ユーザーがSilentCastのインストールを
+  簡単に最新の状態に保つことができます。
+  
+  ## 提案する解決策
+  新しいリリースをダウンロードし、その整合性を検証し、現在のバイナリをアトミックに置き換える
+  セルフアップデート機構を実装します。更新プロセスは安全で、失敗時のロールバック機能を備えている
+  必要があります。
+  
+  ## 実装詳細
+  - GitHubリリースから新しいバイナリをダウンロード
+  - チェックサム/署名を使用してダウンロードの整合性を検証
+  - アトミックなバイナリ置換ロジックの実装（バックアップ + 置換 + 検証）
+  - 異なるプラットフォームの処理（Windows .exe、Linux/macOSバイナリ）
+  - 更新失敗時のロールバック機構を追加
+  - 更新中の実行中プロセスが正しく処理されることを確認
+  - 更新には明示的なユーザー確認が必要
+  
+tasks:
+  - [ ] セルフアップデートインターフェースとワークフローの設計
+  - [ ] GitHubリリースからのバイナリダウンロードの実装
+  - [ ] チェックサム/署名検証の追加
+  - [ ] アトミックなバイナリ置換ロジックの作成
+  - [ ] プラットフォーム固有の更新要件の処理
+  - [ ] ロールバック機構の実装
+  - [ ] 更新確認と進捗レポート機能の追加
+  - [ ] 更新中の実行中プロセス管理の処理
+  - [ ] 包括的なユニットテストの作成
+  - [ ] モックリリースを使用した統合テストの追加
+  - [ ] 更新手順でドキュメントを更新
+
+acceptance_criteria:
+  - セルフアップデートが現在のプラットフォーム用の正しいバイナリをダウンロードする
+  - ダウンロードされたバイナリの整合性が検証される
+  - バイナリの置換がアトミックで安全である
+  - 失敗した更新をロールバックできる
+  - 更新前にユーザー確認が必要
+  - 実行中のプロセスが適切に処理される
+  - すべてのテストが合格する
+  - ドキュメントにセルフアップデートの使用方法が含まれる
+
+dependencies: 
+  - T054  # Auto-update checker
+
+related: 
+  - T054  # Auto-update checker  
+  - T056  # Update notifications
+
+files:
+  - app/internal/updater/
+  - app/internal/updater/downloader.go
+  - app/internal/updater/installer.go
+  - app/internal/updater/verifier.go
+  - app/internal/updater/rollback.go
+
+time_estimate: 8h
+time_spent: 0h
+
+# Feature-specific fields
+user_story: |
+  SilentCastユーザーとして
+  単一のコマンドで新しいバージョンに簡単に更新したい
+  手動でインストールすることなく、新機能とバグ修正を入手できるようにするため
+
+impact:
+  users_affected: "all"
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  モックリリースと実際のGitHubリリースで更新プロセスをテスト。
+  更新が失敗した場合のロールバックが動作することを確認。
+  サポートされているすべてのプラットフォームでテスト。
+  プロセスが実行中のアプリケーションを破損しないことを確認。
+  異なる権限レベル（管理者 vs ユーザー）でテスト。

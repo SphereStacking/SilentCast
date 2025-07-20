@@ -1,0 +1,66 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T040
+title: "--onceと--spell単一実行モードの実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels:
+  - feature
+  - phase4
+  - cli
+  - execution-control
+
+description: |
+  単一実行モード用の --once と --spell コマンドラインオプションを実装する。
+  これにより、ホットキーリスナーやシステムトレイを開始することなく、
+  特定のスペルを一度実行して終了するSilentCastを実行できる。
+  
+  主要機能：
+  - --once フラグでSilentCastを単一実行モードで実行
+  - --spell <spell> で実行するスペルを指定
+  - 起動時に指定されたスペルを即座実行
+  - 実行完了後に終了
+  - ホットキー登録やシステムトレイアイコンなし
+  - スクリプトや自動化に有用
+  
+tasks:
+  - [ ] CLIパーサーに --once フラグを追加
+  - [ ] CLIパーサーに --spell <spell> 引数を追加
+  - [ ] 単一実行モードロジックの実装
+  - [ ] onceモードでのホットキー登録のバイパス
+  - [ ] onceモードでのシステムトレイのバイパス
+  - [ ] 起動時の指定スペル実行
+  - [ ] 実行後の適切な終了を確実にする
+  - [ ] エラーの適切な処理
+  - [ ] 単一実行モードのテスト作成
+  - [ ] ドキュメントと例の更新
+  
+acceptance_criteria:
+  - "--once フラグが単一実行モードをトリガーする"
+  - "--spell 引数がスペルキー（例：\"e\" または \"g,s\"）を受け入れる"
+  - "スペルがユーザーインタラクションなしで即座実行される"
+  - "プロセスが実行後にクリーンに終了する"
+  - "終了コードがスペル実行の成功・失敗を反映する"
+  - "ホットキーリスナーやシステムトレイが開始されない"
+  - "全てのアクションタイプ（app, script, url）で動作する"
+  - "無効なスペルに対する明確なエラーメッセージ"
+
+dependencies: []  # このチケットが依存するチケットIDのリスト
+
+related: []  # 関連チケットIDのリスト
+
+files: []  # 変更・作成するファイルのリスト
+
+time_estimate: 5h
+time_spent: 0h
+
+notes: |
+  この機能は、スクリプトや自動化ワークフローでSilentCastを使用できるようにする。
+  使用例：
+    silentcast --once --spell "e"  # エディターを開いて終了
+    silentcast --once --spell "g,s"  # git statusを実行して終了

@@ -1,0 +1,77 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T019
+title: "出力サポート付きLinux通知の実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, core-features, phase2, platform-specific, notifications, linux]
+
+description: |
+  コマンド出力表示をサポートするLinux固有の通知を実装する。
+  
+  このチケットでは、以下の機能を持つSystemNotifierインターフェースの
+  Linux実装の作成に焦点を当てる：
+  - D-Bus/libnotifyを使用した通知タイトルとメッセージの表示
+  - show_output有効時のコマンド出力表示サポート
+  - 様々なLinux通知システムの適切なエラーハンドリング
+  - 複数の通知バックエンドのサポート（notify-send、D-Bus）
+  
+  実装は設定に応じてコマンド出力をキャプチャし通知に表示するため、
+  バッファ出力システムと統合される必要がある。異なる
+  Linuxデスクトップ環境（GNOME、KDE、XFCEなど）で動作する必要がある。
+  
+tasks:
+  - [ ] Linux通知システムの調査（D-Bus、libnotify、notify-send）
+  - [ ] SystemNotifierインターフェースに準拠するLinuxNotifier構造体の実装
+  - [ ] タイトルと本文を含むデスクトップ通知のサポート追加
+  - [ ] 複数バックエンドサポートの実装（D-Bus直接、notify-sendコマンド）
+  - [ ] BufferedOutputと統合してコマンド出力をキャプチャ
+  - [ ] デスクトップ通知用出力フォーマットの実装
+  - [ ] 異なるデスクトップ環境の処理（GNOME、KDE、XFCE）
+  - [ ] Add fallback mechanisms for systems without notification support
+  - [ ] Add unit tests for Linux notifier
+  - [ ] Test integration with show_output configuration
+  - [ ] Document Linux-specific notification behavior and requirements
+  
+acceptance_criteria:
+  - Linux users see desktop notifications when actions complete
+  - Command output is displayed in notifications when show_output is true
+  - Notifications have proper titles based on action names
+  - Long output is truncated appropriately for notification format
+  - Works across major desktop environments (GNOME, KDE, XFCE)
+  - Gracefully falls back when notification system is unavailable
+  - Supports both D-Bus and notify-send backends
+  - Unit tests pass for all notification scenarios
+  - Integration tests verify output capture and display
+
+dependencies: [T012]  # Depends on SystemNotifier interface
+
+related: [T015]  # Related to show_output implementation
+
+files:
+  - app/internal/notify/linux.go (create)
+  - app/internal/notify/linux_test.go (create)
+  - app/internal/notify/factory.go (modify)
+  - app/internal/action/executor.go (modify)
+  - go.mod (modify - add Linux notification library if needed)
+
+time_estimate: 8h
+time_spent: 0h
+
+notes: |
+  Key implementation details:
+  - Use github.com/gen2brain/beeep or godbus/dbus for Linux notifications
+  - Implement in app/internal/notify/linux.go
+  - Follow the SystemNotifier interface from notify/interface.go
+  - Use BufferedOutput to capture command output
+  - Detect available notification system at runtime
+  - Prefer D-Bus for better features, fallback to notify-send
+  - Format output appropriately for notification constraints
+  - Handle Wayland vs X11 differences if any
+  - Consider urgency levels for different notification types
+  - Test on major distributions (Ubuntu, Fedora, Arch)

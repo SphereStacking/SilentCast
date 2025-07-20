@@ -1,0 +1,76 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T013
+title: "非同期通知用NotificationQueueを実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels:
+  - feature
+  - foundation
+  - notification
+  - phase1
+  - async
+
+description: |
+  通知を非同期で処理するための通知キューシステムを実装する。
+  これにより通知配信でのブロッキングを防ぎ、複数の通知がトリガー
+  された場合のパフォーマンスを向上させる。
+  
+  ## 機能
+  - ノンブロッキング通知配信
+  - 重要な通知のための優先度キュー
+  - 通知スパムを防ぐレート制限
+  - 失敗した通知のリトライロジック
+  - キューのドレインを伴うグレースフルシャットダウン
+  
+  ## 使用例
+  - 複数のスクリプトが同時に終了する場合
+  - 長時間実行される通知配信
+  - リトライが必要な失敗した通知
+  - 通知中のUIフリーズの防止
+  
+tasks:
+  - [ ] app/internal/notify/queue.goを作成
+  - [ ] NotificationQueue構造体を実装
+  - [ ] 優先度キューの実装を追加
+  - [ ] Enqueue()メソッドを実装
+  - [ ] ProcessQueue()ゴルーチンを実装
+  - [ ] レート制限ロジックを追加
+  - [ ] バックオフ付きリトライ機構を追加
+  - [ ] グレースフルシャットダウンを実装
+  - [ ] メトリクス/ログを追加
+  - [ ] 包括的な単体テストを作成
+  - [ ] 統合テストを追加
+  
+acceptance_criteria:
+  - ノンブロッキング通知配信
+  - 優先度通知が最初に配信される
+  - レート制限がスパムを防ぐ
+  - 失敗した通知がリトライされる
+  - 通知を失わずにクリーンシャットダウン
+  - ゴルーチンリークがない
+  - スレッドセーフな実装
+  - 優秀なテストカバレッジ
+
+dependencies:
+  - T012  # SystemNotifier interface  # List of ticket IDs this depends on
+
+related:
+  - T015  # Will use queue for show_output  # List of related ticket IDs
+
+files:
+  - app/internal/notify/queue.go
+  - app/internal/notify/queue_test.go  # List of files to be modified/created
+
+time_estimate: 6h
+time_spent: 0h
+
+notes: |
+  キューの実装にはチャネルの使用を検討する。
+  contextのキャンセルを適切に処理することを確実にする。
+  これにより体感パフォーマンスが大幅に向上する。

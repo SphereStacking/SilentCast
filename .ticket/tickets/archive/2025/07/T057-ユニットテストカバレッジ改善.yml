@@ -1,0 +1,79 @@
+# T057: Improve unit test coverage to 80%+
+
+id: T057
+title: "ユニットテストカバレッジの80%+への改善"
+type: test
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: ["test", "coverage", "quality"]
+
+description: |
+  SilentCastコードベース全体のユニットテストカバレッジを大幅に改善し、80%以上の
+  カバレッジを達成します。これには既存のテストギャップの分析、包括的なテストスイートの実装、
+  および品質基準を維持するためのカバレッジ監視の確立が含まれます。
+
+  現在の状況：一部のパッケージには基本的なユニットテストが存在しますが、カバレッジは一貫していません。
+  目標：全パッケージで80%以上のユニットテストカバレッジを達成し維持します。
+  
+tasks:
+  - [ ] go test -coverを使用して現在のテストカバレッジを分析
+  - [ ] カバレッジが最も低いパッケージと重要なギャップを特定
+  - [ ] configパッケージの包括的なテストスイートを作成（loader、types、validation）
+  - [ ] actionパッケージのテストを拡張（executor、script、shell、url、elevated）
+  - [ ] hotkeyパッケージの不足しているテストを追加（manager、parser、sequence）
+  - [ ] notifyパッケージのテストカバレッジを改善（システム通知、コンソール出力）
+  - [ ] outputパッケージのテストを追加（buffered、formatter、interface）
+  - [ ] permissionパッケージの包括的なテストを作成
+  - [ ] trayパッケージのユニットテストを追加
+  - [ ] loggerパッケージのテストを実装
+  - [ ] CI/CDパイプラインでカバレッジレポートをセットアップ
+  - [ ] カバレッジバッジと監視を追加
+  
+acceptance_criteria:
+  - 全体のテストカバレッジが80%以上に到達
+  - すべてのクリティカルパスとエラー条件がテスト済み
+  - 外部依存関係用のモックインターフェースが適切に実装されている
+  - テストカバレッジレポートが生成され追跡されている
+  - カバレッジが閾値を下回った場合CI/CDパイプラインが失敗
+  - すべての新しいコードに適切なテストカバレッジが必要
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: ["T058", "T059"]  # Integration and E2E tests
+
+files: 
+  - "app/internal/config/*_test.go"
+  - "app/internal/action/*_test.go"
+  - "app/internal/hotkey/*_test.go"
+  - "app/internal/notify/*_test.go"
+  - "app/internal/output/*_test.go"
+  - "app/internal/permission/*_test.go"
+  - "app/internal/tray/*_test.go"
+  - "app/pkg/logger/*_test.go"
+  - ".github/workflows/test.yml"
+  - "Makefile"
+
+time_estimate: 8h
+time_spent: 0h
+
+notes: |
+  テスト戦略：
+  - 包括的な入力検証にはテーブル駆動テストを使用
+  - 外部依存関係をモック化（ファイルシステム、OS API、ネットワーク）
+  - ハッピーパスとエラー条件の両方をテスト
+  - エッジケースと境界条件に焦点を当てる
+  - プラットフォーム固有のコードが適切にテストされていることを確認
+  
+  カバレッジツール：
+  - 基本的なカバレッジにはgo test -coverを使用
+  - 詳細なレポートにはgocovまたはgcovを検討
+  - CI/CDでカバレッジ閾値を設定
+  
+  優先パッケージ（最も影響度が高い）：
+  1. configパッケージ - コア設定ロジック
+  2. actionパッケージ - アクション実行エンジン
+  3. hotkeyパッケージ - キー検出と解析
+  4. notifyパッケージ - ユーザーフィードバックシステム

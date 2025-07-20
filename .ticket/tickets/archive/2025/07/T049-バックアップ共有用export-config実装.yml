@@ -1,0 +1,65 @@
+# Feature Ticket Template
+
+id: T049
+title: "バックアップ/共有用--export-configの実装"
+type: feature
+priority: low
+status: completed
+created: "2025-07-17"
+updated: "2025-07-19"
+assignee: null
+labels:
+  - feature
+  - phase4
+  - cli
+
+description: |
+  ## 問題の説明
+  ユーザーはspellbook設定をバックアップし、他の人と共有する方法が必要です。
+  
+  ## 提案される解決策
+  現在の設定をファイルまたは標準出力にエクスポートする--export-configフラグを追加します。
+  
+  ## 実装の詳細
+  - メインCLIに--export-configフラグを追加
+  - ファイルまたは標準出力（ファイル指定なしの場合）への出力をサポート
+  - エクスポートにすべての設定ファイルを含める
+  - 異なるエクスポート形式（YAMLバンドル、tar.gz）をサポート
+  
+tasks:
+  - [ ] Add --export-config flag to CLI
+  - [ ] Implement configuration export functionality
+  - [ ] Support file output and stdout
+  - [ ] Add export format options
+  - [ ] Write unit tests
+  - [ ] Update documentation
+  
+acceptance_criteria:
+  - --export-config flag works correctly
+  - Can export to file or stdout
+  - Exported config can be imported later
+  - All tests pass
+  - Documentation is complete
+
+dependencies: []
+
+related: [T050]
+
+files: []
+
+time_estimate: 3h
+time_spent: 0h
+
+# Feature-specific fields
+user_story: |
+  As a SilentCast user
+  I want to export my configuration
+  So that I can backup or share my spellbook setup
+
+impact:
+  users_affected: "all"
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  Test exporting various configuration formats and ensure they can be imported correctly

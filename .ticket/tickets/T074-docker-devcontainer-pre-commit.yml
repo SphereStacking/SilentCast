@@ -1,0 +1,87 @@
+id: T074
+title: "開発環境の改善（Docker・DevContainer・pre-commit）"
+type: feature
+priority: medium
+status: todo
+created: "2025-01-20"
+updated: "2025-01-20"
+assignee: null
+labels:
+  - developer-experience
+  - tooling
+  - automation
+  - docker
+
+description: |
+  ## 概要
+  開発者の生産性向上とコード品質の一貫性確保のため、
+  モダンな開発環境ツールを導入する。
+  
+  ## 目的
+  - 環境構築の簡素化
+  - コード品質の自動チェック
+  - 開発環境の標準化
+  - 新規コントリビューターの参入障壁を下げる
+  
+tasks:
+  - [ ] Dockerfile の作成（マルチステージビルド）
+  - [ ] docker-compose.yml の作成（開発環境用）
+  - [ ] .devcontainer/devcontainer.json の作成
+  - [ ] VS Code 推奨拡張機能リストの作成
+  - [ ] pre-commit フックの設定
+  - [ ] pre-commit 設定ファイルの作成
+  - [ ] Makefile への Docker コマンド追加
+  - [ ] 開発環境セットアップスクリプトの作成
+  - [ ] GitHub Codespaces 対応の検討
+  - [ ] 開発環境ドキュメントの更新
+  
+acceptance_criteria:
+  - Docker で一発で開発環境が構築できる
+  - VS Code Dev Container で開発可能
+  - コミット前に自動的にコード品質チェックが実行される
+  - 全プラットフォームで統一された開発体験
+  - ドキュメントが分かりやすく整備されている
+
+dependencies: []
+
+related: [T070]
+
+files:
+  - Dockerfile
+  - docker-compose.yml
+  - .devcontainer/devcontainer.json
+  - .devcontainer/Dockerfile
+  - .pre-commit-config.yaml
+  - .vscode/extensions.json
+  - .vscode/settings.json
+  - scripts/setup-dev.sh
+  - docs/development/docker-setup.md
+
+time_estimate: 10h
+time_spent: 0h
+
+notes: |
+  ## Dockerfile 構成
+  - ベースイメージ: golang:1.21-alpine
+  - マルチステージビルド採用
+  - 開発用ステージと本番用ステージ
+  
+  ## Dev Container 機能
+  - Go 開発ツール自動インストール
+  - Git 設定の引き継ぎ
+  - ホットリロード対応
+  - デバッガー設定
+  
+  ## pre-commit チェック項目
+  - gofmt / goimports
+  - golangci-lint
+  - go test
+  - go mod tidy
+  - 魔法の用語チェック（カスタムスクリプト）
+  - YAML 検証
+  - Markdown lint
+  
+  ## Docker Compose サービス
+  - app: メインアプリケーション
+  - docs: ドキュメントサーバー
+  - test: テスト実行環境

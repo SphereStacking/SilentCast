@@ -1,0 +1,85 @@
+# SilentCast Ticket Labels Definition
+
+# Component labels
+components:
+  - name: core
+    color: "#FF6B6B"
+    description: "Core functionality"
+  - name: output-management
+    color: "#4ECDC4"
+    description: "Output capture and display"
+  - name: notification
+    color: "#45B7D1"
+    description: "Notification system"
+  - name: config
+    color: "#96CEB4"
+    description: "Configuration management"
+  - name: action
+    color: "#DDA0DD"
+    description: "Action execution"
+  - name: hotkey
+    color: "#FFB347"
+    description: "Hotkey management"
+  - name: cli
+    color: "#87CEEB"
+    description: "Command-line interface"
+  - name: service
+    color: "#98D8C8"
+    description: "Service/daemon functionality"
+
+# Platform labels
+platforms:
+  - name: windows
+    color: "#0078D4"
+    description: "Windows-specific"
+  - name: macos
+    color: "#000000"
+    description: "macOS-specific"
+  - name: linux
+    color: "#FCC624"
+    description: "Linux-specific"
+  - name: cross-platform
+    color: "#2ECC71"
+    description: "Works on all platforms"
+
+# Special labels
+special:
+  - name: breaking-change
+    color: "#D73502"
+    description: "Introduces breaking changes"
+  - name: security
+    color: "#D73502"
+    description: "Security-related"
+  - name: performance
+    color: "#F39C12"
+    description: "Performance improvement"
+  - name: ux
+    color: "#9B59B6"
+    description: "User experience"
+  - name: blocked
+    color: "#E74C3C"
+    description: "Blocked by dependencies"
+  - name: good-first-issue
+    color: "#7057FF"
+    description: "Good for newcomers"
+
+# Testing labels
+testing:
+  - name: needs-tests
+    color: "#FBCA04"
+    description: "Tests need to be written"
+  - name: has-tests
+    color: "#0E8A16"
+    description: "Tests are included"
+  - name: test-failing
+    color: "#E74C3C"
+    description: "Tests are failing"
+
+# Documentation labels
+documentation:
+  - name: needs-docs
+    color: "#FBCA04"
+    description: "Documentation needed"
+  - name: has-docs
+    color: "#0E8A16"
+    description: "Documentation included"

@@ -1,0 +1,61 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T020
+title: "keep_open機能用Windowsターミナルサポートの実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, core-features, phase2, keep-open, terminal, windows]
+
+description: |
+  keep_open機能用のWindows固有のターミナルサポートを実装する。
+  この実装は様々なWindowsターミナルエミュレーターを処理し、堅牢なフォールバックオプションを提供する必要がある。
+  
+  サポートされるターミナルエミュレーター（優先度順）：
+  1. Windows Terminal (wt.exe) - モダンなWindowsターミナル
+  2. PowerShell 7 (pwsh.exe) - クロスプラットフォームPowerShell
+  3. Windows PowerShell (powershell.exe) - 組み込みPowerShell
+  4. Command Prompt (cmd.exe) - フォールバックオプション
+  
+  実装詳細：
+  - システム上で利用可能なターミナルエミュレーターの検出
+  - ウィンドウを開いたままにするための適切なコマンドライン引数の使用
+  - GUIとコンソールサブシステムの両方のコンテキストの処理
+  - 設定からのカスタムターミナル設定のサポート
+  
+tasks:
+  - [ ] app/internal/terminal/manager_windows.goにWindowsターミナルマネージャーを実装
+  - [ ] Windowsターミナルエミュレーター検出機能を追加
+  - [ ] サポートされる各ターミナル用のコマンドビルダーを実装
+  - [ ] 実行後もターミナルウィンドウを開いたままにするロジックを追加
+  - [ ] GUIアプリケーションとコンソールアプリケーションの特殊ケースを処理
+  - [ ] Windows固有のユニットテストを追加
+  - [ ] 様々なターミナルエミュレーターでテスト
+  
+acceptance_criteria:
+  - Windows Terminalが利用可能な場合は検出され使用される
+  - PowerShellからcmd.exeへの適切なフォールバック
+  - スクリプト実行後もターミナルウィンドウが開いたままになる
+  - GUIとコンソールの両方のコンテキストから正しく動作
+  - ターミナルが見つからない場合の適切なエラー処理
+  - すべてのWindows固有のテストが合格
+
+dependencies: [T023]  # Depends on terminal manager interface
+
+related: [T021, T022]  # Related OS-specific implementations
+
+files:
+  - app/internal/terminal/manager_windows.go
+  - app/internal/terminal/manager_windows_test.go
+  - app/internal/terminal/detector_windows.go
+  - app/internal/terminal/command_builder_windows.go
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  Additional notes or comments

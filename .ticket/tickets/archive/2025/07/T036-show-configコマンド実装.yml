@@ -1,0 +1,46 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T036
+title: "--show-configコマンドの実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, phase4, cli, configuration]
+
+description: |
+  全ての設定ファイルを読み込み、オーバーライドを適用した後のマージされた設定を表示する --show-config コマンドを実装する。機能：
+  - カスケード読み込み後の最終マージ設定の表示
+  - 複数の出力フォーマット（JSONとYAML）のサポート
+  - 設定の特定セクションのみを表示するオプション
+  - 設定問題のデバッグに有用
+  
+tasks:
+  - [ ] オプションのフォーマットパラメータ付きの --show-config フラグを追加
+  - [ ] JSON/YAMLへの設定シリアライゼーション実装
+  - [ ] セクションフィルタリング機能の追加（例：--show-config spells）
+  - [ ] 読みやすい出力フォーマット
+  - [ ] 異なる出力フォーマットのテスト追加
+  
+acceptance_criteria:
+  - "--show-config が完全なマージ設定を表示する"
+  - "JSONとYAMLの両方の出力フォーマットをサポートする"
+  - "特定の設定セクションをフィルタリング表示できる"
+  - "最終設定に貢献したファイルを表示する"
+  - "出力が適切にフォーマットされ読みやすい"
+
+dependencies: []  # 依存関係なし
+
+related: []  # 関連チケットIDのリスト
+
+files: []  # 変更・作成するファイルのリスト
+
+time_estimate: 3h
+time_spent: 0h
+
+notes: |
+  このコマンドは、カスケード読み込みとオーバーライドが全て適用された後に
+  実際に読み込まれた設定をユーザーが理解するのに役立つ。

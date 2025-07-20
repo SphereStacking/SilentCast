@@ -1,0 +1,77 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T016
+title: "通知用出力フォーマッターの作成"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels:
+  - feature
+  - core-features
+  - phase2
+  - output-management
+  - formatting
+
+description: |
+  コマンド出力を通知での表示用に準備する出力フォーマッターを作成する。
+  プラットフォームごとに通知コンテンツの機能と制限が異なる。
+  
+  ## フォーマット要件
+  - ANSIカラーコードの除去または変換
+  - 行末の正規化 (CRLF -> LF)
+  - 長い出力の省略記号での切り詰め
+  - エラーパターンのハイライト
+  - テーブルと構造化出力のフォーマット
+  - 特殊文字の処理
+  
+  ## プラットフォーム考慮事項
+  - Windows: トーストでプレーンテキストのみ
+  - macOS: 一部のフォーマットをサポート
+  - Linux: 通知システムにより異なる
+  
+tasks:
+  - [ ] app/internal/output/formatter.go の作成
+  - [ ] ANSIカラーコード除去の実装
+  - [ ] 行末正規化の追加
+  - [ ] スマート切り詰めアルゴリズムの実装
+  - [ ] エラーパターンハイライトの追加
+  - [ ] プラットフォーム固有フォーマッターの作成
+  - [ ] テーブル検出とフォーマットの追加
+  - [ ] Unicode と特殊文字の処理
+  - [ ] 包括的なユニットテストの作成
+  - [ ] パフォーマンス用ベンチマークの追加
+  
+acceptance_criteria:
+  - ANSIコードが適切に除去または変換される
+  - 出力がプラットフォーム通知制限に適合する
+  - エラーが視覚的に区別される
+  - 重要な情報の損失がない
+  - 高速なパフォーマンス（典型的な出力で1ms未満）
+  - エッジケース（バイナリデータ、Unicode）を処理する
+  - プラットフォームに適したフォーマット
+
+dependencies: []  # List of ticket IDs this depends on
+
+related:
+  - T015  # Used by show_output
+  - T017  # Windows formatting needs
+  - T018  # macOS formatting needs
+  - T019  # Linux formatting needs  # List of related ticket IDs
+
+files:
+  - app/internal/output/formatter.go
+  - app/internal/output/formatter_test.go
+  - app/internal/output/formatter_ansi.go
+  - app/internal/output/formatter_platform.go  # List of files to be modified/created
+
+time_estimate: 6h
+time_spent: 0h
+
+notes: |
+  既存のANSI除去ライブラリの使用を検討する。
+  切り詰め時に重要な情報を保持することを確認する。
+  git、npm、dockerなどの実際のコマンド出力でテストする。

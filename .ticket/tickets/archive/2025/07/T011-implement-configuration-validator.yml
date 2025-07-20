@@ -1,0 +1,80 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T011
+title: "設定バリデーターを実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels:
+  - feature
+  - foundation
+  - configuration
+  - phase1
+  - validation
+
+description: |
+  エラーを早期に検出し、ユーザーに有用なエラーメッセージを提供する
+  包括的な設定バリデーターを実装する。spellbook.yml設定ファイルの
+  正確性を検証する。
+  
+  ## 検証ルール
+  - タイムアウト値は非負の値である必要がある
+  - シェル実行ファイルがシステムに存在する必要がある
+  - スペルキーが有効である必要がある（プレフィックスとの競合なし）
+  - アクションタイプが有効である必要がある（app、script、url）
+  - 必須フィールドが存在する
+  - 相互排他的なオプションが両方とも設定されていない
+  - appアクションのファイルパスが存在する
+  - urlアクションのURL形式が有効である
+  
+  ## エラー報告
+  - 行番号付きの明確なエラーメッセージ
+  - 一般的な問題の修正提案
+  - 一度に複数のエラーを報告
+  
+tasks:
+  - [ ] app/internal/config/validator.goを作成
+  - [ ] 検証ルールを持つValidator構造体を実装
+  - [ ] タイムアウト値の範囲検証を追加
+  - [ ] シェル実行ファイルの存在チェックを追加
+  - [ ] スペルキーの競合検出を追加
+  - [ ] アクションタイプの検証を追加
+  - [ ] 必須フィールドの検証を追加
+  - [ ] 相互排他検証を追加
+  - [ ] 詳細なエラー報告を作成
+  - [ ] すべての検証ルールの単体テストを作成
+  - [ ] 設定ローダーとの統合
+  
+acceptance_criteria:
+  - すべての検証ルールが実装されている
+  - 明確で実行可能なエラーメッセージ
+  - エラー報告に行番号が含まれる
+  - 一回の実行で複数のエラーが報告される
+  - 偽陽性がない
+  - パフォーマンスへの影響が10ms未満
+  - --validate-config CLIとの統合
+  - 95%以上のテストカバレッジ
+
+dependencies:
+  - T004  # Extended ActionConfig  # List of ticket IDs this depends on
+
+related:
+  - T032  # --validate-config CLI command  # List of related ticket IDs
+
+files:
+  - app/internal/config/validator.go
+  - app/internal/config/validator_test.go
+  - app/internal/config/loader.go (integration)  # List of files to be modified/created
+
+time_estimate: 8h
+time_spent: 0h
+
+notes: |
+  これはユーザーエクスペリエンスにとって重要である。悪い設定は
+  有用なエラーメッセージと共に素早く失敗するべきである。
+  拡張性のために検証フレームワークの使用やルールベースシステムの
+  構築を検討する。

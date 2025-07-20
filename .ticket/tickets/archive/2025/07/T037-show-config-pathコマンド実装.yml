@@ -1,0 +1,47 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T037
+title: "--show-config-pathコマンドの実装"
+type: feature
+priority: low
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, phase4, cli, configuration]
+
+description: |
+  設定ファイルの場所に関する情報を表示する --show-config-path コマンドを実装する。
+  このコマンドは以下を実行する必要がある：
+  - SilentCastが設定ファイルを検索する全てのパスを表示
+  - 実際に見つかって読み込まれた設定ファイルを示す
+  - 検索順序（優先度）を表示
+  - ユーザーの設定読み込み問題のトラブルシューティングを支援
+  
+tasks:
+  - [ ] CLIに --show-config-path フラグを追加
+  - [ ] パス解決表示ロジックの実装
+  - [ ] 存在するファイルと缠失ファイルの表示
+  - [ ] 読み込み順序と優先度の表示
+  - [ ] ユニットテストの追加
+  
+acceptance_criteria:
+  - "--show-config-path が全ての設定検索パスをリストする"
+  - "ファイルの存在と読み込み状態を明確に示す"
+  - "ファイルが読み込まれる順序を表示する"
+  - "メインとOS固有の設定パスの両方を表示する"
+  - "設定読み込み問題のデバッグに役立つ"
+
+dependencies: []  # 依存関係なし
+
+related: []  # 関連チケットIDのリスト
+
+files: []  # 変更・作成するファイルのリスト
+
+time_estimate: 2h
+time_spent: 0h
+
+notes: |
+  SilentCastが設定ファイルをどこで検索し、実際にどのファイルを見つけるかを
+  ユーザーが理解するためのシンプルな診断コマンド。

@@ -1,0 +1,51 @@
+id: T044
+title: "--list-spellsコマンドの実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: 
+  - feature
+  - phase4
+  - cli
+  - debug
+
+description: |
+  設定されたすべてのspells（キーボードショートカット）を、説明と関連するアクションと共に
+  表示する新しい--list-spellsコマンドを実装します。これは、ユーザーが設定ファイルを
+  手動で読むことなく、利用可能な機能を発見し理解するために不可欠です。
+  
+tasks:
+  - [ ] CLIの引数解析に--list-spellsフラグを追加
+  - [ ] configパッケージにspell一覧表示機能を作成
+  - [ ] spellキー、説明、アクションタイプで出力をフォーマット
+  - [ ] フィルタリングオプションを追加（アクションタイプ別、有効/無効別）
+  - [ ] キーボードショートカット形式の検証状態を含める
+  - [ ] 大規模なspellリスト用の検索/grep機能を追加
+  
+acceptance_criteria:
+  - コマンドは設定されたすべてのspellsを明確なフォーマットで一覧表示する
+  - spellキーの組み合わせ、説明、アクションタイプを表示する
+  - どのspellsが有効/無効かを示す
+  - 異なるアクションタイプ用のフィルタリングオプションを提供する
+  - 各spell設定の検証状態を含める
+  - 出力は適切にフォーマットされ読みやすい
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files: 
+  - app/cmd/silentcast/main.go
+  - app/internal/config/loader.go
+  - app/internal/config/types.go
+
+time_estimate: 2h
+time_spent: 0h
+
+notes: |
+  利用可能なspellsのユーザー発見に不可欠なため、高優先度。
+  通常の設定とカスケードロードされた設定の両方で動作する必要がある。
+  スクリプト使用のためのJSON/YAML出力形式の追加を検討。

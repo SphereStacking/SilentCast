@@ -1,0 +1,120 @@
+# T060: Update documentation for all implemented features
+
+id: T060
+title: "実装された全機能のドキュメント更新"
+type: docs
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: ["docs", "user-guide", "api", "examples"]
+
+description: |
+  SilentCastの機能と実装の現在の状態を反映するように、すべてのドキュメントを
+  包括的に更新します。これにはユーザーガイド、APIドキュメント、設定リファレンス、
+  および設定例が含まれます。
+
+  ドキュメントは正確で完全、ユーザーフレンドリーであるべきで、URLアクション、
+  昇格権限、出力フォーマット、クロスプラットフォーム改善などの新しい追加機能を
+  含む、実装されたすべての機能をカバーします。
+  
+tasks:
+  - [ ] 既存ドキュメントの正確性と完全性を監査
+  - [ ] 現在の機能セットでメインREADME.mdを更新
+  - [ ] 新しいアクションタイプ（URL、昇格）でユーザーガイドを更新
+  - [ ] 出力フォーマットとバッファリング機能を文書化
+  - [ ] すべての新しいオプションで設定リファレンスを更新
+  - [ ] プラットフォーム固有ドキュメントを追加（Windows、macOS、Linux）
+  - [ ] 全パッケージのAPIドキュメントを更新
+  - [ ] 包括的な設定例を作成
+  - [ ] パーミッション要件とセットアップを文書化
+  - [ ] インストールとセットアップガイドを更新
+  - [ ] トラブルシューティングセクションの改善を追加
+  - [ ] 開発ドキュメントを更新（CLAUDE.md、コントリビューティング）
+  - [ ] 設定変更用マイグレーションガイドを作成
+  - [ ] パフォーマンスチューニングと最適化ガイドを追加
+  - [ ] CLIリファレンスとコマンドドキュメントを更新
+  
+acceptance_criteria:
+  - 実装されたすべての機能が適切に文書化されている
+  - ドキュメントが正確で現在のコードベースと同期している
+  - ユーザーガイドに実用的な例とユースケースが含まれている
+  - APIドキュメントがすべてのパブリックインターフェースをカバー
+  - 設定リファレンスが完全ですべてのオプションを含んでいる
+  - プラットフォーム固有の指示が明確でテスト済み
+  - ドキュメントがアクセシブルでよく整理されている
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: ["T061"]  # Troubleshooting guide
+
+files: 
+  - "README.md"
+  - "docs/index.md"
+  - "docs/guide/"
+  - "docs/guide/getting-started.md"
+  - "docs/guide/configuration.md"
+  - "docs/guide/actions.md"
+  - "docs/guide/hotkeys.md"
+  - "docs/guide/platform-specific.md"
+  - "docs/config/"
+  - "docs/config/reference.md"
+  - "docs/config/examples.md"
+  - "docs/config/migration.md"
+  - "docs/api/"
+  - "docs/api/packages.md"
+  - "docs/api/interfaces.md"
+  - "docs/development/"
+  - "docs/development/setup.md"
+  - "docs/development/testing.md"
+  - "docs/development/contributing.md"
+  - "examples/config/"
+  - "CLAUDE.md"
+
+time_estimate: 6h
+time_spent: 0h
+
+notes: |
+  ドキュメント更新戦略：
+  - ドキュメントのギャップについて最近のコミットと機能をレビュー
+  - すべての例をテストし、現在のバージョンで動作することを確認
+  - すべてのドキュメントで一貫したフォーマットとスタイルを使用
+  - コード例と実用的なユースケースを含める
+  - 相互参照とリンクが最新であることを確認
+  
+  主要なドキュメント領域：
+  1. ユーザー向けドキュメント：
+     - ステップバイステップセットアップで始めるガイド
+     - すべてのオプションを説明した設定ガイド
+     - アクションタイプ: app、script、url、elevated
+     - ホットキーシーケンスとスペル構文
+     - プラットフォーム固有のセットアップと要件
+  
+  2. 技術ドキュメント：
+     - 全パッケージのAPIドキュメント
+     - 設定ファイルスキーマと検証
+     - コマンドラインインターフェースリファレンス
+     - ビルドとデプロイ手順
+  
+  3. 例とサンプル：
+     - 実世界の設定例
+     - 一般的なユースケースシナリオ
+     - プラットフォーム固有の設定
+     - 高度な自動化ワークフロー
+  
+  ドキュメント標準：
+  - 一貫したフォーマットでmarkdownを使用
+  - 長いドキュメントには目次を含める
+  - コードシンタックスハイライトを追加
+  - 必要にUI要素のスクリーンショットを使用
+  - 初心者と上級者の両方の例を提供
+  - バージョン互換性情報を含める
+  
+  文書化する新機能：
+  - URLアクションタイプとプロトコル処理
+  - 昇格アクション実行とパーミッション
+  - 出力バッファリングとフォーマット
+  - クロスプラットフォーム互換性改善
+  - システム通知機能強化
+  - 設定検証とエラー報告

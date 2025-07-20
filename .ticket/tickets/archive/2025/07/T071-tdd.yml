@@ -1,0 +1,92 @@
+id: T071
+title: "TDD開発手法への移行"
+type: refactor
+priority: high
+status: completed
+created: "2025-07-20"
+updated: "2025-07-20"
+assignee: null
+labels:
+  - test
+  - tdd
+  - methodology
+  - quality
+
+description: |
+  ## 概要
+  プロジェクト全体をTest-Driven Development (TDD) 手法に移行する。
+  t-wadaのRed-Green-Refactorサイクルに基づき、テストファーストの開発体制を確立する。
+  
+  ## 背景
+  - 現在のテストは実装後に追加される後付けテスト
+  - テストカバレッジは改善されたが、設計品質とテスト品質にまだ改善の余地がある
+  - TDDにより自然に90%+のカバレッジと高品質な設計を実現する
+  
+  ## 目標
+  - 全ての新機能とバグ修正をTDDで実装
+  - 既存コードの段階的TDD化
+  - 開発チームのTDDスキル向上
+  
+tasks:
+  - [ ] TDDガイドラインの確立（CLAUDE.mdに追記済み）
+  - [ ] TDDワークフローの設定（make targetsなど）
+  - [ ] 既存テストのTDD形式への移行調査
+  - [ ] パイロットプロジェクト選定（小さな新機能）
+  - [ ] TDDサイクルツール導入（タイマーなど）
+  - [ ] 既存コードのCharacterization Test追加
+  - [ ] TDD向けのmock/stubライブラリ整備
+  - [ ] TDDメトリクス測定（サイクル時間、カバレッジなど）
+  - [ ] 開発チーム向けTDDトレーニング文書作成
+  - [ ] TDDベストプラクティス事例集作成
+  
+acceptance_criteria:
+  - 新機能の100%がTDDで実装される
+  - TDDサイクル時間が10分以内で安定する
+  - 自然にテストカバレッジ90%+を達成
+  - テストが仕様書として機能する（Living Documentation）
+  - リファクタリングが安全に実行できる
+  - CI/CDでTDDワークフローが自動化される
+
+dependencies: [T067]  # テストカバレッジ改善完了後
+
+related: [T067, T064]  # テスト改善、プロジェクト監査
+
+files:
+  - CLAUDE.md
+  - Makefile
+  - app/**/*_test.go
+  - docs/development/tdd-guide.md
+  - .github/workflows/test.yml
+  - app/test/helpers/
+  - app/test/mocks/
+
+time_estimate: 16h
+time_spent: 1h
+
+notes: |
+  ## TDD移行戦略
+  
+  ### Phase 1: 基盤整備（4h）
+  - TDDガイドライン確立 ✓
+  - ツール・環境整備
+  - メトリクス設定
+  
+  ### Phase 2: パイロット実装（4h）
+  - 小さな新機能をTDDで実装
+  - ワークフローの検証
+  - 改善点の特定
+  
+  ### Phase 3: 既存コード移行（6h）
+  - Characterization Test追加
+  - レガシーコードのリファクタリング
+  - テストの品質向上
+  
+  ### Phase 4: チーム展開（2h）
+  - ドキュメント整備
+  - ベストプラクティス策定
+  - 継続的改善プロセス確立
+  
+  ## 参考資料
+  - t-wada: https://github.com/twada-js/tdd-cycle
+  - TDD by Example - Kent Beck
+  - Working Effectively with Legacy Code - Michael Feathers

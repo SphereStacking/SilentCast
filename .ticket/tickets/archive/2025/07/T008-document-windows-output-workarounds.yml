@@ -1,0 +1,72 @@
+# チケットテンプレート
+# 新しいチケット用にこのファイルをコピーして項目を記入
+
+id: T008
+title: "Windows出力回避策をドキュメント化"
+type: docs
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels:
+  - documentation
+  - windows
+  - workaround
+  - user-guide
+
+description: |
+  スクリプト出力の可視性問題（T005）が修正されるまで、ユーザーは
+  WindowsでコマンドOutput を見るためのドキュメント化された回避策が必要。
+  これらの回避策により、現在の制限にもかかわらずSilentCastを効果的に使用できる。
+  
+  ## 現在の回避策
+  
+  ### Windows Terminal方式
+  ```yaml
+  git_status:
+    type: script
+    command: "cmd /c start cmd /k git status && pause"
+  ```
+  
+  ### PowerShell方式
+  ```yaml
+  git_log:
+    type: script
+    command: "powershell -NoExit -Command git log --oneline -10"
+  ```
+  
+  これらの回避策は開いたままの新しいターミナルウィンドウを開き、
+  ユーザーが出力を確認できるようにする。
+  
+tasks:
+  - [ ] トラブルシューティングガイドセクションを作成
+  - [ ] 例付きでWindows Terminal回避策をドキュメント化
+  - [ ] 例付きでPowerShell回避策をドキュメント化
+  - [ ] 回避策が必要な理由の説明を追加
+  - [ ] 一般的な使用例の例を含める
+  - [ ] T005が修正されるまでの一時的なものであることを注記
+  
+acceptance_criteria:
+  - すべての回避策の明確なドキュメント
+  - 一般的なコマンドの動作例
+  - ユーザーが回避策を使って出力を正常に確認できる
+  - ドキュメントで一時的なものであることを明示
+  - トラブルシューティングセクションで見つけやすい
+
+dependencies: []  # このチケットが依存するチケットIDのリスト
+
+related:
+  - T005  # 回避対象のバグ  # 関連するチケットIDのリスト
+
+files:
+  - docs/troubleshooting.md
+  - docs/guide/windows.md
+  - README.md (既知の問題に関する注記を追加)  # 変更・作成予定のファイルリスト
+
+time_estimate: 2h
+time_spent: 0h
+
+notes: |
+  これはT005が解決されるまでの一時的なドキュメント要求。
+  適切な出力表示が実装されたら削除または更新すべき。

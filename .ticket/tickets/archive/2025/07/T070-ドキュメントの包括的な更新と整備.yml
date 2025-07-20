@@ -1,0 +1,73 @@
+id: T070
+title: "ドキュメントの包括的な更新と整備"
+type: docs
+priority: medium
+status: completed
+created: "2025-07-19"
+updated: "2025-07-20"
+assignee: null
+labels:
+  - documentation
+  - user-guide
+  - developer-guide
+
+description: |
+  ## 概要
+  プロジェクトのドキュメントを包括的に見直し、最新の状態に更新する。
+  ユーザー向けと開発者向けの両方のドキュメントを整備する。
+  
+  ## 対象
+  - README.md の更新
+  - ユーザーガイドの作成・更新
+  - 開発者ガイドの作成
+  - APIドキュメントの生成
+  - アーキテクチャドキュメント
+  
+tasks:
+  - [ ] 現状のドキュメントの棚卸し
+  - [ ] README.md の全面改訂
+  - [ ] インストールガイドの更新
+  - [ ] 設定ガイドの詳細化
+  - [ ] CLIリファレンスの自動生成
+  - [ ] APIドキュメントの生成（godoc）
+  - [ ] アーキテクチャ図の作成
+  - [ ] 開発者向けセットアップガイド
+  - [ ] コントリビューションガイドの作成
+  - [ ] FAQ/トラブルシューティングの充実
+  - [ ] 変更履歴（CHANGELOG）の整備
+  - [ ] ライセンス関連ドキュメントの確認
+  
+acceptance_criteria:
+  - 全ての機能がドキュメント化されている
+  - インストールから使用までの流れが明確
+  - 開発者が容易に貢献できるガイドがある
+  - ドキュメントが最新の実装と一致している
+  - 多言語対応の準備（日本語/英語）
+
+dependencies: [T064, T065, T066, T067, T068, T069]
+
+related: [T064, T061]
+
+files:
+  - README.md
+  - README.ja.md
+  - docs/**/*.md
+  - CONTRIBUTING.md
+  - CHANGELOG.md
+  - LICENSE
+
+time_estimate: 10h
+time_spent: 0h
+
+notes: |
+  ## ドキュメント構成案
+  - /docs
+    - /guide (ユーザーガイド)
+    - /reference (APIリファレンス)
+    - /development (開発者ガイド)
+    - /architecture (設計ドキュメント)
+  
+  ## 自動生成ツール
+  - godoc
+  - mermaid (図表)
+  - VitePress (静的サイト)

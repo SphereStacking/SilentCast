@@ -1,0 +1,85 @@
+# Feature Ticket Template
+
+id: T029
+title: "プラットフォームサポート付きブラウザーランチャーの実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels:
+  - feature
+  - phase3
+  - new-action-types
+
+description: |
+  ## 問題の説明
+  ブラウザーが検出された後、各プラットフォームでURLを使用してブラウザーを
+  起動する信頼できる方法が必要です。
+  
+  ## 提案するソリューション
+  プラットフォームに適した方法を使用して、特定のブラウザーでURLを開くことが
+  できるクロスプラットフォームブラウザーランチャーを実装します。
+  
+  ## 実装の詳細
+  - `internal/action/browser/`にブラウザーランチャーを作成
+  - プラットフォーム固有の起動方法:
+    - Windows: ShellExecuteまたはstartコマンドを使用
+    - macOS: -aフラグ付きのopenコマンドを使用
+    - Linux: xdg-openまたは直接ブラウザー実行を使用
+  - 名前/パスで特定のブラウザーの起動をサポート
+  - ブラウザーコマンドライン引数を処理
+  - 適切なエラーハンドリングとリカバリを実装
+  - シークレット/プライベートブラウジングモードをサポート
+  
+tasks:
+  - [ ] ブラウザーランチャーインターフェースを設計
+  - [ ] Windowsブラウザー起動を実装
+  - [ ] macOSブラウザー起動を実装
+  - [ ] Linuxブラウザー起動を実装
+  - [ ] ブラウザー固有の引数のサポートを追加
+  - [ ] シークレット/プライベートモードサポートを実装
+  - [ ] プラットフォーム固有のテストを作成
+  - [ ] 様々なURL形式でテスト
+  - [ ] 起動失敗をグレースフルに処理
+  
+acceptance_criteria:
+  - すべてのプラットフォームで指定されたブラウザーでURLを開く
+  - 特定のブラウザーが利用できない場合はデフォルトブラウザーにフォールバック
+  - 特殊URL文字を適切に処理
+  - シークレット/プライベートブラウジングモードをサポート
+  - 起動失敗時の明確なエラーメッセージ
+  - シェルインジェクション脆弱性がない
+
+dependencies:
+  - T027
+  - T028
+
+related:
+  - T027
+  - T028
+
+files:
+  - app/internal/action/browser/launcher.go
+  - app/internal/action/browser/launcher_windows.go
+  - app/internal/action/browser/launcher_darwin.go
+  - app/internal/action/browser/launcher_linux.go
+  - app/internal/action/browser/launcher_test.go
+
+time_estimate: 4h
+time_spent: 0h
+
+# Feature-specific fields
+user_story: |
+  SilentCastユーザーとして
+  選択したブラウザーでURLが確実に開くことを望みます
+  それによりプラットフォーム間でWebリソースにシームレスにアクセスできます
+
+impact:
+  users_affected: "all"  # all, some, few
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  この機能のテスト方法

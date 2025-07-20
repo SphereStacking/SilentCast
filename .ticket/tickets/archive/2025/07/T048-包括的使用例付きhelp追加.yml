@@ -1,0 +1,65 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T048
+title: "包括的な使用例付き--helpの追加"
+type: feature
+priority: low
+status: completed
+created: "2025-07-17"
+updated: "2025-07-19"
+assignee: null
+labels:
+  - feature
+  - phase4
+  - cli
+
+description: |
+  ## 問題の説明
+  現在の--help出力は最小限で、包括的な使用例を提供していません。
+  
+  ## 提案される解決策
+  詳細な使用例、コマンドの組み合わせ、一般的なワークフローを表示するように--helpフラグを拡張します。
+  
+  ## 実装の詳細
+  - 包括的な例でCLIヘルプシステムを拡張
+  - 一般的なspell設定の例を含める
+  - プラットフォーム固有の使用パターンを表示
+  - 異なるユースケース（開発、生産性など）の例を追加
+  
+tasks:
+  - [ ] Design comprehensive help structure
+  - [ ] Add usage examples for all CLI commands
+  - [ ] Include platform-specific examples
+  - [ ] Add common workflow examples
+  - [ ] Write unit tests for help output
+  - [ ] Update documentation
+  
+acceptance_criteria:
+  - --help shows comprehensive usage examples
+  - Examples cover all major CLI features
+  - Platform-specific differences are documented
+  - Help output is well-formatted and readable
+  - All tests pass
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files: []  # List of files to be modified/created
+
+time_estimate: 2h
+time_spent: 0h
+
+user_story: |
+  As a SilentCast user
+  I want comprehensive help documentation
+  So that I can understand all available features and usage patterns
+
+impact:
+  users_affected: "all"
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  Verify help output covers all CLI features and is user-friendly
