@@ -1,0 +1,106 @@
+# Comprehensive configuration for E2E testing
+daemon:
+  auto_start: false
+  log_level: debug
+  config_watch: true
+  tray: false
+
+logger:
+  level: debug
+  file: ""
+
+hotkeys:
+  prefix: "alt+space"
+  timeout: 1000
+  sequence_timeout: 2000
+
+spells:
+  # Single key spells
+  e: editor
+  t: terminal
+  b: browser
+  f: file-manager
+  c: calculator
+  
+  # Multi-key sequences
+  "g,s": git-status
+  "g,p": git-pull
+  "g,c": git-commit
+  "d,l": docker-logs
+  "d,s": docker-status
+  
+  # Complex sequences
+  "s,y,s": system-info
+  "d,e,v": dev-tools
+
+grimoire:
+  editor:
+    type: app
+    command: echo
+    args: ["editor", "launched"]
+    description: "Text editor"
+    
+  terminal:
+    type: app
+    command: echo
+    args: ["terminal", "opened"]
+    description: "Terminal application"
+    
+  browser:
+    type: url
+    command: "https://example.com"
+    description: "Web browser"
+    
+  file-manager:
+    type: app
+    command: echo
+    args: ["file", "manager", "started"]
+    description: "File manager"
+    
+  calculator:
+    type: app
+    command: echo
+    args: ["calculator", "ready"]
+    description: "Calculator application"
+    
+  git-status:
+    type: script
+    command: echo "Git status: working tree clean"
+    show_output: true
+    description: "Git repository status"
+    
+  git-pull:
+    type: script
+    command: echo "Git pull: Already up to date"
+    show_output: true
+    description: "Git pull from remote"
+    
+  git-commit:
+    type: script
+    command: echo "Git commit: Changes committed"
+    show_output: true
+    description: "Git commit changes"
+    
+  docker-logs:
+    type: script
+    command: echo "Docker logs: Container output"
+    show_output: true
+    description: "Docker container logs"
+    
+  docker-status:
+    type: script
+    command: echo "Docker status: All containers running"
+    show_output: true
+    description: "Docker status check"
+    
+  system-info:
+    type: script
+    command: echo "System: Linux x64, 16GB RAM, 8 cores"
+    show_output: true
+    description: "System information"
+    
+  dev-tools:
+    type: app
+    command: echo
+    args: ["development", "tools", "launched"]
+    description: "Development tools suite"
