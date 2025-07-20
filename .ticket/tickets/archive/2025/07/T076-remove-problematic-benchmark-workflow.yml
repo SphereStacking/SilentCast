@@ -1,0 +1,43 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T076
+title: "Remove problematic benchmark workflow"
+type: task
+priority: high
+status: completed
+created: "2025-07-21"
+updated: "2025-07-21"
+assignee: null
+labels: [ci-cd, maintenance]
+
+description: |
+  The benchmark workflow has been causing persistent issues across different platforms:
+  - Windows: Path resolution problems ("no Go files" error)
+  - macOS: Resource exhaustion ("fork/exec: resource temporarily unavailable")
+  - All platforms: Complex maintenance requirements
+  
+  Decision: Remove the benchmark workflow to reduce CI/CD complexity and maintenance overhead.
+  Developers can still run benchmarks locally with make commands when needed.
+  
+tasks:
+  - [x] Remove .github/workflows/benchmarks.yml
+  - [x] Commit and push the removal
+  - [x] Update documentation if benchmark workflow is mentioned (確認済み：言及なし)
+  
+acceptance_criteria:
+  - Benchmark workflow is removed from the repository
+  - CI/CD pipelines are simplified
+  - Local benchmark execution remains functional
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files: []  # List of files to be modified/created
+
+time_estimate: 0h
+time_spent: 0h
+
+notes: |
+  Additional notes or comments
