@@ -1,0 +1,69 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T010
+title: "複数出力先対応TeeOutputManagerを実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels:
+  - feature
+  - foundation
+  - output-management
+  - phase1
+
+description: |
+  複数の出力先に同時に出力を送信できるTeeOutputManagerを実装する。
+  出力をユーザーに表示すると同時にファイルにログを保存したり、
+  複数の通知システムに送信したりする必要があるシナリオで必須となる。
+  
+  ## 使用例
+  - コンソールに出力を表示し、同時にログファイルに保存
+  - 短い出力を通知に送信し、完全な出力をファイルに保存
+  - ターミナルにストリームし、同時に後の処理のためにバッファリング
+  
+  ## 設計上の考慮事項
+  - OutputManagerインターフェースを実装する
+  - 複数のwriterの効率的な処理
+  - 出力先の動的な追加/削除をサポート
+  - 個別の出力先のエラーを適切に処理
+  
+tasks:
+  - [ ] app/internal/output/tee.goを作成
+  - [ ] TeeOutputManager構造体を実装
+  - [ ] AddDestination()メソッドを実装
+  - [ ] RemoveDestination()メソッドを実装
+  - [ ] io.MultiWriterを使用してStartCapture()を実装
+  - [ ] 個別の出力先の失敗を処理
+  - [ ] 包括的な単体テストを作成
+  - [ ] コメントに使用例を追加
+  
+acceptance_criteria:
+  - OutputManagerインターフェースを実装する
+  - 複数の出力先に同時に書き込みができる
+  - 一つの出力先が失敗しても動作を継続する
+  - 動的な出力先管理をサポートする
+  - 単一出力と比較してパフォーマンスの低下がない
+  - スレッドセーフな実装
+  - 90%以上のテストカバレッジ
+
+dependencies:
+  - T001  # OutputManager interface  # List of ticket IDs this depends on
+
+related:
+  - T002  # BufferedOutputManager
+  - T003  # StreamingOutputManager  # List of related ticket IDs
+
+files:
+  - app/internal/output/tee.go
+  - app/internal/output/tee_test.go  # List of files to be modified/created
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  基本実装にはio.MultiWriterの使用を検討する。
+  これは将来の複雑な出力シナリオで有用になる。

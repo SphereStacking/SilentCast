@@ -1,0 +1,69 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T022
+title: "keep_open機能用Linuxターミナルサポートの実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, core-features, phase2, keep-open, terminal, linux]
+
+description: |
+  keep_open機能用のLinux固有のターミナルサポートを実装します。
+  この実装では、Linuxディストリビューションで利用可能な幅広いターミナルエミュレーターを処理します。
+  
+  サポートされるターミナルエミュレーター（優先度順）：
+  1. GNOME Terminal (gnome-terminal) - GNOMEデスクトップのデフォルト
+  2. Konsole - KDEデスクトップのデフォルト
+  3. xterm - ユニバーサルフォールバック
+  4. Terminator - パワーユーザー向けの人気ターミナル
+  5. Alacritty - GPUアクセラレーションターミナル
+  6. Kitty - 機能豊富なターミナル
+  7. Tilix - タイリングターミナルエミュレーター
+  8. xfce4-terminal - XFCEデスクトップのデフォルト
+  
+  実装アプローチ：
+  - 'which'コマンドを使用して利用可能なターミナルを検出
+  - 一般的なインストールパスを確認
+  - デスクトップ環境のヒントを使用（DESKTOP_SESSION、XDG_CURRENT_DESKTOP）
+  - 各ターミナルに適切なコマンドラインフラグを活用
+  - X11とWaylandセッションの両方を処理
+  
+tasks:
+  - [ ] app/internal/terminal/manager_linux.goにLinuxターミナルマネージャーを実装
+  - [ ] 包括的なターミナルエミュレーター検出機能を追加
+  - [ ] デスクトップ環境検出ロジックを実装
+  - [ ] サポートされる各ターミナル用のコマンドビルダーを作成
+  - [ ] シェルコマンドを使用したキープアライブロジックを追加
+  - [ ] X11とWaylandの違いを処理
+  - [ ] Linux固有のユニットテストを追加
+  - [ ] 主要ディストリビューション（Ubuntu、Fedora、Arch）でテスト
+  
+acceptance_criteria:
+  - デスクトップ環境に適したターミナルを検出して使用する
+  - 少なくとも5つの一般的なターミナルエミュレーターをサポート
+  - スクリプト実行後もターミナルウィンドウが開いたままになる
+  - X11とWaylandの両方で動作
+  - 優先ターミナルが利用できない場合はxtermへの適切なフォールバック
+  - Proper error handling for missing terminals
+  - All Linux-specific tests pass
+
+dependencies: [T023]  # Depends on terminal manager interface
+
+related: [T020, T021]  # Related OS-specific implementations
+
+files:
+  - app/internal/terminal/manager_linux.go
+  - app/internal/terminal/manager_linux_test.go
+  - app/internal/terminal/detector_linux.go
+  - app/internal/terminal/command_builder_linux.go
+  - app/internal/terminal/desktop_detector_linux.go
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  Additional notes or comments

@@ -1,0 +1,72 @@
+# Feature Ticket Template
+
+id: T027
+title: "URLアクションタイプ実行器の実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels:
+  - feature
+  - phase3
+  - new-action-types
+
+description: |
+  ## 問題記述
+  ユーザーはSilentCastのスペルからURLを開く必要があるが、URLアクションタイプ実行器が実装されていない。
+  
+  ## 提案される解決策
+  URLを検証し、ブラウザーランチャーと統合してユーザーの優先ブラウザーでURLを開くURLアクションタイプ実行器を実装する。
+  
+  ## 実装詳細
+  - `internal/action/` パッケージに `url.go` を作成
+  - URL検証の実装（http、https、一般的なスキームをサポート）
+  - ブラウザーランチャーコンポーネントとの統合
+  - エラーの適切な処理（無効なURL、ブラウザー起動失敗）
+  - 環境変数展開を含むURLテンプレートのサポート
+  
+tasks:
+  - [ ] URLアクション実行器インターフェースの設計
+  - [ ] URL検証ロジックの実装
+  - [ ] URL実行器の実装作成
+  - [ ] ブラウザーランチャーとの統合
+  - [ ] 包括的なユニットテストの作成
+  - [ ] エラーシナリオのテスト（無効なURL、ブラウザー不在）
+  - [ ] URLタイプをルーティングするようアクション実行器を更新
+  - [ ] 統合テストの追加
+  
+acceptance_criteria:
+  - URLアクションが適切に検証される
+  - 有効なURLが設定されたブラウザーで開く
+  - 無効なURLに明確なエラーメッセージを返す
+  - URL内の環境変数が展開される
+  - すべてのテストが良好なカバレッジで合格
+  - エラー処理が堅牢
+
+dependencies: []
+
+related: []
+
+files:
+  - app/internal/action/url.go
+  - app/internal/action/url_test.go
+  - app/internal/action/executor.go
+
+time_estimate: 6h
+time_spent: 0h
+
+# Feature-specific fields
+user_story: |
+  As a SilentCast user
+  I want to open URLs through spells
+  So that I can quickly access web resources using keyboard shortcuts
+
+impact:
+  users_affected: "all"  # all, some, few
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  How to test this feature

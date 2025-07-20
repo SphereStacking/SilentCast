@@ -1,0 +1,70 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T012
+title: "SystemNotifierインターフェースに出力サポートを追加"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels:
+  - feature
+  - foundation
+  - notification
+  - phase1
+
+description: |
+  通知にコマンド出力を表示するためのSystemNotifierインターフェースを拡張する。
+  これはshow_output機能の基盤となる作業である。
+  
+  ## 新しいメソッド
+  - ShowWithOutput(): コマンド出力と共に通知を表示
+  - SetMaxOutputLength(): 出力の切り詰め設定
+  - SupportsRichContent(): リッチフォーマットサポートの確認
+  
+  ## 考慮事項
+  - プラットフォームごとに通知の制限が異なる
+  - 長い出力は切り詰めまたは代替表示が必要
+  - 一部のシステムはリッチテキストをサポートし、他はプレーンテキストのみ
+  - サポートされていない機能のフォールバック機構が必要
+  
+tasks:
+  - [ ] app/internal/notify/interface.goを更新
+  - [ ] SystemNotifierにShowWithOutput()メソッドを追加
+  - [ ] SetMaxOutputLength()メソッドを追加
+  - [ ] SupportsRichContent()メソッドを追加
+  - [ ] OutputNotification構造体を定義
+  - [ ] プラットフォーム機能検出を追加
+  - [ ] テスト用のモック実装を作成
+  - [ ] 既存の通知実装を更新
+  - [ ] プラットフォーム制限を文書化
+  
+acceptance_criteria:
+  - SystemNotifierインターフェースが拡張されている
+  - 後方互換性が維持されている
+  - 新しいメソッドの明確な文書化
+  - プラットフォーム制限が文書化されている
+  - テスト用のモック実装
+  - 既存のテストがすべて通過する
+
+dependencies: []  # List of ticket IDs this depends on
+
+related:
+  - T015  # show_output implementation
+  - T017  # Windows notification
+  - T018  # macOS notification
+  - T019  # Linux notification  # List of related ticket IDs
+
+files:
+  - app/internal/notify/interface.go
+  - app/internal/notify/mock.go
+  - app/internal/notify/console.go  # List of files to be modified/created
+
+time_estimate: 3h
+time_spent: 0h
+
+notes: |
+  これはプラットフォーム固有の実装のための準備作業である。
+  インターフェースをシンプルに保ちつつ、将来のニーズに対して拡張可能にする。

@@ -1,0 +1,47 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T030
+title: "スクリプト用カスタムシェルサポートの実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, phase3, advanced-scripts]
+
+description: |
+  デフォルトのシステムシェルを超えて、カスタムシェルでスクリプトを実行する
+  サポートを追加します。これには、利用可能なシェルの検出と、python、node、ruby、
+  bash、zsh、powershellなどのシェルを指定するための設定オプションが含まれます。
+  
+tasks:
+  - [ ] actionパッケージにシェル検出機構を作成
+  - [ ] スクリプト設定スキーマに'shell'フィールドを追加
+  - [ ] 異なるプラットフォーム用のシェルパス解決を実装
+  - [ ] シェルの利用可能性検証を追加
+  - [ ] シェル検出と実行のユニットテストを作成
+  - [ ] カスタムシェルの例でドキュメントを更新
+  
+acceptance_criteria:
+  - スクリプトは設定でカスタムシェルを指定できる
+  - システムはプラットフォーム上の利用可能なシェルを検出する
+  - 指定されたシェルが見つからない場合はデフォルトシェルにフォールバック
+  - 一般的なシェルをサポート (bash, zsh, sh, cmd, powershell, python, node, ruby)
+  - シェルパス解決がプラットフォーム間で動作する
+  - 欠落または無効なシェルのエラーハンドリング
+
+dependencies: []  # 依存するチケットIDのリスト
+
+related: []  # 関連するチケットIDのリスト
+
+files: []  # 変更/作成されるファイルのリスト
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  実装ではカスタムシェル実行のセキュリティ上の影響を考慮する必要があります。
+  シェル検出はパフォーマンスのために結果をキャッシュする必要があります。
+  シェル検出にはwhich/whereコマンドの使用を検討してください。

@@ -1,0 +1,49 @@
+id: T043
+title: "改良された出力による--test-hotkeyコマンドの拡張"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: 
+  - feature
+  - phase4
+  - cli
+  - debug
+
+description: |
+  Enhance the existing --test-hotkey command to provide better visual feedback and debugging information.
+  Current implementation needs improved output formatting, better key detection display, and modifier state reporting.
+  
+tasks:
+  - [ ] Add real-time key detection display with visual feedback
+  - [ ] Show modifier key states (Ctrl, Alt, Shift, etc.)
+  - [ ] Display key sequence progress and timeout information
+  - [ ] Add colorized output for better readability
+  - [ ] Include timestamp information for each key press
+  - [ ] Show detailed key mapping information
+  
+acceptance_criteria:
+  - Command shows real-time key detection with clear visual indicators
+  - Modifier key states are clearly displayed
+  - Key sequence progress is shown with timeout countdown
+  - Output is colorized and well-formatted for easy reading
+  - Timestamps are included for debugging timing issues
+  - Key mapping details are available for troubleshooting
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files: 
+  - app/cmd/silentcast/main.go
+  - app/internal/hotkey/manager.go
+  - app/internal/hotkey/manager_stub.go
+
+time_estimate: 3h
+time_spent: 0h
+
+notes: |
+  This enhancement is part of Phase 4 CLI debug support improvements.
+  Should work in both full and stub modes for development purposes.

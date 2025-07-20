@@ -1,0 +1,56 @@
+id: T045
+title: "--benchmarkコマンドの実装"
+type: feature
+priority: low
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: 
+  - feature
+  - phase4
+  - cli
+  - debug
+
+description: |
+  SilentCastの操作に関するパフォーマンスメトリクスを測定し報告する包括的な
+  --benchmarkコマンドを実装します。これにより、パフォーマンスボトルネックを
+  特定し、アプリケーションの応答性を最適化できます。
+  
+tasks:
+  - [ ] CLIの引数解析に--benchmarkフラグを追加
+  - [ ] 起動時間測定を実装
+  - [ ] メモリ使用量の監視と報告を追加
+  - [ ] ホットキー検出の応答時間を測定
+  - [ ] 設定ロードパフォーマンスのベンチマーク
+  - [ ] アクション実行のタイミング測定を追加
+  - [ ] フォーマットされたベンチマークレポート出力を作成
+  - [ ] 統計分析付きの複数回テスト実行を追加
+  
+acceptance_criteria:
+  - コマンドは起動から準備完了状態までの起動時間を測定する
+  - 現在のメモリ使用量とピークメモリ消費量を報告する
+  - ホットキー検出の遅延と応答時間を測定する
+  - 設定のロードと解析操作の時間を計測する
+  - アクション実行パフォーマンスのベンチマークを行う
+  - 複数回実行の統計分析（最小、最大、平均、中央値）を提供する
+  - 出力は読みやすいレポート形式でフォーマットされる
+  - システム情報コンテキスト（OS、アーキテクチャ、Goバージョン）を含む
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files: 
+  - app/cmd/silentcast/main.go
+  - app/internal/benchmark/
+  - app/internal/config/loader.go
+  - app/internal/hotkey/manager.go
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  主に開発と最適化目的のため、低優先度。
+  測定ユーティリティ用に新しいinternal/benchmarkパッケージを作成すべき。
+  リグレッション検出のための継続的ベンチマーク機能の追加を検討。

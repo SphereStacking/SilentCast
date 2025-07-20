@@ -1,0 +1,72 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T017
+title: "出力サポート付きWindows トースト通知の実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-18"
+assignee: null
+labels: [feature, core-features, phase2, platform-specific, notifications, windows]
+
+description: |
+  コマンド出力表示をサポートするWindows固有のトースト通知を実装する。
+  
+  このチケットでは、以下の機能を持つSystemNotifierインターフェースの
+  Windows実装の作成に焦点を当てる：
+  - 通知タイトルとメッセージの表示
+  - show_output有効時のコマンド出力表示サポート
+  - Windows通知APIの適切なエラーハンドリング
+  - トースト通知が利用できない場合のフォールバック機能
+  
+  実装は設定に応じてコマンド出力をキャプチャし通知に表示するため、
+  バッファ出力システムと統合される必要がある。
+  
+tasks:
+  - [ ] Windows トースト通知APIとライブラリの調査
+  - [ ] SystemNotifierインターフェースに準拠するWindowsNotifier構造体の実装
+  - [ ] タイトルと本文を含むリッチトースト通知のサポート追加
+  - [ ] BufferedOutputと統合してコマンド出力をキャプチャ
+  - [ ] トースト通知用出力フォーマットの実装
+  - [ ] トースト通知失敗時のコンソール出力へのフォールバック追加
+  - [ ] Windowsバージョン互換性の処理（Windows 10+）
+  - [ ] Windows通知用ユニットテストの追加
+  - [ ] show_output設定との統合テスト
+  - [ ] Windows固有の通知動作の文書化
+  
+acceptance_criteria:
+  - Windows users see toast notifications when actions complete
+  - Command output is displayed in notifications when show_output is true
+  - Notifications have proper titles based on action names
+  - Long output is truncated appropriately for toast format
+  - Errors are handled gracefully with fallback to console
+  - Works on Windows 10 and later versions
+  - Unit tests pass for all notification scenarios
+  - Integration tests verify output capture and display
+
+dependencies: [T012]  # Depends on SystemNotifier interface
+
+related: [T015]  # Related to show_output implementation
+
+files:
+  - app/internal/notify/windows.go (create)
+  - app/internal/notify/windows_test.go (create)
+  - app/internal/notify/factory.go (modify)
+  - app/internal/action/executor.go (modify)
+  - go.mod (modify - add Windows notification library)
+
+time_estimate: 8h
+time_spent: 0h
+
+notes: |
+  Key implementation details:
+  - Use github.com/go-toast/toast library for Windows notifications
+  - Implement in app/internal/notify/windows.go
+  - Follow the SystemNotifier interface from notify/interface.go
+  - Use BufferedOutput to capture command output
+  - Format output appropriately for toast notification constraints
+  - Consider using Windows Action Center for persistent notifications
+  - Handle cases where notifications are disabled by user/system
+  - Ensure proper cleanup of notification resources

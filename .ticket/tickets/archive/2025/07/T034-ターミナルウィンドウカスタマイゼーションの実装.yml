@@ -1,0 +1,52 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T034
+title: "ターミナルウィンドウカスタマイゼーションの実装"
+type: feature
+priority: low
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, phase3, advanced-scripts]
+
+description: |
+  サイズ、位置、色、タイトル、その他の視覚的プロパティを含む
+  ターミナルウィンドウカスタマイゼーションオプションを実装します。
+  これによりスクリプトが実行時にターミナルウィンドウの表示方法を
+  制御できるようになります。
+  
+tasks:
+  - [ ] スクリプト設定にターミナルカスタマイゼーションオプションを追加
+  - [ ] ウィンドウサイズと位置制御を実装
+  - [ ] ターミナルタイトルカスタマイゼーションを追加
+  - [ ] 可能な場合にカラースキームサポートを実装
+  - [ ] プラットフォーム固有のターミナル機能を処理
+  - [ ] サポートされていない機能のフォールバック動作を作成
+  - [ ] 異なるターミナルエミュレーターでのテスト
+  - [ ] カスタマイゼーションオプションと制限をドキュメント化
+  
+acceptance_criteria:
+  - スクリプトがターミナルウィンドウサイズ（行、列）を設定できる
+  - スクリプトがターミナルウィンドウ位置（x, y）を設定できる
+  - スクリプトがカスタムターミナルタイトルを設定できる
+  - サポートされている場合に色のカスタマイゼーションが機能する
+  - サポートされていない機能に対して適切にフォールバックする
+  - 主要ターミナル（cmd、Terminal.app、gnome-terminal）で設定が機能する
+  - ドキュメントにプラットフォーム制限が明確に記載される
+
+dependencies: [T023]  # Terminal manager  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files: []  # List of files to be modified/created
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  ターミナルカスタマイゼーションはプラットフォームとターミナルエミュレーターによって大きく異なる。
+  大部分のターミナルで動作する共通機能に焦点を当てる。
+  適切な場合にはカラー用のANSIエスケープシーケンスを検討する。
+  ウィンドウ位置決めは一部のプラットフォームでセキュリティ制限がある場合がある。

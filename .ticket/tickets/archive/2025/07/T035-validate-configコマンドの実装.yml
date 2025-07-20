@@ -1,0 +1,49 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T035
+title: "--validate-configコマンドの実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, phase4, cli, configuration]
+
+description: |
+  spellbook.yml設定ファイルを検証する --validate-config コマンドラインフラグを実装する。
+  バリデーターは以下の機能を持つ必要がある：
+  - YAML構文の有効性チェック
+  - 設定スキーマの検証
+  - 問題が見つかった場合の行番号付き詳細エラーメッセージ表示
+  - 適切な終了ステータスコード（有効な場合は0、無効な場合は1）
+  - メイン設定とOS固有のオーバーライドの両方の検証サポート
+  
+tasks:
+  - [ ] CLIの引数パーサーに --validate-config フラグを追加
+  - [ ] T011のバリデーターを使用した設定検証ロジックの実装
+  - [ ] ファイル名と行番号付きの検証エラーフォーマット
+  - [ ] 様々な無効な設定でのテスト
+  - [ ] 新しいフラグのドキュメント追加
+  
+acceptance_criteria:
+  - "--validate-config フラグが認識され処理される"
+  - "YAML構文エラーが行番号付きで捕捉され報告される"
+  - "スキーマ検証が全ての必須フィールドと型をチェックする"
+  - "明確なエラーメッセージがユーザーの問題修正を支援する"
+  - "有効な設定で終了コード0、無効な場合は1"
+  - "カスケード設定ファイル（メイン + OS固有）で動作する"
+
+dependencies: [T011]  # 設定バリデーターに依存
+
+related: []  # 関連チケットIDのリスト
+
+files: []  # 変更・作成するファイルのリスト
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  このコマンドは、SilentCastを実行する前にユーザーが設定の有効性を検証するのに役立つ。
+  明確で実用的なエラーメッセージを提供する必要がある。

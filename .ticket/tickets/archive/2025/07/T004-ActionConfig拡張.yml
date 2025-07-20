@@ -1,0 +1,65 @@
+id: T004
+title: "ActionConfig拡張による新実行オプションの追加"
+type: feature
+priority: high
+status: completed
+created: "2025-07-17"
+updated: "2025-07-17"
+assignee: null
+labels:
+  - foundation
+  - config
+  - core
+  - cross-platform
+
+description: |
+  ActionConfig構造体を拡張し、ドキュメント化されているがまだ実装されていない
+  新しい実行オプションをサポートします。これらのオプションはユーザーが期待する
+  柔軟性を提供するために重要です。
+  
+  追加する新しいフィールド:
+  - ShowOutput: 通知にコマンド出力を表示
+  - KeepOpen: 実行後もターミナルを開いたままにする
+  - Timeout: 最大実行時間
+  - Shell: 実行用のカスタムシェル
+  - Admin: 管理者権限で実行
+  - Terminal: ターミナルウィンドウでの実行を強制
+  
+tasks:
+  - [x] app/internal/config/types.goを更新
+  - [x] ShowOutputフィールドを追加 (bool, デフォルト: false)
+  - [x] KeepOpenフィールドを追加 (bool, デフォルト: false)
+  - [x] Timeoutフィールドを追加 (int, デフォルト: 0 = タイムアウトなし)
+  - [x] Shellフィールドを追加 (string, デフォルト: "")
+  - [x] Adminフィールドを追加 (bool, デフォルト: false)
+  - [x] Terminalフィールドを追加 (bool, デフォルト: false)
+  - [x] YAML解析ロジックを更新
+  - [x] 新しいフィールドの解析テストを追加
+  - [x] デフォルト値をテスト
+  
+acceptance_criteria:
+  - すべての新しいフィールドが正しい型で適切に定義されている
+  - YAMLアンマーシャリングが正しく動作する
+  - 指定されていない場合はデフォルト値が適用される
+  - 既存の設定との後方互換性がある
+  - テストがすべての新しいフィールドをカバーしている
+
+dependencies: []
+
+related:
+  - T005  # 新しいフィールドの設定検証
+  - T011  # show_output実装
+  - T014  # keep_open実装
+  - T020  # timeout実装
+
+files:
+  - app/internal/config/types.go
+  - app/internal/config/loader_test.go
+
+time_estimate: 3h
+time_spent: 3h
+
+notes: |
+  これはすべての新機能を実装するための前提条件です。
+  後方互換性を維持する必要があります - すべてのフィールドは
+  現在の動作と一致する適切なデフォルト値を持つ必要があります。

@@ -1,0 +1,67 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T050
+title: "Windowsサービス管理の実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-17"
+updated: "2025-07-19"
+assignee: null
+labels:
+  - feature
+  - phase5
+  - service-management
+
+description: |
+  ## 問題の説明
+  SilentCastはシステム全体での利用可能性と自動起動のためにWindowsサービスとして実行する必要があります。
+  
+  ## 提案される解決策
+  インストール/アンインストール/開始/停止機能を持つWindowsサービス管理を実装します。
+  
+  ## 実装の詳細
+  - 適切なWindows APIを使用してWindowsサービス統合を追加
+  - サービスのインストールと削除をサポート
+  - サービスの開始/停止/再起動操作を処理
+  - サービスモード用の適切なログとエラー処理を確保
+  - サービスと通常のアプリケーションの両方として実行をサポート
+  
+tasks:
+  - [ ] Research Windows service APIs and Go libraries
+  - [ ] Implement service installation/removal
+  - [ ] Add service start/stop/restart functionality
+  - [ ] Handle service mode logging
+  - [ ] Add CLI commands for service management
+  - [ ] Write integration tests
+  - [ ] Update documentation with service setup
+  
+acceptance_criteria:
+  - Can install SilentCast as Windows service
+  - Service starts automatically on boot
+  - Service can be controlled via CLI commands
+  - Proper error handling and logging in service mode
+  - All tests pass on Windows
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files: []  # List of files to be modified/created
+
+time_estimate: 6h
+time_spent: 0h
+
+user_story: |
+  As a Windows system administrator
+  I want to run SilentCast as a system service
+  So that it's available for all users and starts automatically
+
+impact:
+  users_affected: "windows users"
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  Test service installation, startup, and management on various Windows versions

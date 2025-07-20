@@ -1,0 +1,70 @@
+id: T067
+title: "テストカバレッジの改善と整理"
+type: test
+priority: high
+status: completed
+created: "2025-07-19"
+updated: "2025-07-20"
+assignee: null
+labels:
+  - test
+  - coverage
+  - quality
+
+description: |
+  ## 概要
+  プロジェクト全体のテストカバレッジを80%以上に改善し、テストの品質と保守性を向上させる。
+  
+  ## 現状
+  - 現在のテストカバレッジ: 約60%
+  - 一部のパッケージでテストが不足
+  - テストの命名規則が不統一
+  - モックの使用が不統一
+  
+tasks:
+  - [ ] 現在のテストカバレッジレポートの生成
+  - [ ] カバレッジが低いパッケージの特定
+  - [ ] テストガイドラインの作成
+  - [ ] ユニットテストの追加（優先度高）
+  - [ ] 統合テストの追加
+  - [ ] テストヘルパー関数の整理
+  - [ ] モックの統一と整理
+  - [ ] テストデータ（fixtures）の整理
+  - [ ] テーブルドリブンテストへの移行
+  - [ ] 並列テストの適切な実装
+  - [ ] ベンチマークテストの追加
+  - [ ] E2Eテストの基盤整備
+  
+acceptance_criteria:
+  - テストカバレッジ80%以上
+  - 全てのpublicな関数にテストが存在
+  - テストが高速で安定している
+  - テストガイドラインの文書化完了
+  - CI/CDでのテスト自動実行
+
+dependencies: [T064]  # 親チケット：プロジェクト全体の監査とリファクタリング
+
+related: [T064, T059]
+
+files:
+  - app/**/*_test.go
+  - app/test/**/*
+  - Makefile
+  - .github/workflows/test.yml
+  - docs/development/testing.md
+
+time_estimate: 12h
+time_spent: 0h
+
+notes: |
+  ## 重点領域
+  - action パッケージ
+  - config パッケージ
+  - hotkey パッケージ
+  - service パッケージ
+  
+  ## テストの種類
+  - ユニットテスト
+  - 統合テスト
+  - ベンチマークテスト
+  - E2Eテスト

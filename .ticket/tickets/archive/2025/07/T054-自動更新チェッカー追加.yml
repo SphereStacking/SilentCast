@@ -1,0 +1,86 @@
+# Feature Ticket Template
+
+id: T054
+title: "自動更新チェッカーの追加"
+type: feature
+priority: low
+status: completed
+created: "2025-07-18"
+updated: "2025-07-20"
+assignee: null
+labels:
+  - feature
+  - phase5
+  - updater
+  - auto-update
+
+description: |
+  ## Problem Statement
+  Users need to manually check for new versions of SilentCast, which leads to outdated installations
+  and missed bug fixes or new features. An automated update checker would keep users informed
+  about available updates.
+  
+  ## Proposed Solution
+  Implement an auto-update checker that periodically checks the GitHub releases API for new versions.
+  The checker should be configurable (frequency, enable/disable) and respect user preferences.
+  
+  ## Implementation Details
+  - Integrate with GitHub releases API to check for new versions
+  - Add configurable update check intervals (daily, weekly, disabled)
+  - Implement version comparison logic to detect newer releases
+  - Add update check on application startup (optional)
+  - Cache update check results to avoid excessive API calls
+  - Handle network failures gracefully
+  
+tasks:
+  - [ ] Design update checker interface and configuration
+  - [ ] Implement GitHub releases API integration
+  - [ ] Add version comparison logic
+  - [ ] Create configurable update check scheduling
+  - [ ] Add startup update check option
+  - [ ] Implement result caching mechanism
+  - [ ] Handle network errors and rate limiting
+  - [ ] Write unit tests for update checker
+  - [ ] Add integration tests with mock API responses
+  - [ ] Update configuration documentation
+
+acceptance_criteria:
+  - Update checker queries GitHub releases API correctly
+  - Version comparison accurately detects newer releases
+  - Update checks respect configured intervals
+  - Network failures don't crash the application
+  - Configuration options work as expected
+  - All tests pass
+  - Documentation includes update checker configuration
+
+dependencies: []
+
+related: 
+  - T055  # Self-update mechanism
+  - T056  # Update notifications
+
+files:
+  - app/internal/updater/
+  - app/internal/updater/checker.go
+  - app/internal/updater/github.go
+  - app/internal/updater/version.go
+
+time_estimate: 4h
+time_spent: 0h
+
+# Feature-specific fields
+user_story: |
+  As a SilentCast user
+  I want the application to automatically check for updates
+  So that I can stay informed about new releases and security fixes
+
+impact:
+  users_affected: "all"
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  Test with various network conditions (offline, slow connection).
+  Verify rate limiting doesn't cause issues.
+  Test version comparison with different version formats.
+  Mock GitHub API responses for consistent testing.

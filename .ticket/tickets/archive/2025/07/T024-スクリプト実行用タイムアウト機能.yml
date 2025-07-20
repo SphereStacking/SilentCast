@@ -1,0 +1,51 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T024
+title: "スクリプト実行用タイムアウト機能の実装"
+type: feature
+priority: high
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, core-features, phase2, timeout]
+
+description: |
+  SilentCastでスクリプト実行のタイムアウト機能を実装し、ハングしたプロセスを防ぎ、
+  長時間実行されるコマンドのより良い制御を提供します。これはGoのcontext.WithTimeoutを
+  使用してスクリプト実行のタイムアウトを管理するメイン実装チケットです。
+  
+tasks:
+  - [ ] config/types.goのアクション設定にtimeoutフィールドを追加
+  - [ ] スクリプトエグゼキューター(action/script.go)にcontext.WithTimeoutを実装
+  - [ ] 設定からタイムアウト値を解析および検証
+  - [ ] スクリプト実行でのコンテキストキャンセルを処理
+  - [ ] デフォルトタイムアウト設定のサポートを追加
+  - [ ] タイムアウト機能のユニットテストを作成
+  - [ ] タイムアウト使用例で設定例を更新
+  
+acceptance_criteria:
+  - spellbook.ymlでスクリプトに設定可能なタイムアウト値を持たせられる
+  - タイムアウトを超えた場合、スクリプトが終了される
+  - タイムアウトは様々な形式で指定可能(例: "30s", "5m", "1h")
+  - デフォルトタイムアウトはグローバルに設定でき、アクションごとに上書き可能
+  - コンテキストキャンセルが適切に処理される
+  - テストが通常実行、タイムアウトシナリオ、エッジケースをカバーしている
+
+dependencies: []  # 依存するチケットIDのリスト
+
+related: [T025, T026]  # 関連するチケットIDのリスト
+
+files:
+  - app/internal/config/types.go
+  - app/internal/action/script.go
+  - app/internal/action/script_test.go
+  - examples/config/timeout_example.yml
+
+time_estimate: 6h
+time_spent: 0h
+
+notes: |
+  これはタイムアウト機能のコア実装です。T025とT026は
+  このチケットが最初に完了することに依存しています。

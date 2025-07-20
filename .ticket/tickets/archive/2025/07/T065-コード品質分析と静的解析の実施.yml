@@ -1,0 +1,62 @@
+id: T065
+title: "コード品質分析と静的解析の実施"
+type: refactor
+priority: high
+status: completed
+created: "2025-07-19"
+updated: "2025-07-20"
+assignee: null
+labels:
+  - refactor
+  - quality
+  - analysis
+
+description: |
+  ## 概要
+  SilentCastプロジェクト全体のコード品質を分析し、静的解析ツールを使用して問題を特定・修正する。
+  
+  ## 目的
+  - コードの一貫性と品質の向上
+  - 潜在的なバグの発見と修正
+  - ベストプラクティスへの準拠
+  
+tasks:
+  - [ ] golangci-lintの設定見直しと更新
+  - [ ] go vetの実行と問題修正
+  - [ ] golangci-lintの実行と問題修正
+  - [ ] staticcheckの導入と実行
+  - [ ] gosecによるセキュリティ分析
+  - [ ] ineffassignによる無効な代入の検出
+  - [ ] gocycloによる循環的複雑度の分析
+  - [ ] dupl による重複コードの検出
+  - [ ] 分析結果のレポート作成
+  - [ ] 修正優先度の決定とドキュメント化
+  
+acceptance_criteria:
+  - golangci-lintでエラーが0件
+  - go vetでエラーが0件
+  - gosecで高リスクの問題が0件
+  - 循環的複雑度が15以下
+  - 重複コードが5%以下
+  - 分析レポートの作成完了
+
+dependencies: [T064]  # 親チケット：プロジェクト全体の監査とリファクタリング
+
+related: [T064]
+
+files:
+  - .golangci.yml
+  - app/**/*.go
+  - Makefile
+
+time_estimate: 6h
+time_spent: 0h
+
+notes: |
+  ## 静的解析ツール
+  - golangci-lint: 総合的なリンター
+  - go vet: 標準の静的解析
+  - staticcheck: 高度な静的解析
+  - gosec: セキュリティ分析
+  - gocyclo: 循環的複雑度
+  - dupl: 重複コード検出

@@ -1,0 +1,67 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T052
+title: "設定復元用--import-configの追加"
+type: feature
+priority: low
+status: completed
+created: "2025-07-17"
+updated: "2025-07-19"
+assignee: null
+labels:
+  - feature
+  - phase4
+  - cli
+
+description: |
+  ## Problem Statement
+  Users need a way to restore previously exported configurations or import configurations from other sources.
+  
+  ## Proposed Solution
+  Add a --import-config flag that imports configuration from a file or stdin.
+  
+  ## Implementation Details
+  - Add --import-config flag to main CLI
+  - Support input from file or stdin
+  - Validate imported configuration before applying
+  - Support backup of existing config before import
+  - Handle different import formats (YAML bundle, tar.gz)
+  
+tasks:
+  - [ ] Add --import-config flag to CLI
+  - [ ] Implement configuration import functionality
+  - [ ] Add configuration validation
+  - [ ] Support backup of existing config
+  - [ ] Support file input and stdin
+  - [ ] Write unit tests
+  - [ ] Update documentation
+  
+acceptance_criteria:
+  - --import-config flag works correctly
+  - Can import from file or stdin
+  - Configuration is validated before import
+  - Existing config is backed up before import
+  - All tests pass
+
+dependencies: [T049]  # List of ticket IDs this depends on
+
+related: [T049]  # List of related ticket IDs
+
+files: []  # List of files to be modified/created
+
+time_estimate: 3h
+time_spent: 0h
+
+user_story: |
+  As a SilentCast user
+  I want to import configurations
+  So that I can restore backups or use configurations from other sources
+
+impact:
+  users_affected: "all"
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  Test importing various configuration formats and ensure validation works correctly

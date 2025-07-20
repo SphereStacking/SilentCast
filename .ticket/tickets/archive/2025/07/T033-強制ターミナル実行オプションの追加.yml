@@ -1,0 +1,48 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T033
+title: "強制ターミナル実行オプションの追加"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, phase3, advanced-scripts]
+
+description: |
+  SilentCastがGUI/トレイモードで実行されている場合でも、スクリプトを強制的に
+  ターミナルウィンドウで実行するオプションを追加します。これはユーザーとの
+  インタラクションが必要なスクリプトや、重要な出力を表示する必要がある
+  スクリプトに有用です。
+  
+tasks:
+  - [ ] スクリプト設定に 'force_terminal' フラグを追加
+  - [ ] GUIモードでのターミナル起動を実装
+  - [ ] ターミナルウィンドウのライフサイクル管理
+  - [ ] 出力キャプチャが引き続き機能することを確認
+  - [ ] 異なるターミナルエミュレーターでのテスト
+  - [ ] 強制ターミナル使用シナリオのドキュメント化
+  
+acceptance_criteria:
+  - スクリプトが設定によりターミナルウィンドウ表示を強制できる
+  - SilentCastがトレイモードで実行中でもターミナルが開く
+  - ターミナルウィンドウで出力が表示される
+  - keep_open設定に基づいてターミナルが開いたままになる
+  - 全プラットフォームのデフォルトシステムターミナルで動作する
+  - 通知システムがターミナルと併せて機能する
+
+dependencies: [T023]  # Terminal manager  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files: []  # List of files to be modified/created
+
+time_estimate: 3h
+time_spent: 0h
+
+notes: |
+  インタラクティブスクリプト、インストーラー、重要な出力を持つスクリプトに有用。
+  既存のターミナル設定とkeep_open動作を尊重すべき。
+  ターミナルカスタマイゼーション機能との統合を検討する。

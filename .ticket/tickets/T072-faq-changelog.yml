@@ -1,0 +1,74 @@
+id: T072
+title: "FAQ・トラブルシューティング・CHANGELOGの作成"
+type: docs
+priority: low
+status: todo
+created: "2025-07-20"
+updated: "2025-07-20"
+assignee: null
+labels:
+  - documentation
+  - user-guide
+  - maintenance
+
+description: |
+  ## 概要
+  T070で完了したドキュメント整備の続きとして、残りのドキュメントを作成する。
+  ユーザーサポートとプロジェクトの透明性を向上させるための重要なドキュメント。
+  
+  ## 対象ドキュメント
+  1. **FAQ** - よくある質問と回答
+  2. **トラブルシューティングガイド** - 問題解決の詳細な手順
+  3. **CHANGELOG** - バージョン履歴と変更内容
+  
+tasks:
+  - [ ] FAQページの作成
+  - [ ] よくある質問の収集と整理
+  - [ ] プラットフォーム別のFAQ追加
+  - [ ] トラブルシューティングガイドの拡充
+  - [ ] 既知の問題と回避策の文書化
+  - [ ] エラーメッセージ一覧の作成
+  - [ ] CHANGELOG.mdの作成
+  - [ ] セマンティックバージョニングの説明追加
+  - [ ] 過去のリリース履歴の整理
+  - [ ] 自動CHANGELOG生成の検討
+  
+acceptance_criteria:
+  - FAQが主要な質問をカバーしている
+  - トラブルシューティングが具体的な解決手順を提供
+  - CHANGELOGが標準フォーマットに従っている
+  - すべてのドキュメントが検索可能
+  - 魔法の用語が一貫して使用されている
+
+dependencies: [T070]
+
+related: [T070]
+
+files:
+  - docs/guide/faq.md
+  - docs/troubleshooting/README.md
+  - docs/troubleshooting/*.md
+  - CHANGELOG.md
+  - .github/ISSUE_TEMPLATE/bug_report.md
+
+time_estimate: 6h
+time_spent: 0h
+
+notes: |
+  ## FAQ候補
+  - ホットキーが動作しない
+  - 設定ファイルの場所
+  - プラットフォーム固有の問題
+  - パフォーマンスの最適化
+  - アンインストール方法
+  
+  ## トラブルシューティング構成
+  - 一般的な問題
+  - プラットフォーム別の問題
+  - 設定関連の問題
+  - ビルド・開発関連の問題
+  
+  ## CHANGELOG形式
+  - Keep a Changelog形式を採用
+  - セマンティックバージョニング準拠
+  - Added/Changed/Deprecated/Removed/Fixed/Security

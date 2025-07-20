@@ -1,0 +1,91 @@
+# Feature Ticket Template
+
+id: T056
+title: "アップデート通知の追加"
+type: feature
+priority: low
+status: completed
+created: "2025-07-18"
+updated: "2025-07-20"
+assignee: null
+labels:
+  - feature
+  - phase5
+  - updater
+  - auto-update
+
+description: |
+  ## Problem Statement
+  When updates are available, users need to be notified in a user-friendly way that doesn't
+  interrupt their workflow. The notification system should provide clear information about
+  available updates and options to act on them.
+  
+  ## Proposed Solution
+  Implement a multi-channel notification system that can inform users about available updates
+  through system notifications, tray notifications, and optional CLI output. Users should be
+  able to configure notification preferences and frequency.
+  
+  ## Implementation Details
+  - Integrate with existing notification system (internal/notify/)
+  - Add system tray update notifications with actions
+  - Show desktop notifications for new releases
+  - Add CLI command to check and display update status
+  - Include release notes and changelog information in notifications
+  - Allow users to configure notification preferences (frequency, channels)
+  - Support notification actions (update now, remind later, dismiss)
+  
+tasks:
+  - [ ] Design notification interface for updates
+  - [ ] Integrate with existing notification system
+  - [ ] Add system tray update notifications
+  - [ ] Implement desktop notification for updates
+  - [ ] Add CLI update status command
+  - [ ] Include release notes in notification content
+  - [ ] Add notification preference configuration
+  - [ ] Implement notification actions (update, dismiss, remind)
+  - [ ] Write unit tests for notification system
+  - [ ] Add integration tests with notification mocks
+  - [ ] Update documentation with notification settings
+
+acceptance_criteria:
+  - Users receive notifications when updates are available
+  - Notifications include relevant update information and release notes
+  - System tray shows update status and actions
+  - CLI command displays current update status
+  - Notification preferences are configurable
+  - Notification actions work correctly
+  - All tests pass
+  - Documentation includes notification configuration
+
+dependencies: 
+  - T054  # Auto-update checker
+
+related: 
+  - T054  # Auto-update checker
+  - T055  # Self-update mechanism
+
+files:
+  - app/internal/notify/updater.go
+  - app/internal/tray/update_menu.go
+  - app/cmd/silentcast/update_command.go
+
+time_estimate: 3h
+time_spent: 0h
+
+# Feature-specific fields
+user_story: |
+  As a SilentCast user
+  I want to be notified when updates are available
+  So that I can stay current with the latest features and fixes
+
+impact:
+  users_affected: "all"
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  Test notifications on all supported platforms.
+  Verify tray integration works correctly.
+  Test notification actions and user responses.
+  Ensure notifications don't spam users.
+  Test with different notification settings.

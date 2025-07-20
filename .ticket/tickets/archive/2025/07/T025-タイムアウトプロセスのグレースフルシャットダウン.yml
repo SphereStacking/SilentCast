@@ -1,0 +1,56 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T025
+title: "タイムアウトプロセスのグレースフルシャットダウン実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels: [feature, core-features, phase2, timeout]
+
+description: |
+  タイムアウトを超えたプロセスのグレースフルシャットダウン機構を実装します。
+  まずSIGTERMでプロセスをグレースフルに終了しようと試み、猶予期間を待ち、
+  必要に応じてSIGKILLで強制終了します。これによりデータの整合性と
+  リソースの適切なクリーンアップが保証されます。
+  
+tasks:
+  - [ ] タイムアウト時のSIGTERMシグナル送信を実装
+  - [ ] SIGKILL前の設定可能な猶予期間を追加
+  - [ ] 猶予期間後のSIGKILLによる強制終了を実装
+  - [ ] プラットフォーム固有のシグナルハンドリングを追加 (Windows vs Unix)
+  - [ ] プロセスクリーンアップとリソース解放を処理
+  - [ ] グレースフルシャットダウンシナリオのテストを作成
+  - [ ] グレースフルシャットダウンの動作をドキュメント化
+  
+acceptance_criteria:
+  - タイムアウト超過時にプロセスが最初にSIGTERMを受け取る
+  - 猶予期間が設定可能 (デフォルト: 5-10秒)
+  - 猶予期間内にプロセスが終了しない場合はSIGKILLが送信される
+  - プラットフォーム固有のシグナルハンドリングが正しく動作する
+  - 終了後にリソースが適切にクリーンアップされる
+  - ゾンビプロセスが残らない
+  - テストがグレースフルと強制終了の両方のパスを検証する
+
+dependencies: [T024]  # 基本的なタイムアウト実装に依存
+
+related: [T024, T026]  # 関連するチケットIDのリスト
+
+files:
+  - app/internal/action/script.go
+  - app/internal/action/script_windows.go
+  - app/internal/action/script_unix.go
+  - app/internal/action/script_test.go
+  - app/internal/config/types.go
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  このチケットは基本的なタイムアウト機能の上に構築されるため、
+  T024が最初に完了することに依存しています。WindowsとUnixシステムが
+  プロセスシグナルを異なる方法で処理するため、実装はプラットフォームを
+  認識する必要があります。

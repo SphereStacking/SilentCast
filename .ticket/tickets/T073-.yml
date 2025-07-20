@@ -1,0 +1,83 @@
+id: T073
+title: "セキュリティポリシーとコミュニティガバナンスの整備"
+type: docs
+priority: high
+status: todo
+created: "2025-01-20"
+updated: "2025-01-20"
+assignee: null
+labels:
+  - security
+  - community
+  - governance
+  - documentation
+
+description: |
+  ## 概要
+  オープンソースプロジェクトとしての信頼性向上とコミュニティの健全な成長のため、
+  セキュリティポリシーとコミュニティガバナンス関連のドキュメントを整備する。
+  
+  ## 背景
+  現在、プロジェクトには以下の重要なドキュメントが不足している：
+  - セキュリティ脆弱性の報告方法
+  - コミュニティの行動規範
+  - コントリビューション促進のためのテンプレート
+  
+tasks:
+  - [ ] SECURITY.md の作成
+  - [ ] 脆弱性報告プロセスの定義
+  - [ ] セキュリティ連絡先の設定
+  - [ ] CODE_OF_CONDUCT.md の作成
+  - [ ] Issue テンプレートの作成（バグ報告、機能要望、質問）
+  - [ ] Pull Request テンプレートの作成
+  - [ ] .github/FUNDING.yml の設定検討
+  - [ ] Dependabot 設定の追加
+  - [ ] CODEOWNERS ファイルの作成
+  - [ ] プロジェクトロードマップの作成
+  
+acceptance_criteria:
+  - セキュリティ脆弱性の報告方法が明確
+  - コミュニティの行動規範が定義されている
+  - Issue/PR作成時にテンプレートが自動適用される
+  - 依存関係の脆弱性が自動チェックされる
+  - すべてのドキュメントが英語/日本語で提供される
+
+dependencies: []
+
+related: [T070, T072]
+
+files:
+  - SECURITY.md
+  - CODE_OF_CONDUCT.md
+  - .github/ISSUE_TEMPLATE/bug_report.md
+  - .github/ISSUE_TEMPLATE/feature_request.md
+  - .github/ISSUE_TEMPLATE/question.md
+  - .github/pull_request_template.md
+  - .github/dependabot.yml
+  - .github/FUNDING.yml
+  - .github/CODEOWNERS
+  - ROADMAP.md
+
+time_estimate: 8h
+time_spent: 0h
+
+notes: |
+  ## SECURITY.md の内容
+  - サポートされているバージョン
+  - 脆弱性報告方法
+  - セキュリティアップデートプロセス
+  - 責任ある開示方針
+  
+  ## CODE_OF_CONDUCT.md
+  - Contributor Covenant を採用検討
+  - 日本語版も作成
+  
+  ## Issue テンプレート
+  - バグ報告：再現手順、環境情報
+  - 機能要望：ユースケース、提案内容
+  - 質問：カテゴリ選択
+  
+  ## Dependabot 設定
+  - Go modules の自動更新
+  - GitHub Actions の更新
+  - セキュリティアラートの有効化

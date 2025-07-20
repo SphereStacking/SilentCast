@@ -1,0 +1,82 @@
+# Feature Ticket Template
+
+id: T028
+title: "ブラウザー検出と選択の実装"
+type: feature
+priority: medium
+status: completed
+created: "2025-07-18"
+updated: "2025-07-19"
+assignee: null
+labels:
+  - feature
+  - phase3
+  - new-action-types
+
+description: |
+  ## 問題の説明
+  URLアクションエグゼキューターは、インストールされたブラウザーを検出し、URLを開くために
+  使用するブラウザーを決定する必要があります。
+  
+  ## 提案するソリューション
+  各プラットフォーム上でインストールされたブラウザーを見つけ、システムの
+  デフォルトブラウザーを識別できるブラウザー検出ロジックを実装します。
+  
+  ## 実装の詳細
+  - `internal/action/browser/`にブラウザー検出モジュールを作成
+  - プラットフォーム固有のブラウザー検出を実装:
+    - Windows: レジストリでインストールされたブラウザーをチェック
+    - macOS: Applicationsフォルダーとシステム設定をチェック
+    - Linux: desktopファイルとalternativesシステムをチェック
+  - システムデフォルトブラウザーを検出
+  - ブラウザー優先設定をサポート
+  - フォールバック機構を提供
+  
+tasks:
+  - [ ] ブラウザー検出インターフェースを設計
+  - [ ] Windowsブラウザー検出を実装
+  - [ ] macOSブラウザー検出を実装
+  - [ ] Linuxブラウザー検出を実装
+  - [ ] ブラウザー優先設定の処理を作成
+  - [ ] 各プラットフォームのユニットテストを作成
+  - [ ] 様々なブラウザーインストールでテスト
+  - [ ] エッジケースを処理 (ブラウザーなし、ポータブルブラウザー)
+  
+acceptance_criteria:
+  - すべての主要ブラウザーを検出 (Chrome、Firefox、Edge、Safari)
+  - システムデフォルトブラウザーを正しく識別
+  - Windows、macOS、Linuxで動作する
+  - ブラウザーがない場合をグレースフルに処理
+  - 有用なブラウザー情報を提供 (名前、パス、バージョン)
+  - テストがすべてのプラットフォームをカバー
+
+dependencies:
+  - T027
+
+related:
+  - T027
+  - T029
+
+files:
+  - app/internal/action/browser/detector.go
+  - app/internal/action/browser/detector_windows.go
+  - app/internal/action/browser/detector_darwin.go
+  - app/internal/action/browser/detector_linux.go
+  - app/internal/action/browser/detector_test.go
+
+time_estimate: 4h
+time_spent: 0h
+
+# Feature-specific fields
+user_story: |
+  SilentCastユーザーとして
+  システムがインストールされたブラウザーを検出することを望みます
+  それによりURLを好みのブラウザーで開けるようになります
+
+impact:
+  users_affected: "all"  # all, some, few
+  breaking_change: false
+  migration_required: false
+
+testing_notes: |
+  この機能のテスト方法

@@ -1,0 +1,90 @@
+id: T075
+title: "パッケージング・配布の改善（インストーラー作成）"
+type: feature
+priority: medium
+status: todo
+created: "2025-01-20"
+updated: "2025-01-20"
+assignee: null
+labels:
+  - packaging
+  - distribution
+  - installer
+  - user-experience
+
+description: |
+  ## 概要
+  ユーザーのインストール体験を向上させるため、
+  各プラットフォーム用のネイティブインストーラーを作成する。
+  
+  ## 目的
+  - ワンクリックインストールの実現
+  - アンインストールの簡素化
+  - システム統合の改善
+  - エンタープライズ環境での導入促進
+  
+tasks:
+  - [ ] Windows MSI インストーラーの作成
+  - [ ] macOS PKG インストーラーの作成
+  - [ ] Linux パッケージの作成（DEB/RPM）
+  - [ ] Chocolatey パッケージの作成
+  - [ ] AUR パッケージの作成
+  - [ ] Flatpak パッケージの検討
+  - [ ] 自動更新機能の統合
+  - [ ] アンインストーラーの実装
+  - [ ] インストールガイドの更新
+  - [ ] CI/CD でのパッケージ自動生成
+  
+acceptance_criteria:
+  - 各プラットフォームでワンクリックインストール可能
+  - きれいにアンインストールできる
+  - 自動更新が適切に動作する
+  - デジタル署名されている
+  - サイレントインストールオプションがある
+
+dependencies: []
+
+related: [T072]
+
+files:
+  - build/windows/installer.wxs
+  - build/windows/build-msi.ps1
+  - build/macos/installer.pkgproj
+  - build/macos/build-pkg.sh
+  - build/linux/debian/control
+  - build/linux/rpm/silentcast.spec
+  - scripts/package.sh
+  - .github/workflows/package.yml
+  - docs/guide/uninstall.md
+
+time_estimate: 12h
+time_spent: 0h
+
+notes: |
+  ## Windows MSI
+  - WiX Toolset を使用
+  - スタートメニューエントリ作成
+  - 自動起動オプション
+  - ファイアウォール例外追加
+  
+  ## macOS PKG
+  - pkgbuild / productbuild 使用
+  - Apple Developer ID で署名
+  - ログイン項目への追加オプション
+  - アクセシビリティ権限の案内
+  
+  ## Linux パッケージ
+  - DEB: Ubuntu/Debian 用
+  - RPM: Fedora/RHEL 用
+  - systemd サービスファイル含む
+  - 依存関係の適切な設定
+  
+  ## Chocolatey
+  - PowerShell インストールスクリプト
+  - 自動更新対応
+  - 依存パッケージ管理
+  
+  ## 署名要件
+  - Windows: コード署名証明書
+  - macOS: Apple Developer ID
+  - Linux: GPG 署名
