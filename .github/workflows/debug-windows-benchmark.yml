@@ -1,0 +1,65 @@
+name: Debug Windows Benchmarks
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    name: Debug Windows Benchmark
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+
+    - name: Debug environment
+      working-directory: app
+      run: |
+        echo "Current directory:"
+        pwd
+        echo ""
+        echo "Go version:"
+        go version
+        echo ""
+        echo "Go env:"
+        go env
+        echo ""
+        echo "CI environment variable:"
+        echo $env:CI
+        echo $env:GITHUB_ACTIONS
+
+    - name: Test simple echo command
+      working-directory: app
+      run: |
+        echo "Testing echo commands:"
+        cmd /c "echo test"
+        cmd /c "echo test output"
+        
+    - name: Run single benchmark with verbose output
+      working-directory: app
+      env:
+        CI: true
+      run: |
+        echo "Running single action benchmark..."
+        go test -tags "nogohook notray" -run=^$ -bench=BenchmarkActionExecution -benchtime=1x ./test/benchmarks/action_test.go ./test/benchmarks/framework.go -v
+        
+    - name: Run goroutine leak test
+      working-directory: app
+      env:
+        CI: true
+      run: |
+        echo "Running goroutine leak test..."
+        go test -tags "nogohook notray" -run=TestGoroutineLeaks -timeout=60s ./test/benchmarks/... -v
+        
+    - name: Run all benchmarks with error capture
+      working-directory: app
+      env:
+        CI: true
+      run: |
+        echo "Running all benchmarks..."
+        go test -tags "nogohook notray" -run=^$ -bench=. -benchmem -timeout=5m ./test/benchmarks/... -v 2>&1 | Out-String -Stream | Select-Object -Last 100
