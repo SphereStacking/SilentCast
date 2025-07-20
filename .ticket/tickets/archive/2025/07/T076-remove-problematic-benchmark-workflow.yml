@@ -24,6 +24,8 @@ tasks:
   - [x] Remove .github/workflows/benchmarks.yml
   - [x] Commit and push the removal
   - [x] Update documentation if benchmark workflow is mentioned (確認済み：言及なし)
+  - [ ] Remove benchmark test files in app/test/benchmarks/
+  - [ ] Remove benchmark-related targets from app/Makefile
   
 acceptance_criteria:
   - Benchmark workflow is removed from the repository

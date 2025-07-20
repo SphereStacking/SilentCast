@@ -1,4 +1,4 @@
-.PHONY: build build-dev build-stub build-snapshot test test-integration test-e2e test-all test-coverage test-integration-coverage test-e2e-coverage benchmark benchmark-cpu benchmark-mem benchmark-startup benchmark-hotkey benchmark-action benchmark-config benchmark-memory benchmark-stress benchmark-watcher benchmark-compare clean run install lint fmt release-test snapshot
+.PHONY: build build-dev build-stub build-snapshot test test-integration test-e2e test-all test-coverage test-integration-coverage test-e2e-coverage clean run install lint fmt release-test snapshot
 
 # Build variables
 BINARY_NAME=silentcast
