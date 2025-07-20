@@ -68,76 +68,76 @@ jobs:
       working-directory: app
       run: |
         echo "Running comprehensive benchmarks..."
-        go test -tags "nogohook notray" -bench=. -benchmem -timeout=45m ./test/benchmarks/... | tee ../benchmark-results/all-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+        go test -tags "nogohook notray" -run=^$ -bench=. -benchmem -timeout=45m ./test/benchmarks/... | tee ../benchmark-results/all-${{ matrix.os }}-go${{ matrix.go-version }}.txt
 
     - name: Run startup benchmarks
       if: github.event.inputs.benchmark_type == 'startup'
       working-directory: app
       run: |
         echo "Running startup benchmarks..."
-        go test -tags "nogohook notray" -bench=BenchmarkStartup -benchmem ./test/benchmarks/startup_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/startup-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+        go test -tags "nogohook notray" -run=^$ -bench=BenchmarkStartup -benchmem ./test/benchmarks/startup_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/startup-${{ matrix.os }}-go${{ matrix.go-version }}.txt
 
     - name: Run hotkey benchmarks
       if: github.event.inputs.benchmark_type == 'hotkey'
       working-directory: app
       run: |
         echo "Running hotkey benchmarks..."
-        go test -tags "nogohook notray" -bench=BenchmarkKey -benchmem ./test/benchmarks/hotkey_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/hotkey-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+        go test -tags "nogohook notray" -run=^$ -bench=BenchmarkKey -benchmem ./test/benchmarks/hotkey_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/hotkey-${{ matrix.os }}-go${{ matrix.go-version }}.txt
 
     - name: Run action benchmarks
       if: github.event.inputs.benchmark_type == 'action'
       working-directory: app
       run: |
         echo "Running action benchmarks..."
-        go test -tags "nogohook notray" -bench=BenchmarkAction -benchmem ./test/benchmarks/action_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/action-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+        go test -tags "nogohook notray" -run=^$ -bench=BenchmarkAction -benchmem ./test/benchmarks/action_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/action-${{ matrix.os }}-go${{ matrix.go-version }}.txt
 
     - name: Run config benchmarks
       if: github.event.inputs.benchmark_type == 'config'
       working-directory: app
       run: |
         echo "Running config benchmarks..."
-        go test -tags "nogohook notray" -bench=BenchmarkConfig -benchmem ./test/benchmarks/config_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/config-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+        go test -tags "nogohook notray" -run=^$ -bench=BenchmarkConfig -benchmem ./test/benchmarks/config_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/config-${{ matrix.os }}-go${{ matrix.go-version }}.txt
 
     - name: Run memory benchmarks
       if: github.event.inputs.benchmark_type == 'memory'
       working-directory: app
       run: |
         echo "Running memory benchmarks..."
-        go test -tags "nogohook notray" -bench=BenchmarkMemory -benchmem ./test/benchmarks/memory_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/memory-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+        go test -tags "nogohook notray" -run=^$ -bench=BenchmarkMemory -benchmem ./test/benchmarks/memory_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/memory-${{ matrix.os }}-go${{ matrix.go-version }}.txt
 
     - name: Run stress benchmarks
       if: github.event.inputs.benchmark_type == 'stress'
       working-directory: app
       run: |
         echo "Running stress benchmarks..."
-        go test -tags "nogohook notray" -bench=BenchmarkStress -benchmem -timeout=20m ./test/benchmarks/stress_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/stress-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+        go test -tags "nogohook notray" -run=^$ -bench=BenchmarkStress -benchmem -timeout=20m ./test/benchmarks/stress_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/stress-${{ matrix.os }}-go${{ matrix.go-version }}.txt
 
     - name: Run notification benchmarks
       if: github.event.inputs.benchmark_type == 'notification'
       working-directory: app
       run: |
         echo "Running notification benchmarks..."
-        go test -tags "nogohook notray" -bench=BenchmarkNotification -benchmem ./test/benchmarks/notification_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/notification-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+        go test -tags "nogohook notray" -run=^$ -bench=BenchmarkNotification -benchmem ./test/benchmarks/notification_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/notification-${{ matrix.os }}-go${{ matrix.go-version }}.txt
 
     - name: Run watcher benchmarks
       if: github.event.inputs.benchmark_type == 'watcher'
       working-directory: app
       run: |
         echo "Running watcher benchmarks..."
-        go test -tags "nogohook notray" -bench=BenchmarkConfig -benchmem ./test/benchmarks/watcher_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/watcher-${{ matrix.os }}-go${{ matrix.go-version }}.txt
+        go test -tags "nogohook notray" -run=^$ -bench=BenchmarkConfig -benchmem ./test/benchmarks/watcher_test.go ./test/benchmarks/framework.go | tee ../benchmark-results/watcher-${{ matrix.os }}-go${{ matrix.go-version }}.txt
 
     - name: Generate CPU profile
       working-directory: app
       run: |
         echo "Generating CPU profile..."
-        go test -tags "nogohook notray" -bench=BenchmarkStartup -benchmem -cpuprofile=cpu-${{ matrix.os }}-go${{ matrix.go-version }}.prof -timeout=10m ./test/benchmarks/startup_test.go ./test/benchmarks/framework.go
+        go test -tags "nogohook notray" -run=^$ -bench=BenchmarkStartup -benchmem -cpuprofile=cpu-${{ matrix.os }}-go${{ matrix.go-version }}.prof -timeout=10m ./test/benchmarks/startup_test.go ./test/benchmarks/framework.go
         mv cpu-${{ matrix.os }}-go${{ matrix.go-version }}.prof ../benchmark-results/
 
     - name: Generate memory profile
       working-directory: app
       run: |
         echo "Generating memory profile..."
-        go test -tags "nogohook notray" -bench=BenchmarkMemory -benchmem -memprofile=mem-${{ matrix.os }}-go${{ matrix.go-version }}.prof -timeout=10m ./test/benchmarks/memory_test.go ./test/benchmarks/framework.go
+        go test -tags "nogohook notray" -run=^$ -bench=BenchmarkMemory -benchmem -memprofile=mem-${{ matrix.os }}-go${{ matrix.go-version }}.prof -timeout=10m ./test/benchmarks/memory_test.go ./test/benchmarks/framework.go
         mv mem-${{ matrix.os }}-go${{ matrix.go-version }}.prof ../benchmark-results/
 
     - name: Upload benchmark results
@@ -170,7 +170,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.22'
+        go-version: '1.23'
 
     - name: Download all benchmark artifacts
       uses: actions/download-artifact@v4
@@ -197,9 +197,9 @@ jobs:
         
         for os in ubuntu-latest windows-latest macos-latest; do
           echo "### $os" >> performance-report.md
-          if [ -f "all-benchmark-results/benchmark-results-$os-go1.22/all-$os-go1.22.txt" ]; then
+          if [ -f "all-benchmark-results/benchmark-results-$os-go1.23/all-$os-go1.23.txt" ]; then
             echo "\`\`\`" >> performance-report.md
-            head -20 "all-benchmark-results/benchmark-results-$os-go1.22/all-$os-go1.22.txt" >> performance-report.md
+            head -20 "all-benchmark-results/benchmark-results-$os-go1.23/all-$os-go1.23.txt" >> performance-report.md
             echo "\`\`\`" >> performance-report.md
           fi
           echo "" >> performance-report.md
@@ -234,13 +234,13 @@ jobs:
     - name: Download benchmark results
       uses: actions/download-artifact@v4
       with:
-        name: benchmark-results-ubuntu-latest-go1.22
+        name: benchmark-results-ubuntu-latest-go1.23
         path: current-results
 
     - name: Check for baseline results
       id: baseline
       run: |
-        if [ -f "benchmark-baselines/baseline-ubuntu-latest-go1.22.txt" ]; then
+        if [ -f "benchmark-baselines/baseline-ubuntu-latest-go1.23.txt" ]; then
           echo "baseline_exists=true" >> $GITHUB_OUTPUT
         else
           echo "baseline_exists=false" >> $GITHUB_OUTPUT
@@ -254,8 +254,8 @@ jobs:
         go install golang.org/x/tools/cmd/benchcmp@latest
         
         # Compare results
-        if [ -f "current-results/all-ubuntu-latest-go1.22.txt" ] && [ -f "benchmark-baselines/baseline-ubuntu-latest-go1.22.txt" ]; then
-          benchcmp benchmark-baselines/baseline-ubuntu-latest-go1.22.txt current-results/all-ubuntu-latest-go1.22.txt > regression-report.txt || true
+        if [ -f "current-results/all-ubuntu-latest-go1.23.txt" ] && [ -f "benchmark-baselines/baseline-ubuntu-latest-go1.23.txt" ]; then
+          benchcmp benchmark-baselines/baseline-ubuntu-latest-go1.23.txt current-results/all-ubuntu-latest-go1.23.txt > regression-report.txt || true
           
           # Check for significant regressions (more than 20% slower)
           if grep -q "+[2-9][0-9]\|+[0-9][0-9][0-9]" regression-report.txt; then
@@ -274,8 +274,8 @@ jobs:
       run: |
         echo "Updating performance baseline..."
         mkdir -p benchmark-baselines
-        if [ -f "current-results/all-ubuntu-latest-go1.22.txt" ]; then
-          cp current-results/all-ubuntu-latest-go1.22.txt benchmark-baselines/baseline-ubuntu-latest-go1.22.txt
+        if [ -f "current-results/all-ubuntu-latest-go1.23.txt" ]; then
+          cp current-results/all-ubuntu-latest-go1.23.txt benchmark-baselines/baseline-ubuntu-latest-go1.23.txt
         fi
 
     - name: Commit updated baseline
@@ -314,9 +314,9 @@ jobs:
         
         for os in ubuntu-latest windows-latest macos-latest; do
           echo "### $os" >> performance-dashboard.md
-          if [ -f "all-results/benchmark-results-$os-go1.22/all-$os-go1.22.txt" ]; then
+          if [ -f "all-results/benchmark-results-$os-go1.23/all-$os-go1.23.txt" ]; then
             echo "\`\`\`" >> performance-dashboard.md
-            grep "^Benchmark" "all-results/benchmark-results-$os-go1.22/all-$os-go1.22.txt" | head -10 >> performance-dashboard.md
+            grep "^Benchmark" "all-results/benchmark-results-$os-go1.23/all-$os-go1.23.txt" | head -10 >> performance-dashboard.md
             echo "\`\`\`" >> performance-dashboard.md
           fi
           echo "" >> performance-dashboard.md
