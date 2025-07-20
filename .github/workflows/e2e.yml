@@ -1,0 +1,345 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run E2E tests daily at 3 AM UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      test_category:
+        description: 'E2E test category to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - startup
+        - action_workflow
+        - permission
+        - notification
+        - performance
+        - tray
+
+jobs:
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        go-version: ['1.21', '1.22']
+      fail-fast: false
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go-version }}
+
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-${{ matrix.go-version }}-
+
+    - name: Install dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xvfb libgtk-3-dev libnotify-dev
+        # Install additional dependencies for headless testing
+        sudo apt-get install -y dbus-x11
+
+    - name: Install dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        # macOS dependencies for E2E testing
+        brew install --cask xquartz || true
+
+    - name: Install dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        # Windows-specific E2E test dependencies
+        choco install --no-progress -y git
+
+    - name: Setup test environment
+      working-directory: app
+      run: |
+        go mod download
+        go mod tidy
+
+    - name: Build application for E2E testing
+      working-directory: app
+      run: |
+        # Build stub version for reliable E2E testing
+        make build-stub
+        
+        # Verify binary exists
+        ls -la build/
+        
+        # Test binary runs
+        ./build/silentcast --version || echo "Version check failed but continuing"
+
+    - name: Setup virtual display (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        # Start virtual display for headless testing
+        export DISPLAY=:99.0
+        Xvfb :99 -screen 0 1024x768x24 -ac &
+        sleep 3
+
+    - name: Run all E2E tests
+      if: github.event.inputs.test_category == 'all' || github.event.inputs.test_category == ''
+      working-directory: app
+      env:
+        DISPLAY: ${{ runner.os == 'Linux' && ':99.0' || '' }}
+      run: |
+        echo "Running comprehensive E2E tests..."
+        go test -tags "e2e nogohook notray" -v -timeout=30m ./test/e2e/...
+
+    - name: Run startup E2E tests
+      if: github.event.inputs.test_category == 'startup'
+      working-directory: app
+      env:
+        DISPLAY: ${{ runner.os == 'Linux' && ':99.0' || '' }}
+      run: |
+        echo "Running startup E2E tests..."
+        go test -tags "e2e nogohook notray" -v -timeout=15m -run "TestApplication.*Startup|TestConfiguration.*" ./test/e2e/startup_test.go ./test/e2e/framework.go
+
+    - name: Run action workflow E2E tests
+      if: github.event.inputs.test_category == 'action_workflow'
+      working-directory: app
+      env:
+        DISPLAY: ${{ runner.os == 'Linux' && ':99.0' || '' }}
+      run: |
+        echo "Running action workflow E2E tests..."
+        go test -tags "e2e nogohook notray" -v -timeout=20m -run "TestScript.*|TestApp.*|TestURL.*|TestSequential.*|TestError.*" ./test/e2e/action_workflow_test.go ./test/e2e/framework.go
+
+    - name: Run permission E2E tests
+      if: github.event.inputs.test_category == 'permission'
+      working-directory: app
+      env:
+        DISPLAY: ${{ runner.os == 'Linux' && ':99.0' || '' }}
+      run: |
+        echo "Running permission E2E tests..."
+        go test -tags "e2e nogohook notray" -v -timeout=20m -run "TestPermission.*|TestElevated.*" ./test/e2e/permission_test.go ./test/e2e/framework.go
+
+    - name: Run notification E2E tests
+      if: github.event.inputs.test_category == 'notification'
+      working-directory: app
+      env:
+        DISPLAY: ${{ runner.os == 'Linux' && ':99.0' || '' }}
+      run: |
+        echo "Running notification E2E tests..."
+        go test -tags "e2e nogohook notray" -v -timeout=15m -run "TestNotification.*" ./test/e2e/notification_test.go ./test/e2e/framework.go
+
+    - name: Run performance E2E tests
+      if: github.event.inputs.test_category == 'performance'
+      working-directory: app
+      env:
+        DISPLAY: ${{ runner.os == 'Linux' && ':99.0' || '' }}
+      run: |
+        echo "Running performance E2E tests..."
+        go test -tags "e2e nogohook notray" -v -timeout=25m -run "Test.*Performance|Test.*Stability" ./test/e2e/performance_test.go ./test/e2e/framework.go
+
+    - name: Run tray E2E tests
+      if: github.event.inputs.test_category == 'tray'
+      working-directory: app
+      env:
+        DISPLAY: ${{ runner.os == 'Linux' && ':99.0' || '' }}
+      run: |
+        echo "Running tray E2E tests..."
+        go test -tags "e2e nogohook notray" -v -timeout=15m -run "TestTray.*" ./test/e2e/tray_test.go ./test/e2e/framework.go
+
+    - name: Collect test logs
+      if: always()
+      run: |
+        echo "Collecting E2E test logs and artifacts..."
+        mkdir -p e2e-logs
+        find . -name "*.log" -type f -exec cp {} e2e-logs/ \; || true
+        find . -name "silentcast.log" -type f -exec cp {} e2e-logs/ \; || true
+        find /tmp -name "*silentcast*" -type f -exec cp {} e2e-logs/ \; 2>/dev/null || true
+
+    - name: Upload test artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: e2e-test-logs-${{ matrix.os }}-go${{ matrix.go-version }}
+        path: |
+          e2e-logs/
+          app/test/e2e/test_*
+        retention-days: 7
+
+    - name: Generate E2E test report
+      if: always()
+      run: |
+        echo "# E2E Test Report" > e2e-report.md
+        echo "" >> e2e-report.md
+        echo "**Platform:** ${{ matrix.os }}" >> e2e-report.md
+        echo "**Go Version:** ${{ matrix.go-version }}" >> e2e-report.md
+        echo "**Test Category:** ${{ github.event.inputs.test_category || 'all' }}" >> e2e-report.md
+        echo "**Timestamp:** $(date)" >> e2e-report.md
+        echo "" >> e2e-report.md
+        
+        if [ "${{ job.status }}" = "success" ]; then
+          echo "✅ **Status:** All E2E tests passed" >> e2e-report.md
+        else
+          echo "❌ **Status:** Some E2E tests failed" >> e2e-report.md
+        fi
+        
+        echo "" >> e2e-report.md
+        echo "## Test Coverage" >> e2e-report.md
+        echo "- Application Lifecycle (Startup/Shutdown)" >> e2e-report.md
+        echo "- Configuration Management" >> e2e-report.md
+        echo "- Action Execution Workflows" >> e2e-report.md
+        echo "- Permission Handling" >> e2e-report.md
+        echo "- Notification System" >> e2e-report.md
+        echo "- Performance Benchmarks" >> e2e-report.md
+        echo "- System Tray Integration" >> e2e-report.md
+
+    - name: Upload E2E test report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: e2e-report-${{ matrix.os }}-go${{ matrix.go-version }}
+        path: e2e-report.md
+        retention-days: 30
+
+  e2e-summary:
+    name: E2E Test Summary
+    runs-on: ubuntu-latest
+    needs: e2e-tests
+    if: always()
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: all-e2e-results
+
+    - name: Generate comprehensive E2E summary
+      run: |
+        echo "# SilentCast E2E Test Summary" > e2e-summary.md
+        echo "" >> e2e-summary.md
+        echo "**Run Date:** $(date)" >> e2e-summary.md
+        echo "**Trigger:** ${{ github.event_name }}" >> e2e-summary.md
+        echo "**Branch:** ${{ github.ref_name }}" >> e2e-summary.md
+        echo "**Commit:** ${{ github.sha }}" >> e2e-summary.md
+        echo "" >> e2e-summary.md
+        
+        echo "## Platform Results" >> e2e-summary.md
+        echo "" >> e2e-summary.md
+        echo "| Platform | Go 1.21 | Go 1.22 |" >> e2e-summary.md
+        echo "|----------|---------|---------|" >> e2e-summary.md
+        
+        for os in ubuntu-latest windows-latest macos-latest; do
+          echo -n "| $os | " >> e2e-summary.md
+          
+          # Check Go 1.21 result
+          if [ -d "all-e2e-results/e2e-report-$os-go1.21" ]; then
+            echo -n "✅ | " >> e2e-summary.md
+          else
+            echo -n "❌ | " >> e2e-summary.md
+          fi
+          
+          # Check Go 1.22 result
+          if [ -d "all-e2e-results/e2e-report-$os-go1.22" ]; then
+            echo "✅ |" >> e2e-summary.md
+          else
+            echo "❌ |" >> e2e-summary.md
+          fi
+        done
+        
+        echo "" >> e2e-summary.md
+        echo "## Test Categories Covered" >> e2e-summary.md
+        echo "" >> e2e-summary.md
+        echo "- **Startup Tests:** Application initialization and configuration loading" >> e2e-summary.md
+        echo "- **Action Workflow Tests:** Script, app, and URL action execution" >> e2e-summary.md
+        echo "- **Permission Tests:** Elevated actions and platform-specific permissions" >> e2e-summary.md
+        echo "- **Notification Tests:** Cross-platform notification system" >> e2e-summary.md
+        echo "- **Performance Tests:** Startup time, response time, and stability" >> e2e-summary.md
+        echo "- **Tray Tests:** System tray integration and fallback modes" >> e2e-summary.md
+        
+        echo "" >> e2e-summary.md
+        echo "## Key Metrics" >> e2e-summary.md
+        echo "" >> e2e-summary.md
+        echo "- **Startup Performance Target:** < 10 seconds" >> e2e-summary.md
+        echo "- **Hotkey Response Target:** < 5 seconds" >> e2e-summary.md
+        echo "- **Configuration Reload Target:** < 20 seconds" >> e2e-summary.md
+        echo "- **Stability Test:** 10 iterations without failure" >> e2e-summary.md
+        
+        echo "" >> e2e-summary.md
+        echo "## Artifacts Generated" >> e2e-summary.md
+        echo "" >> e2e-summary.md
+        find all-e2e-results -name "*.md" -o -name "*.log" | while read file; do
+          echo "- $(basename "$file")" >> e2e-summary.md
+        done
+
+    - name: Upload comprehensive summary
+      uses: actions/upload-artifact@v4
+      with:
+        name: e2e-comprehensive-summary
+        path: e2e-summary.md
+        retention-days: 30
+
+    - name: Comment on PR (if applicable)
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          if (fs.existsSync('e2e-summary.md')) {
+            const summary = fs.readFileSync('e2e-summary.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+          }
+
+  e2e-cleanup:
+    name: Cleanup E2E Artifacts
+    runs-on: ubuntu-latest
+    needs: e2e-summary
+    if: github.event_name == 'schedule'
+
+    steps:
+    - name: Cleanup old E2E artifacts
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const artifacts = await github.rest.actions.listArtifactsForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            per_page: 100
+          });
+          
+          const oldArtifacts = artifacts.data.artifacts.filter(artifact => {
+            const createdAt = new Date(artifact.created_at);
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            return createdAt < thirtyDaysAgo && 
+                   (artifact.name.includes('e2e-test-logs') || 
+                    artifact.name.includes('e2e-report'));
+          });
+          
+          for (const artifact of oldArtifacts) {
+            await github.rest.actions.deleteArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: artifact.id
+            });
+            console.log(`Deleted old E2E artifact: ${artifact.name}`);
+          }

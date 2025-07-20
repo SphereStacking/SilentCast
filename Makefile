@@ -16,6 +16,13 @@ help:
 	@echo "  test          Run tests"
 	@echo "  clean         Remove build artifacts"
 	@echo ""
+	@echo "TDD Workflow:"
+	@echo "  tdd-watch     Watch for changes and run tests automatically"
+	@echo "  tdd-red       Run RED phase (expecting test failures)"
+	@echo "  tdd-green     Run GREEN phase (tests should pass)"
+	@echo "  tdd-refactor  Run REFACTOR phase (improve code quality)"
+	@echo "  tdd-cycle     Run full Red-Green-Refactor cycle"
+	@echo ""
 	@echo "Documentation:"
 	@echo "  docs-dev      Start documentation development server"
 	@echo "  docs-build    Build documentation"
@@ -39,6 +46,22 @@ build-snapshot:
 
 test:
 	@$(MAKE) -C app test
+
+# TDD workflow shortcuts
+tdd-watch:
+	@$(MAKE) -C app tdd-watch
+
+tdd-red:
+	@$(MAKE) -C app tdd-red
+
+tdd-green:
+	@$(MAKE) -C app tdd-green
+
+tdd-refactor:
+	@$(MAKE) -C app tdd-refactor
+
+tdd-cycle:
+	@$(MAKE) -C app tdd-cycle
 
 clean:
 	@$(MAKE) -C app clean
