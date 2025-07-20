@@ -1,6 +1,6 @@
 //go:build linux
 
-package action
+package app
 
 import (
 	"context"

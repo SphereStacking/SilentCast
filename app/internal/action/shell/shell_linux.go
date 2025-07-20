@@ -1,6 +1,6 @@
 //go:build linux
 
-package action
+package shell
 
 import (
 	"context"
@@ -26,6 +26,11 @@ func (l *linuxShellExecutor) GetShell() (shell, flag string) {
 }
 
 func (l *linuxShellExecutor) WrapInTerminal(ctx context.Context, cmd *exec.Cmd) *exec.Cmd {
+	// Linux: default to keep open
+	return l.WrapInTerminalWithOptions(ctx, cmd, true)
+}
+
+func (l *linuxShellExecutor) WrapInTerminalWithOptions(ctx context.Context, cmd *exec.Cmd, keepOpen bool) *exec.Cmd {
 	// Linux: try common terminal emulators
 	terminals := []string{"gnome-terminal", "konsole", "xterm", "xfce4-terminal"}
 
@@ -33,13 +38,32 @@ func (l *linuxShellExecutor) WrapInTerminal(ctx context.Context, cmd *exec.Cmd) 
 		if _, err := exec.LookPath(term); err == nil {
 			switch term {
 			case "gnome-terminal":
+				if keepOpen {
+					// Use bash to execute command and wait for input
+					return exec.CommandContext(ctx, term, "--", "bash", "-c",
+						cmd.String()+`; echo ""; echo "Press Enter to close..."; read`)
+				}
 				args := []string{"--"}
 				args = append(args, cmd.Path)
 				args = append(args, cmd.Args[1:]...)
 				return exec.CommandContext(ctx, term, args...)
 			case "konsole":
+				if keepOpen {
+					// Use --hold to keep konsole open
+					return exec.CommandContext(ctx, term, "--hold", "-e", cmd.String())
+				}
 				return exec.CommandContext(ctx, term, "-e", cmd.String())
-			case "xterm", "xfce4-terminal":
+			case "xterm":
+				if keepOpen {
+					// Use -hold to keep xterm open
+					return exec.CommandContext(ctx, term, "-hold", "-e", cmd.String())
+				}
+				return exec.CommandContext(ctx, term, "-e", cmd.String())
+			case "xfce4-terminal":
+				if keepOpen {
+					// Use --hold to keep terminal open
+					return exec.CommandContext(ctx, term, "--hold", "-e", cmd.String())
+				}
 				return exec.CommandContext(ctx, term, "-e", cmd.String())
 			}
 		}

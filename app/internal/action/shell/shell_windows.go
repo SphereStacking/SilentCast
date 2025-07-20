@@ -1,6 +1,6 @@
 //go:build windows
 
-package action
+package shell
 
 import (
 	"context"
@@ -21,8 +21,18 @@ func (w *windowsShellExecutor) GetShell() (string, string) {
 }
 
 func (w *windowsShellExecutor) WrapInTerminal(ctx context.Context, cmd *exec.Cmd) *exec.Cmd {
+	// Windows: use cmd with start, default to keep open
+	return w.WrapInTerminalWithOptions(ctx, cmd, true)
+}
+
+func (w *windowsShellExecutor) WrapInTerminalWithOptions(ctx context.Context, cmd *exec.Cmd, keepOpen bool) *exec.Cmd {
 	// Windows: use cmd with start
-	return exec.CommandContext(ctx, "cmd", "/c", "start", "cmd", "/k", cmd.String())
+	// /k keeps window open, /c closes after execution
+	flag := "/k"
+	if !keepOpen {
+		flag = "/c"
+	}
+	return exec.CommandContext(ctx, "cmd", "/c", "start", "cmd", flag, cmd.String())
 }
 
 func (w *windowsShellExecutor) IsInteractiveCommand(command string) bool {
