@@ -21,7 +21,7 @@ make build-stub
 
 ### Required Tools
 
-- **Go**: 1.21 or later
+- **Go**: 1.23 or later
   ```bash
   # Check version
   go version

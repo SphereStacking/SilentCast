@@ -261,7 +261,7 @@ silentcast --version
 
 ### Prerequisites
 
-- Go 1.21 or later
+- Go 1.23 or later
 - Git
 - Make (optional but recommended)
 - C compiler (for full features, optional)

@@ -6,7 +6,7 @@ This guide covers building SilentCast from source for development and distributi
 
 ### Required Tools
 
-- **Go 1.21+** - [Download](https://golang.org/dl/)
+- **Go 1.23+** - [Download](https://golang.org/dl/)
 - **Git** - For cloning the repository
 - **Make** - For build automation (optional but recommended)
 

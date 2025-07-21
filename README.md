@@ -203,7 +203,7 @@ grimoire:
 ## 🔧 Development
 
 ### Prerequisites
-- Go 1.21 or later
+- Go 1.23 or later
 - Make (optional but recommended)
 - C compiler (for production builds with hotkey support)
 

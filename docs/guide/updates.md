@@ -121,7 +121,7 @@ Platform: linux/amd64
   "version": "v1.0.0",
   "git_commit": "abc123def456",
   "build_time": "2024-01-15T10:30:00Z",
-  "go_version": "1.21.0",
+  "go_version": "1.23.0",
   "platform": "linux/amd64",
   "cgo_enabled": true
 }
