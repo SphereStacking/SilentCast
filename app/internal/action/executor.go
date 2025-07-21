@@ -49,9 +49,8 @@ func (m *Manager) Execute(ctx context.Context, spellName string) error {
 
 	executor, err := m.createExecutor(&action)
 	if err != nil {
-		return errors.Wrap(errors.ErrorTypeConfig, "failed to create executor", err).
-			WithContext("spell_name", spellName).
-			WithContext("action_type", action.Type)
+		// Return the original error directly to preserve context
+		return err
 	}
 
 	if err := executor.Execute(ctx); err != nil {

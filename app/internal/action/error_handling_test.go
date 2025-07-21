@@ -130,7 +130,7 @@ func TestActionExecutorErrorPropagation(t *testing.T) {
 			name: "script execution error with context",
 			action: config.ActionConfig{
 				Type:    "script",
-				Command: "exit 1", // This will fail
+				Command: "false", // Cross-platform command that always fails
 			},
 			expectError: true,
 			expectType:  customErrors.ErrorTypeSystem,
