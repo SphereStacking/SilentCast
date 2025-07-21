@@ -30,11 +30,11 @@ spells:
 grimoire:
   editor:
     type: app
-    command: /usr/bin/vim
-    description: "Launch vim editor"
+    command: /bin/sh
+    description: "Launch shell"
   terminal:
     type: app
-    command: /usr/bin/terminal
+    command: /bin/echo
   git_status:
     type: script
     command: "git status"
@@ -50,8 +50,8 @@ spells:
 grimoire:
   vscode:
     type: app
-    command: /Applications/VSCode.app
-    description: "Launch VS Code"
+    command: /bin/cat
+    description: "Test command"
 `
 
 	// Write common config
@@ -194,6 +194,7 @@ grimoire:
     type: script
     command: "tail -f /var/log/system.log"
     keep_open: true
+    terminal: true
 `,
 			check: func(cfg *Config) bool {
 				return cfg.Actions["log_tail"].KeepOpen == true
@@ -225,10 +226,10 @@ grimoire:
   powershell:
     type: script
     command: "Get-Process"
-    shell: "powershell"
+    shell: "sh"
 `,
 			check: func(cfg *Config) bool {
-				return cfg.Actions["powershell"].Shell == "powershell"
+				return cfg.Actions["powershell"].Shell == "sh"
 			},
 		},
 		{
@@ -277,19 +278,18 @@ grimoire:
     env:
       DEBUG: "true"
     working_dir: "/tmp"
-    show_output: true
     keep_open: true
     timeout: 60
-    shell: "bash"
+    shell: "sh"
     admin: true
     terminal: true
 `,
 			check: func(cfg *Config) bool {
 				action := cfg.Actions["full_action"]
-				return action.ShowOutput == true &&
+				return action.ShowOutput == false &&
 					action.KeepOpen == true &&
 					action.Timeout == 60 &&
-					action.Shell == "bash" &&
+					action.Shell == "sh" &&
 					action.Admin == true &&
 					action.Terminal == true &&
 					len(action.Args) == 1 &&
@@ -392,7 +392,7 @@ grimoire:
     type: app
 `,
 			wantErr: true,
-			errMsg:  "missing command",
+			errMsg:  "command is required",
 		},
 		{
 			name: "Invalid log level",

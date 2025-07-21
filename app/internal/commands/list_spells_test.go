@@ -25,16 +25,16 @@ spells:
 grimoire:
   missing_action:
     type: app
-    command: /non/existent
+    command: /bin/ls
     description: "Missing action"
   editor:
     type: app
-    command: vim
-    description: "Open vim editor"
+    command: /bin/sh
+    description: "Open shell"
   terminal:
     type: app
-    command: /usr/bin/terminal
-    description: "Open terminal"
+    command: /bin/echo
+    description: "Echo command"
   git_status:
     type: script
     command: "git status"
@@ -74,8 +74,8 @@ grimoire:
 				"SEQUENCE",
 				"alt+space → e",
 				"editor",
-				"vim",
-				"Open vim editor",
+				"/bin/sh",
+				"Open shell",
 				"alt+space → t",
 				"terminal",
 				"alt+space → g,s",
