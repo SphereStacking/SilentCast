@@ -24,6 +24,11 @@ on:
         - performance
         - tray
 
+# Cancel in-progress runs when a new run is queued
+concurrency:
+  group: e2e-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   e2e-tests:
     name: E2E Tests

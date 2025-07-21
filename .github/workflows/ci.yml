@@ -16,6 +16,11 @@ on:
       - 'go.mod'
       - 'go.sum'
 
+# Cancel in-progress runs when a new run is queued
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   GO_VERSION: '1.21'
 
