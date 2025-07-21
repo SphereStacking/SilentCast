@@ -290,6 +290,7 @@ func TestLinuxManager_SystemdService(t *testing.T) {
 		onRun:        func() error { return nil },
 		useSystemd:   true,
 		isSystemWide: false,
+		execCommand:  defaultCommandExecutor,
 	}
 
 	// Mock HOME directory
@@ -412,6 +413,7 @@ func TestLinuxManager_SystemdTemplate(t *testing.T) {
 		onRun:        func() error { return nil },
 		useSystemd:   true,
 		isSystemWide: false,
+		execCommand:  defaultCommandExecutor,
 	}
 
 	// Mock HOME directory

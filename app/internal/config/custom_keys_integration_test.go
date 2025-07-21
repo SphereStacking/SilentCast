@@ -133,10 +133,10 @@ mappings:
 commands:
   help:
     type: app
-    command: help.exe
+    command: /bin/echo
   save:
     type: script
-    command: save.bat
+    command: echo "save"
 `,
 			filename: ConfigName + ".yml",
 			validate: func(t *testing.T, cfg *Config) {
@@ -158,8 +158,8 @@ commands:
 					if cmd.Type != "app" {
 						t.Errorf("Expected type 'app', got '%s'", cmd.Type)
 					}
-					if cmd.Command != "help.exe" {
-						t.Errorf("Expected command 'help.exe', got '%s'", cmd.Command)
+					if cmd.Command != "/bin/echo" {
+						t.Errorf("Expected command '/bin/echo', got '%s'", cmd.Command)
 					}
 				} else {
 					t.Error("Expected 'help' in commands")

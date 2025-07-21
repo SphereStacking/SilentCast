@@ -237,10 +237,6 @@ func (w *teeWriter) streamToDestinations(p []byte) error {
 	destinations := make([]io.Writer, len(w.manager.destinations))
 	copy(destinations, w.manager.destinations)
 
-	// Release lock before doing IO operations
-	w.manager.mu.Unlock()
-	defer w.manager.mu.Lock()
-
 	for _, dest := range destinations {
 		if dest != nil {
 			_, err := dest.Write(p)

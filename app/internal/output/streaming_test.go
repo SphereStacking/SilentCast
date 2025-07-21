@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -254,11 +255,29 @@ func TestStreamingManager_Clear(t *testing.T) {
 	}
 }
 
+// threadSafeBuffer is a thread-safe wrapper around bytes.Buffer
+type threadSafeBuffer struct {
+	mu  sync.Mutex
+	buf bytes.Buffer
+}
+
+func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
+	tsb.mu.Lock()
+	defer tsb.mu.Unlock()
+	return tsb.buf.Write(p)
+}
+
+func (tsb *threadSafeBuffer) String() string {
+	tsb.mu.Lock()
+	defer tsb.mu.Unlock()
+	return tsb.buf.String()
+}
+
 func TestStreamingManager_ConcurrentAccess(t *testing.T) {
 	manager := NewStreamingManager(Options{})
 
-	var buf bytes.Buffer
-	manager.Stream(&buf)
+	buf := &threadSafeBuffer{}
+	manager.Stream(buf)
 
 	writer := manager.StartCapture()
 
