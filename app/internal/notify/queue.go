@@ -307,7 +307,11 @@ func (q *NotificationQueue) drainQueue() {
 
 	// Process all items in heap
 	for len(q.items) > 0 {
-		item := heap.Pop(&q.items).(*QueueItem)
+		poppedItem := heap.Pop(&q.items)
+		item, ok := poppedItem.(*QueueItem)
+		if !ok {
+			continue
+		}
 
 		switch n := item.Notification.(type) {
 		case Notification:
