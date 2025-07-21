@@ -121,3 +121,9 @@ issues:
       linters:
         - errcheck
       source: "StopApplication"
+    
+    # Exclude update notifier errors (best effort notifications)
+    - path: internal/notify/updater\.go
+      linters:
+        - errcheck
+      source: "m\\.(NotifyUpdateFailed|notifier\\.NotifyUpdate)"
