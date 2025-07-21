@@ -155,7 +155,7 @@ func TestScriptActionExecution_WorkingDirectory(t *testing.T) {
 	
 	// Create a test subdirectory
 	testDir := env.TempDir + "/testdir"
-	err := os.MkdirAll(testDir, 0755)
+	err := os.MkdirAll(testDir, 0o755)
 	require.NoError(t, err)
 	
 	config := `

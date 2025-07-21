@@ -48,7 +48,7 @@ func SetupTestEnvironment(t *testing.T) *TestEnvironment {
 	require.NoError(t, err)
 	
 	configDir := filepath.Join(tempDir, "config")
-	require.NoError(t, os.MkdirAll(configDir, 0755))
+	require.NoError(t, os.MkdirAll(configDir, 0o755))
 	
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	
@@ -71,7 +71,7 @@ func SetupTestEnvironment(t *testing.T) *TestEnvironment {
 // WriteConfigFile writes a configuration file to the test environment
 func (e *TestEnvironment) WriteConfigFile(filename, content string) {
 	configPath := filepath.Join(e.ConfigDir, filename)
-	err := os.WriteFile(configPath, []byte(content), 0644)
+	err := os.WriteFile(configPath, []byte(content), 0o644)
 	require.NoError(e.t, err)
 }
 

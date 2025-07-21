@@ -6,7 +6,7 @@ created: "2025-01-17"
 
 # Ticket ID configuration
 id_format: "T{number:03d}"  # T001, T002, etc.
-next_id: 77
+next_id: 85
 
 # Status workflow
 statuses:

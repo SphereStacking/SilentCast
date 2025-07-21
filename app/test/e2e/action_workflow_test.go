@@ -21,7 +21,7 @@ echo "Test script executed successfully"
 echo "Current directory: $(pwd)"
 echo "Arguments: $@"
 `
-	if err := os.WriteFile(testScript, []byte(scriptContent), 0755); err != nil {
+	if err := os.WriteFile(testScript, []byte(scriptContent), 0o755); err != nil {
 		t.Fatalf("Failed to create test script: %v", err)
 	}
 

@@ -93,7 +93,7 @@ func NewTestEnvironment(t *testing.T) *TestEnvironment {
 // SetupSpellbook creates a test spellbook configuration
 func (env *TestEnvironment) SetupSpellbook(spellbookContent string) error {
 	spellbookPath := filepath.Join(env.ConfigDir, "spellbook.yml")
-	return os.WriteFile(spellbookPath, []byte(spellbookContent), 0o644)
+	return os.WriteFile(spellbookPath, []byte(spellbookContent), 0o600)
 }
 
 // StartApplication starts the SilentCast application in the test environment
@@ -114,7 +114,7 @@ func (env *TestEnvironment) StartApplication(args ...string) error {
 	allArgs := append([]string{}, defaultArgs...)
 	allArgs = append(allArgs, args...)
 
-	env.appProcess = exec.CommandContext(env.ctx, env.AppBinary, allArgs...)
+	env.appProcess = exec.CommandContext(env.ctx, env.AppBinary, allArgs...) // nosec G204: AppBinary is controlled by test framework
 	env.appProcess.Dir = env.TempDir
 
 	// Set environment variables
@@ -130,7 +130,7 @@ func (env *TestEnvironment) StartApplication(args ...string) error {
 
 	// Write PID file for monitoring
 	pidContent := fmt.Sprintf("%d\n", env.appProcess.Process.Pid)
-	if err := os.WriteFile(env.PidFile, []byte(pidContent), 0o644); err != nil {
+	if err := os.WriteFile(env.PidFile, []byte(pidContent), 0o600); err != nil {
 		env.t.Logf("Warning: Failed to write PID file: %v", err)
 	}
 
@@ -258,7 +258,7 @@ func (env *TestEnvironment) SimulateHotkey(sequence string) error {
 
 	// For testing, we can create a test file that the application monitors
 	testSignalFile := filepath.Join(env.TempDir, "test_signal")
-	return os.WriteFile(testSignalFile, []byte(sequence), 0o644)
+	return os.WriteFile(testSignalFile, []byte(sequence), 0o600)
 }
 
 // WaitForAction waits for a specific action to complete
