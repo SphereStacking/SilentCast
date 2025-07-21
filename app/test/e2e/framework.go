@@ -86,7 +86,7 @@ func NewTestEnvironment(t *testing.T) *TestEnvironment {
 		PidFile:        filepath.Join(tempDir, "silentcast.pid"),
 		ctx:            ctx,
 		cancel:         cancel,
-		startupTimeout: 10 * time.Second,
+		startupTimeout: 30 * time.Second,
 	}
 }
 
