@@ -35,7 +35,7 @@ type LaunchOptions struct {
 // Launcher is the interface for launching browsers
 type Launcher interface {
 	// Launch opens a URL with the specified options
-	Launch(ctx context.Context, opts LaunchOptions) error
+	Launch(ctx context.Context, opts *LaunchOptions) error
 
 	// LaunchDefault opens a URL with the system default browser
 	LaunchDefault(ctx context.Context, url string) error
@@ -60,11 +60,13 @@ func NewLauncher() Launcher {
 }
 
 // Launch opens a URL with the specified options
-func (l *launcher) Launch(ctx context.Context, opts LaunchOptions) error {
-	// Validate URL
-	if opts.URL == "" {
-		return errors.New("URL is required")
+func (l *launcher) Launch(ctx context.Context, opts *LaunchOptions) error {
+	// Validate and normalize URL for security
+	validURL, err := ValidateURL(opts.URL)
+	if err != nil {
+		return fmt.Errorf("URL validation failed: %w", err)
 	}
+	opts.URL = validURL
 
 	// Parse URL to ensure it's valid
 	parsedURL, err := url.Parse(opts.URL)
@@ -72,23 +74,19 @@ func (l *launcher) Launch(ctx context.Context, opts LaunchOptions) error {
 		return fmt.Errorf("invalid URL: %w", err)
 	}
 
-	// Ensure URL has a scheme
+	// URL should now have a valid scheme from ValidateURL
 	if parsedURL.Scheme == "" {
-		// Default to https for URLs without scheme
-		if strings.Contains(opts.URL, "localhost") || strings.HasPrefix(opts.URL, "127.0.0.1") {
-			opts.URL = "http://" + opts.URL
-		} else {
-			opts.URL = "https://" + opts.URL
-		}
+		return errors.New("URL validation failed: scheme is required")
 	}
 
 	// Determine which browser to use
 	var browser *Browser
 
-	if opts.Browser != nil {
+	switch {
+	case opts.Browser != nil:
 		// Use specified browser
 		browser = opts.Browser
-	} else if len(opts.BrowserPreference) > 0 {
+	case len(opts.BrowserPreference) > 0:
 		// Try browsers in preference order
 		browsers, detectErr := l.detector.DetectBrowsers(ctx)
 		if detectErr != nil {
@@ -100,7 +98,7 @@ func (l *launcher) Launch(ctx context.Context, opts LaunchOptions) error {
 			// Fall back to default if no preference matches
 			browser, _ = l.detector.GetDefaultBrowser(ctx) // Error handled by checking if browser is nil
 		}
-	} else {
+	default:
 		// Use default browser
 		browser, err = l.detector.GetDefaultBrowser(ctx)
 		if err != nil {
@@ -137,12 +135,12 @@ func (l *launcher) Launch(ctx context.Context, opts LaunchOptions) error {
 }
 
 // LaunchDefault opens a URL with the system default browser
-func (l *launcher) LaunchDefault(ctx context.Context, url string) error {
-	if url == "" {
+func (l *launcher) LaunchDefault(ctx context.Context, targetURL string) error {
+	if targetURL == "" {
 		return errors.New("URL is required")
 	}
 
-	return launchURLFallback(ctx, url)
+	return launchURLFallback(ctx, targetURL)
 }
 
 // GetIncognitoArgs returns browser-specific incognito mode arguments
@@ -235,17 +233,17 @@ func ValidateURL(rawURL string) (string, error) {
 }
 
 // EscapeURLForShell escapes a URL for safe use in shell commands
-func EscapeURLForShell(url string) string {
+func EscapeURLForShell(urlStr string) string {
 	// For safety, quote the entire URL
 	// Most browsers handle quoted URLs correctly
-	if strings.Contains(url, "'") {
+	if strings.Contains(urlStr, "'") {
 		// If URL contains single quotes, use double quotes and escape any double quotes
-		return `"` + strings.ReplaceAll(url, `"`, `\"`) + `"`
+		return `"` + strings.ReplaceAll(urlStr, `"`, `\"`) + `"`
 	}
-	if strings.Contains(url, `"`) {
+	if strings.Contains(urlStr, `"`) {
 		// If URL contains double quotes, escape them and use double quotes
-		return `"` + strings.ReplaceAll(url, `"`, `\"`) + `"`
+		return `"` + strings.ReplaceAll(urlStr, `"`, `\"`) + `"`
 	}
 	// Otherwise use single quotes for better safety
-	return "'" + url + "'"
+	return "'" + urlStr + "'"
 }

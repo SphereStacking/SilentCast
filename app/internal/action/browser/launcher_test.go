@@ -183,7 +183,7 @@ func TestLaunch(t *testing.T) {
 			URL: "about:blank",
 		}
 
-		err := launcher.Launch(ctx, opts)
+		err := launcher.Launch(ctx, &opts)
 		if err != nil {
 			t.Logf("Launch() error: %v (this might be expected)", err)
 		}
@@ -196,7 +196,7 @@ func TestLaunch(t *testing.T) {
 			BrowserPreference: []string{"firefox", "chrome"},
 		}
 
-		err := launcher.Launch(ctx, opts)
+		err := launcher.Launch(ctx, &opts)
 		if err != nil {
 			t.Logf("Launch() with preference error: %v", err)
 		}
@@ -209,7 +209,7 @@ func TestLaunch(t *testing.T) {
 			Incognito: true,
 		}
 
-		err := launcher.Launch(ctx, opts)
+		err := launcher.Launch(ctx, &opts)
 		if err != nil {
 			t.Logf("Launch() with incognito error: %v", err)
 		}
@@ -221,7 +221,7 @@ func TestLaunch(t *testing.T) {
 			URL: "",
 		}
 
-		err := launcher.Launch(ctx, opts)
+		err := launcher.Launch(ctx, &opts)
 		if err == nil {
 			t.Error("Launch() with empty URL should return error")
 		}
@@ -254,7 +254,7 @@ func TestLaunchWithSpecificBrowser(t *testing.T) {
 		NewWindow: true,
 	}
 
-	err = launcher.Launch(ctx, opts)
+	err = launcher.Launch(ctx, &opts)
 	if err != nil {
 		t.Logf("Launch() with specific browser error: %v", err)
 	}
@@ -274,7 +274,7 @@ func TestLaunchSafety(t *testing.T) {
 	for _, url := range dangerousURLs {
 		t.Run(url, func(t *testing.T) {
 			opts := LaunchOptions{URL: url}
-			err := launcher.Launch(ctx, opts)
+			err := launcher.Launch(ctx, &opts)
 			if err == nil {
 				t.Errorf("Launch() should reject dangerous URL: %s", url)
 			}
@@ -306,7 +306,7 @@ func ExampleLauncher_Launch() {
 	opts := LaunchOptions{
 		URL: "https://example.com",
 	}
-	_ = launcher.Launch(ctx, opts)
+	_ = launcher.Launch(ctx, &opts)
 
 	// Open URL in Firefox in private mode
 	opts = LaunchOptions{
@@ -314,5 +314,5 @@ func ExampleLauncher_Launch() {
 		BrowserPreference: []string{"firefox"},
 		Incognito:         true,
 	}
-	_ = launcher.Launch(ctx, opts)
+	_ = launcher.Launch(ctx, &opts)
 }
