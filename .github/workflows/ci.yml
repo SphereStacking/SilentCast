@@ -72,7 +72,17 @@ jobs:
         cd app
         set -e
         echo "Running tests with detailed output..."
-        go test -v -race -tags "nogohook notray" -coverprofile=coverage.txt -covermode=atomic ./...
+        # Run tests with race detector (Ubuntu only)
+        if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+          echo "Running with race detector..."
+          go test -v -race -timeout=10m -tags "nogohook notray" ./...
+        else
+          echo "Running without race detector..."
+          go test -v -timeout=10m -tags "nogohook notray" ./...
+        fi
+        echo "All tests passed, generating coverage..."
+        # Generate coverage separately (without race detector to avoid conflicts)
+        go test -timeout=10m -tags "nogohook notray" -coverprofile=coverage.txt -covermode=atomic ./...
         echo "All tests completed successfully"
 
     - name: Upload coverage
