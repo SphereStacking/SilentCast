@@ -56,7 +56,7 @@ func TestGetDefaultBrowser(t *testing.T) {
 	}
 
 	detector := NewDetector()
-	
+
 	// Add timeout to prevent hanging
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -246,7 +246,7 @@ func TestFindBrowser(t *testing.T) {
 	}
 
 	detector := NewDetector()
-	
+
 	// Add timeout to prevent hanging
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
