@@ -88,7 +88,7 @@ func TestFindShell(t *testing.T) {
 	// Add platform-specific tests
 	switch runtime.GOOS {
 	case "windows":
-		tests = append(tests, struct {
+		tests = append(tests, struct { //nolint:gocritic // Platform-specific test cases need separate append
 			name      string
 			shellName string
 			wantErr   bool
@@ -276,7 +276,7 @@ func TestGetShellCommand(t *testing.T) {
 					t.Errorf("GetShellCommand() cmd = %q, want %q", cmd, tt.shell.Executable)
 				}
 
-				expectedArgs := append(tt.shell.Args, tt.script)
+				expectedArgs := append(tt.shell.Args, tt.script) //nolint:gocritic // Test needs to compare against expected args
 				if len(args) != len(expectedArgs) {
 					t.Errorf("GetShellCommand() returned %d args, want %d", len(args), len(expectedArgs))
 				}

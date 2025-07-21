@@ -230,7 +230,7 @@ func TestFindBrowser(t *testing.T) {
 
 	for _, name := range browserNames {
 		browser, err := detector.FindBrowser(ctx, name)
-		if err == ErrNoBrowserFound {
+		if errors.Is(err, ErrNoBrowserFound) {
 			t.Logf("Browser %q not found (expected in CI)", name)
 			continue
 		}

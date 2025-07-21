@@ -120,7 +120,7 @@ func (d *detector) detectFlatpakShells(_ context.Context) []Shell {
 	// But check common locations anyway
 	flatpakDirs := []string{
 		"/var/lib/flatpak/exports/bin",
-		filepath.Join(os.Getenv("HOME"), ".local/share/flatpak/exports/bin"),
+		filepath.Join(os.Getenv("HOME"), ".local", "share", "flatpak", "exports", "bin"), //nolint:gocritic // Path components are separate constants
 	}
 
 	for _, dir := range flatpakDirs {
@@ -155,7 +155,7 @@ func (d *detector) detectUserShells(_ context.Context) []Shell {
 
 	// Check common user directories
 	userDirs := []string{
-		filepath.Join(os.Getenv("HOME"), ".local/bin"),
+		filepath.Join(os.Getenv("HOME"), ".local", "bin"), //nolint:gocritic // Path components are separate constants
 		filepath.Join(os.Getenv("HOME"), "bin"),
 		"/usr/local/bin",
 		"/opt/bin",
@@ -168,7 +168,7 @@ func (d *detector) detectUserShells(_ context.Context) []Shell {
 			shellPath := filepath.Join(dir, shellName)
 			if shell, err := d.ValidateShell(shellPath); err == nil {
 				// Check if it's different from system version
-				systemPath := filepath.Join("/bin", shellName)
+				systemPath := filepath.Join("/bin", shellName) //nolint:gocritic // "/bin" is a standard path constant
 				if shellPath != systemPath {
 					shell.Name = "user-" + shell.Name
 				}

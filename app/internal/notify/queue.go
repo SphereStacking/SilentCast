@@ -32,7 +32,7 @@ type NotificationQueue struct {
 	items   priorityQueue
 	ch      chan *QueueItem
 	manager *Manager
-	ctx     context.Context
+	ctx     context.Context //nolint:containedctx // Required for queue lifecycle management
 	cancel  context.CancelFunc
 	wg      sync.WaitGroup
 

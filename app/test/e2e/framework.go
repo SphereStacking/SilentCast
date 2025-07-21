@@ -19,7 +19,7 @@ type TestEnvironment struct {
 	AppBinary      string
 	LogFile        string
 	PidFile        string
-	ctx            context.Context
+	ctx            context.Context //nolint:containedctx // Required for E2E test lifecycle management
 	cancel         context.CancelFunc
 	appProcess     *exec.Cmd
 	startupTimeout time.Duration
