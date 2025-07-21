@@ -336,7 +336,7 @@ func NewNotFoundError(resource, name string) *SpellbookError {
 func WrapWithContext(errType ErrorType, message string, cause error, context map[string]interface{}) *SpellbookError {
 	err := Wrap(errType, message, cause)
 	for key, value := range context {
-		err.WithContext(key, value)
+		err = err.WithContext(key, value)
 	}
 	return err
 }

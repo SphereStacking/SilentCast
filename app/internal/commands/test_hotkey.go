@@ -147,7 +147,11 @@ func (c *TestHotkeyCommand) Execute(flags interface{}) error {
 	if err := manager.Start(); err != nil {
 		return fmt.Errorf("failed to start hotkey manager: %w", err)
 	}
-	defer manager.Stop()
+	defer func() {
+		if err := manager.Stop(); err != nil {
+			logger.Warn("Failed to stop hotkey manager: %v", err)
+		}
+	}()
 
 	fmt.Println("🎮 Hotkey test mode active!")
 	fmt.Println()

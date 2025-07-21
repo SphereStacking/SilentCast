@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/SphereStacking/silentcast/internal/service"
+	"github.com/SphereStacking/silentcast/pkg/logger"
 )
 
 // ServiceCommand handles macOS service management
@@ -111,8 +112,11 @@ func (c *ServiceCommand) Execute(flags interface{}) error {
 		fmt.Println("🔧 Installing SilentCast LaunchAgent...")
 		
 		// Check if already installed
-		status, _ := mgr.Status()
-		if status.Installed {
+		status, statusErr := mgr.Status()
+		if statusErr != nil {
+			logger.Debug("Failed to get service status: %v", statusErr)
+			// Continue with installation attempt
+		} else if status.Installed {
 			return fmt.Errorf("service already installed")
 		}
 		

@@ -13,6 +13,7 @@ import (
 	"github.com/SphereStacking/silentcast/internal/errors"
 	"github.com/SphereStacking/silentcast/internal/notify"
 	"github.com/SphereStacking/silentcast/internal/output"
+	"github.com/SphereStacking/silentcast/pkg/logger"
 )
 
 // ScriptExecutor executes script/command actions
@@ -157,16 +158,25 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 		}
 		
 		// Determine notification level based on error
+		// Notification errors are logged but don't affect script execution
 		if err != nil {
-			_ = e.notifier.Error(ctx, title, fmt.Sprintf("Failed: %v\n\nOutput:\n%s", err, capturedOutput))
+			if notifyErr := e.notifier.Error(ctx, title, fmt.Sprintf("Failed: %v\n\nOutput:\n%s", err, capturedOutput)); notifyErr != nil {
+				logger.Warn("Failed to send error notification: %v", notifyErr)
+			}
 		} else if capturedOutput != "" {
-			_ = e.notifier.Success(ctx, title, capturedOutput)
+			if notifyErr := e.notifier.Success(ctx, title, capturedOutput); notifyErr != nil {
+				logger.Warn("Failed to send success notification: %v", notifyErr)
+			}
 		} else {
-			_ = e.notifier.Info(ctx, title, "Command completed with no output")
+			if notifyErr := e.notifier.Info(ctx, title, "Command completed with no output"); notifyErr != nil {
+				logger.Warn("Failed to send info notification: %v", notifyErr)
+			}
 		}
 		
 		// Clean up output manager
-		_ = outputManager.Stop()
+		if stopErr := outputManager.Stop(); stopErr != nil {
+			logger.Warn("Failed to stop output manager: %v", stopErr)
+		}
 	}
 	
 	if err != nil {

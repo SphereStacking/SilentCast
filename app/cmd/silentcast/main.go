@@ -1073,8 +1073,13 @@ func dryRunScriptAction(action config.ActionConfig) error {
 			fmt.Printf("   ✅ Working directory exists: %s\n", expandedDir)
 		}
 	} else {
-		cwd, _ := os.Getwd()
-		fmt.Printf("   Would run in current directory: %s\n", cwd)
+		cwd, err := os.Getwd()
+		if err != nil {
+			fmt.Printf("   ⚠️  Failed to get current directory: %v\n", err)
+			fmt.Printf("   Would run in current directory: [unknown]\n")
+		} else {
+			fmt.Printf("   Would run in current directory: %s\n", cwd)
+		}
 	}
 
 	fmt.Println("\n✅ Dry run analysis completed successfully")

@@ -255,13 +255,17 @@ func (m *UpdateNotificationManager) handleUpdateAction(ctx context.Context, upda
 	// Download update
 	downloadPath, err := upd.DownloadUpdate(ctx, updaterInfo)
 	if err != nil {
-		m.NotifyUpdateFailed(ctx, updateInfo.NewVersion, err)
+		if notifyErr := m.NotifyUpdateFailed(ctx, updateInfo.NewVersion, err); notifyErr != nil {
+			m.logger.Warn("Failed to notify update download failure: %v", notifyErr)
+		}
 		return fmt.Errorf("failed to download update: %w", err)
 	}
 
 	// Apply update
 	if err := upd.ApplyUpdate(downloadPath); err != nil {
-		m.NotifyUpdateFailed(ctx, updateInfo.NewVersion, err)
+		if notifyErr := m.NotifyUpdateFailed(ctx, updateInfo.NewVersion, err); notifyErr != nil {
+			m.logger.Warn("Failed to notify update apply failure: %v", notifyErr)
+		}
 		return fmt.Errorf("failed to apply update: %w", err)
 	}
 
@@ -312,7 +316,9 @@ func (m *UpdateNotificationManager) handleRemindAction(ctx context.Context, upda
 				DownloadURL:    updateInfo.DownloadURL,
 				Actions:        []string{"update", "view", "dismiss"},
 			}
-			m.notifier.NotifyUpdate(ctx, reminderNotif)
+			if err := m.notifier.NotifyUpdate(ctx, reminderNotif); err != nil {
+				m.logger.Warn("Failed to send update reminder notification: %v", err)
+			}
 		}
 	}()
 
