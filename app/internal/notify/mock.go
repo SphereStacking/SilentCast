@@ -3,6 +3,8 @@ package notify
 import (
 	"context"
 	"sync"
+
+	customErrors "github.com/SphereStacking/silentcast/internal/errors"
 )
 
 // MockNotifier is a mock implementation of the Notifier interface for testing
@@ -37,6 +39,14 @@ func (m *MockNotifier) Notify(ctx context.Context, notification Notification) er
 	}
 
 	if m.simulateError != nil {
+		// Check if the error already has context (is already a SpellbookError)
+		if spellErr, ok := m.simulateError.(interface {
+			WithContext(key string, value interface{}) *customErrors.SpellbookError
+		}); ok {
+			// Add notification context to the existing SpellbookError
+			return spellErr.WithContext("notification_title", notification.Title)
+		}
+		// If it's not a SpellbookError, return as-is
 		return m.simulateError
 	}
 

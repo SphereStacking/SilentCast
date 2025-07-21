@@ -214,7 +214,7 @@ func TestOutputNotifierInterfaceMethods(t *testing.T) {
 
 func TestManager_NotifyTimeout(t *testing.T) {
 	ctx := context.Background()
-	
+
 	// Create manager with mock notifier
 	m := NewManager()
 	mockNotif := &mockNotifier{name: "test", available: true}
@@ -227,6 +227,11 @@ func TestManager_NotifyTimeout(t *testing.T) {
 		{
 			name: "graceful timeout",
 			notification: TimeoutNotification{
+				Notification: Notification{
+					Title:   "Test Timeout",
+					Message: "Test message",
+					Level:   LevelInfo,
+				},
 				ActionName:      "test script",
 				TimeoutDuration: 30,
 				ElapsedTime:     25,
@@ -237,6 +242,11 @@ func TestManager_NotifyTimeout(t *testing.T) {
 		{
 			name: "force timeout",
 			notification: TimeoutNotification{
+				Notification: Notification{
+					Title:   "Test Timeout",
+					Message: "Test message",
+					Level:   LevelInfo,
+				},
 				ActionName:      "long running script",
 				TimeoutDuration: 60,
 				ElapsedTime:     60,
@@ -247,6 +257,11 @@ func TestManager_NotifyTimeout(t *testing.T) {
 		{
 			name: "timeout with long output",
 			notification: TimeoutNotification{
+				Notification: Notification{
+					Title:   "Test Timeout",
+					Message: "Test message",
+					Level:   LevelInfo,
+				},
 				ActionName:      "verbose script",
 				TimeoutDuration: 10,
 				ElapsedTime:     10,
@@ -257,6 +272,11 @@ func TestManager_NotifyTimeout(t *testing.T) {
 		{
 			name: "timeout with no output",
 			notification: TimeoutNotification{
+				Notification: Notification{
+					Title:   "Test Timeout",
+					Message: "Test message",
+					Level:   LevelInfo,
+				},
 				ActionName:      "silent script",
 				TimeoutDuration: 5,
 				ElapsedTime:     5,
@@ -273,17 +293,17 @@ func TestManager_NotifyTimeout(t *testing.T) {
 			if err != nil {
 				t.Errorf("NotifyTimeout failed: %v", err)
 			}
-			
+
 			// Verify notification was sent
 			if !mockNotif.notified {
 				t.Error("NotifyTimeout should have sent notification")
 			}
-			
+
 			// Verify notification level
 			if mockNotif.lastNotif.Level != LevelWarning {
 				t.Errorf("NotifyTimeout should use LevelWarning, got %v", mockNotif.lastNotif.Level)
 			}
-			
+
 			// Verify title contains action name
 			if !strings.Contains(mockNotif.lastNotif.Title, tt.notification.ActionName) {
 				t.Errorf("Notification title should contain action name %q", tt.notification.ActionName)
@@ -324,23 +344,23 @@ func TestManager_SupportsUpdateNotifications(t *testing.T) {
 func TestManager_GetUpdateNotifiers(t *testing.T) {
 	// Create manager with different notifier types
 	m := &Manager{notifiers: make([]Notifier, 0)}
-	
+
 	// Add console notifier (implements UpdateNotifier)
 	console := NewConsoleNotifier()
 	m.AddNotifier(console)
-	
+
 	// Add mock notifier (doesn't implement UpdateNotifier)
 	mock := &mockNotifier{available: true}
 	m.AddNotifier(mock)
-	
+
 	// Get update notifiers
 	updateNotifiers := m.GetUpdateNotifiers()
-	
+
 	// Should only contain console notifier
 	if len(updateNotifiers) != 1 {
 		t.Errorf("GetUpdateNotifiers() returned %d notifiers, want 1", len(updateNotifiers))
 	}
-	
+
 	// Verify it's the console notifier
 	if _, ok := updateNotifiers[0].(*ConsoleNotifier); !ok {
 		t.Error("GetUpdateNotifiers() should return ConsoleNotifier")

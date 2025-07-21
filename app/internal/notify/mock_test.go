@@ -25,7 +25,7 @@ func TestMockNotifier_IsAvailable(t *testing.T) {
 			m := &MockNotifier{
 				available: tt.available,
 			}
-			
+
 			got := m.IsAvailable()
 			if got != tt.available {
 				t.Errorf("IsAvailable() = %v, want %v", got, tt.available)
@@ -39,7 +39,7 @@ func TestMockNotifier_Clear(t *testing.T) {
 	m := &MockNotifier{
 		available: true,
 	}
-	
+
 	// Send some notifications
 	ctx := context.Background()
 	notifications := []Notification{
@@ -47,23 +47,23 @@ func TestMockNotifier_Clear(t *testing.T) {
 		{Title: "Test 2", Message: "Message 2", Level: LevelWarning},
 		{Title: "Test 3", Message: "Message 3", Level: LevelError},
 	}
-	
+
 	for _, n := range notifications {
 		err := m.Notify(ctx, n)
 		if err != nil {
 			t.Fatalf("Notify() error = %v", err)
 		}
 	}
-	
+
 	// Verify notifications were recorded
 	recorded := m.GetNotifications()
 	if len(recorded) != len(notifications) {
 		t.Errorf("Expected %d notifications, got %d", len(notifications), len(recorded))
 	}
-	
+
 	// Clear notifications
 	m.Clear()
-	
+
 	// Verify notifications were cleared
 	recorded = m.GetNotifications()
 	if len(recorded) != 0 {
@@ -75,12 +75,12 @@ func TestMockNotifier_ConcurrentAccess(t *testing.T) {
 	m := &MockNotifier{
 		available: true,
 	}
-	
+
 	ctx := context.Background()
-	
+
 	// Test concurrent Notify and GetNotifications
 	done := make(chan bool)
-	
+
 	// Goroutine 1: Send notifications
 	go func() {
 		for i := 0; i < 100; i++ {
@@ -93,7 +93,7 @@ func TestMockNotifier_ConcurrentAccess(t *testing.T) {
 		}
 		done <- true
 	}()
-	
+
 	// Goroutine 2: Read notifications
 	go func() {
 		for i := 0; i < 100; i++ {
@@ -101,7 +101,7 @@ func TestMockNotifier_ConcurrentAccess(t *testing.T) {
 		}
 		done <- true
 	}()
-	
+
 	// Goroutine 3: Clear notifications
 	go func() {
 		for i := 0; i < 10; i++ {
@@ -109,13 +109,12 @@ func TestMockNotifier_ConcurrentAccess(t *testing.T) {
 		}
 		done <- true
 	}()
-	
+
 	// Wait for all goroutines
 	for i := 0; i < 3; i++ {
 		<-done
 	}
-	
+
 	// If we reach here without deadlock or panic, the test passes
 	t.Log("Concurrent access test passed")
 }
-

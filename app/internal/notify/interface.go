@@ -63,13 +63,13 @@ type TimeoutNotification struct {
 // UpdateNotification represents an update-related notification
 type UpdateNotification struct {
 	Notification
-	CurrentVersion string    // Current application version
-	NewVersion     string    // Available update version
-	ReleaseNotes   string    // Release notes/changelog
-	DownloadSize   int64     // Download size in bytes
-	PublishedAt    string    // Release publication date
-	DownloadURL    string    // Direct download URL
-	Actions        []string  // Available actions: "update", "dismiss", "remind"
+	CurrentVersion string   // Current application version
+	NewVersion     string   // Available update version
+	ReleaseNotes   string   // Release notes/changelog
+	DownloadSize   int64    // Download size in bytes
+	PublishedAt    string   // Release publication date
+	DownloadURL    string   // Direct download URL
+	Actions        []string // Available actions: "update", "dismiss", "remind"
 }
 
 // UpdateAction represents an action that can be taken on an update notification
@@ -171,14 +171,20 @@ func (m *Manager) AddNotifier(notifier Notifier) {
 // Notify sends a notification through all available notifiers
 func (m *Manager) Notify(ctx context.Context, notification Notification) error {
 	var lastError error
+	notified := false
 
 	for _, notifier := range m.notifiers {
 		if err := notifier.Notify(ctx, notification); err != nil {
 			lastError = err
+		} else {
+			notified = true
 		}
 	}
 
-	return lastError
+	if !notified && lastError != nil {
+		return lastError
+	}
+	return nil
 }
 
 // Info sends an info notification
@@ -320,6 +326,9 @@ func (m *Manager) GetOutputNotifiers() []OutputNotifier {
 
 // NotifyTimeout sends a timeout-specific notification
 func (m *Manager) NotifyTimeout(ctx context.Context, notification TimeoutNotification) error {
+	// Set the title to include the action name
+	notification.Notification.Title = fmt.Sprintf("⏱️ Timeout: %s", notification.ActionName)
+	
 	// Format a detailed timeout message
 	message := fmt.Sprintf("Script execution timed out after %d seconds", notification.TimeoutDuration)
 
@@ -339,8 +348,9 @@ func (m *Manager) NotifyTimeout(ctx context.Context, notification TimeoutNotific
 		message += fmt.Sprintf("\n\nPartial output:\n%s", output)
 	}
 
-	// Override the base notification message
+	// Override the base notification message and level
 	notification.Notification.Message = message
+	notification.Notification.Level = LevelWarning
 
 	// Use OutputNotification for notifiers that support it
 	if m.SupportsOutputNotifications() && notification.Output != "" {
@@ -363,7 +373,7 @@ func (m *Manager) NotifyUpdate(ctx context.Context, notification UpdateNotificat
 
 	// Format basic message if not provided
 	if notification.Message == "" {
-		notification.Message = fmt.Sprintf("Update available: %s → %s", 
+		notification.Message = fmt.Sprintf("Update available: %s → %s",
 			notification.CurrentVersion, notification.NewVersion)
 	}
 
