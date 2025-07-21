@@ -60,7 +60,7 @@ func OpenURL(ctx context.Context, browser *Browser, url string) error {
 		return errors.New("browser executable not specified")
 	}
 
-	// nosec G204: browser.Executable is from trusted browser detection
+	//nolint:gosec // browser.Executable is from trusted browser detection
 	cmd := exec.CommandContext(ctx, browser.Executable, url)
 	return cmd.Start()
 }

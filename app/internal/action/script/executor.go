@@ -75,7 +75,7 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 		// If args are provided, don't use shell, execute directly
 		parts := strings.Fields(command)
 		if len(parts) > 0 {
-			cmd = exec.CommandContext(ctx, parts[0], append(parts[1:], e.config.Args...)...) // #nosec G204 - Command is from trusted config file
+			cmd = exec.CommandContext(ctx, parts[0], append(parts[1:], e.config.Args...)...) //nolint:gosec // Command is from trusted config file
 		} else {
 			return errors.New(errors.ErrorTypeConfig, "empty command").
 				WithContext("command", command).
@@ -85,7 +85,7 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 		}
 	} else {
 		// Use shell to execute the command
-		cmd = exec.CommandContext(ctx, shell, shellFlag, command) // #nosec G204 - Command is from trusted config file
+		cmd = exec.CommandContext(ctx, shell, shellFlag, command) //nolint:gosec // Command is from trusted config file
 	}
 
 	// Set working directory if specified

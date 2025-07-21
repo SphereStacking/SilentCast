@@ -184,14 +184,16 @@ func (n *LinuxNotifier) sendGDBusNotification(ctx context.Context, notification 
 	}
 
 	// Build the notification ID (use timestamp)
-	notificationID := uint32(time.Now().Unix()) // nosec G115: Unix timestamp fits in uint32 for many decades
+	//nolint:gosec // Unix timestamp fits in uint32 for many decades
+	notificationID := uint32(time.Now().Unix())
 
 	title := notification.Title
 	if title == "" {
 		title = n.appName
 	}
 
-	cmd := exec.CommandContext(ctx, "gdbus", "call", // nosec G204: gdbus is a trusted system command
+	//nolint:gosec // gdbus is a trusted system command
+	cmd := exec.CommandContext(ctx, "gdbus", "call",
 		"--session",
 		"--dest=org.freedesktop.Notifications",
 		"--object-path=/org/freedesktop/Notifications",

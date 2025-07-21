@@ -191,7 +191,7 @@ func (c *ImportConfigCommand) importTarGz(reader io.Reader) error {
 		}
 
 		// Determine target path
-		// nosec G305: Path validation performed below
+		//nolint:gosec // Path validation performed below
 		targetPath := filepath.Join(configDir, header.Name)
 
 		// Ensure the file goes into the config directory

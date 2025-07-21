@@ -114,7 +114,7 @@ func (env *TestEnvironment) StartApplication(args ...string) error {
 	allArgs := append([]string{}, defaultArgs...)
 	allArgs = append(allArgs, args...)
 
-	// nosec G204: AppBinary is controlled by test framework
+	//nolint:gosec // AppBinary is controlled by test framework
 	env.appProcess = exec.CommandContext(env.ctx, env.AppBinary, allArgs...)
 	env.appProcess.Dir = env.TempDir
 
