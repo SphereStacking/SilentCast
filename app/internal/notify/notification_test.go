@@ -206,8 +206,8 @@ func TestNotificationCopy(t *testing.T) {
 	}
 
 	// Create a copy by value
-	copy := original
-	copy.Title = "Modified Title"
+	notifCopy := original
+	notifCopy.Title = "Modified Title"
 
 	// Original should remain unchanged
 	if original.Title != "Original Title" {

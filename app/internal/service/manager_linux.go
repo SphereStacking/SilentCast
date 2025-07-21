@@ -169,7 +169,7 @@ func (m *LinuxManager) installSystemdService() error {
 	}
 	
 	// Check if already installed
-	if _, err := os.Stat(servicePath); err == nil {
+	if _, statErr := os.Stat(servicePath); statErr == nil {
 		return fmt.Errorf("systemd service already installed at %s", servicePath)
 	}
 	

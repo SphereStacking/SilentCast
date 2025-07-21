@@ -142,11 +142,11 @@ func TestManager_Request(t *testing.T) {
 	ctx := context.Background()
 	for _, permType := range permTypes {
 		// Request shouldn't panic or crash
-		err := manager.Request(ctx, permType)
+		reqErr := manager.Request(ctx, permType)
 		// We don't assert error == nil because requesting permissions
 		// may fail in test environments or when already granted
-		if err != nil {
-			t.Logf("Request for %s returned error (expected in test): %v", permType, err)
+		if reqErr != nil {
+			t.Logf("Request for %s returned error (expected in test): %v", permType, reqErr)
 		}
 	}
 
@@ -272,11 +272,11 @@ func TestManager_OpenSettings(t *testing.T) {
 
 	for _, permType := range permTypes {
 		// OpenSettings shouldn't panic or crash
-		err := manager.OpenSettings(permType)
+		openErr := manager.OpenSettings(permType)
 		// We don't assert error == nil because opening settings
 		// may fail in test environments or headless systems
-		if err != nil {
-			t.Logf("OpenSettings for %s returned error (expected in test): %v", permType, err)
+		if openErr != nil {
+			t.Logf("OpenSettings for %s returned error (expected in test): %v", permType, openErr)
 		}
 	}
 

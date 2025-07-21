@@ -90,9 +90,9 @@ func (l *launcher) Launch(ctx context.Context, opts LaunchOptions) error {
 		browser = opts.Browser
 	} else if len(opts.BrowserPreference) > 0 {
 		// Try browsers in preference order
-		browsers, err := l.detector.DetectBrowsers(ctx)
-		if err != nil {
-			return fmt.Errorf("failed to detect browsers: %w", err)
+		browsers, detectErr := l.detector.DetectBrowsers(ctx)
+		if detectErr != nil {
+			return fmt.Errorf("failed to detect browsers: %w", detectErr)
 		}
 
 		browser = GetBrowserByPreference(browsers, opts.BrowserPreference)

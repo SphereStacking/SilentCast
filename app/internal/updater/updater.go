@@ -471,10 +471,8 @@ func (u *Updater) ClearCache() error {
 // ForceCheck performs an update check ignoring cache
 func (u *Updater) ForceCheck(ctx context.Context) (*UpdateInfo, error) {
 	// Clear cache first to force fresh check
-	if err := u.cacheManager.ClearCache(); err != nil {
-		// Log error but continue with check anyway
-		// Cache clearing failure shouldn't prevent update check
-		// The check will simply use any remaining cached data
-	}
+	// Log error but continue with check anyway if cache clearing fails
+	// Cache clearing failure shouldn't prevent update check
+	_ = u.cacheManager.ClearCache()
 	return u.CheckForUpdate(ctx)
 }

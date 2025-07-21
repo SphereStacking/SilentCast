@@ -75,9 +75,9 @@ func TestServiceStatusCopy(t *testing.T) {
 		Message:   "Service stopped",
 	}
 	
-	copy := original
-	copy.Running = true
-	copy.Message = "Service started"
+	statusCopy := original
+	statusCopy.Running = true
+	statusCopy.Message = "Service started"
 	
 	// Original should be unchanged
 	if original.Running {

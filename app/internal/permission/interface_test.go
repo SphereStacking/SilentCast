@@ -74,9 +74,9 @@ func TestPermissionCopy(t *testing.T) {
 		Description: "Original message",
 	}
 	
-	copy := original
-	copy.Status = StatusDenied
-	copy.Description = "Modified message"
+	permCopy := original
+	permCopy.Status = StatusDenied
+	permCopy.Description = "Modified message"
 	
 	// Original should be unchanged
 	if original.Status != StatusGranted {

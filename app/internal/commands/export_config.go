@@ -76,9 +76,9 @@ func (c *ExportConfigCommand) Execute(flags interface{}) error {
 		writer = os.Stdout
 	} else {
 		// Export to file
-		file, err := os.Create(f.ExportConfig)
-		if err != nil {
-			return fmt.Errorf("failed to create export file: %w", err)
+		file, fileErr := os.Create(f.ExportConfig)
+		if fileErr != nil {
+			return fmt.Errorf("failed to create export file: %w", fileErr)
 		}
 		writer = file
 		closeFunc = file.Close

@@ -310,9 +310,7 @@ func (v *Validator) validateScriptAction(fieldPrefix string, action *ActionConfi
 	if action.Shell != "" {
 		shellPath := action.Shell
 		if !filepath.IsAbs(shellPath) {
-			if path, err := exec.LookPath(shellPath); err == nil {
-				shellPath = path
-			} else {
+			if _, err := exec.LookPath(shellPath); err != nil {
 				v.addError(fieldPrefix+".shell", action.Shell,
 					"specified shell not found",
 					fmt.Sprintf("Install %s or use a different shell", action.Shell))

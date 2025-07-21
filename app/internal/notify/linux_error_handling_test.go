@@ -247,10 +247,7 @@ func (m *MockLinuxNotifier) Notify(ctx context.Context, notification Notificatio
 		return nil // Success with fallback
 	}
 	
-	if m.gdbusError != "" {
-		// gdbus specific error - but continue to zenity
-		// Don't return here, try zenity as final fallback
-	}
+	// If gdbus also failed, continue to zenity as final fallback
 
 	// Try zenity as final fallback
 	if !m.zenityFails {

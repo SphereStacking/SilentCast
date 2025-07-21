@@ -265,14 +265,14 @@ func run(noTray bool, debug bool) error {
 				logger.Info("Hotkeys changed, reregistering...")
 
 				// Stop current hotkeys
-				if err := hotkeyManager.Stop(); err != nil {
-					logger.Error("Failed to stop hotkey manager: %v", err)
+				if stopErr := hotkeyManager.Stop(); stopErr != nil {
+					logger.Error("Failed to stop hotkey manager: %v", stopErr)
 				}
 
 				// Create new hotkey manager
-				newHotkeyManager, err := hotkey.NewManager(&newCfg.Hotkeys)
-				if err != nil {
-					logger.Error("Failed to create new hotkey manager: %v", err)
+				newHotkeyManager, newHotkeyErr := hotkey.NewManager(&newCfg.Hotkeys)
+				if newHotkeyErr != nil {
+					logger.Error("Failed to create new hotkey manager: %v", newHotkeyErr)
 					if notifyErr := notifier.Error(ctx, "Hotkey Reload Failed", 
 						"Failed to reload hotkey configuration"); notifyErr != nil {
 						logger.Error("Failed to send error notification: %v", notifyErr)

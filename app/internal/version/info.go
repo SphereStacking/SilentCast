@@ -160,12 +160,12 @@ func (info *BuildInfo) FormatJSON() (string, error) {
 // FormatCompact returns a compact version string
 func (info *BuildInfo) FormatCompact() string {
 	return fmt.Sprintf("SilentCast v%s (%s, %s/%s, %s)", 
-		info.Version, info.GitCommit[:min(len(info.GitCommit), 8)], 
+		info.Version, info.GitCommit[:minInt(len(info.GitCommit), 8)], 
 		info.GoOS, info.GoArch, info.CGOEnabled)
 }
 
-// min returns the minimum of two integers
-func min(a, b int) int {
+// minInt returns the minimum of two integers
+func minInt(a, b int) int {
 	if a < b {
 		return a
 	}

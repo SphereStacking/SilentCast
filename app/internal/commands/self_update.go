@@ -130,9 +130,9 @@ func (c *SelfUpdateCommand) Execute(flags interface{}) error {
 	if !c.force && !forceUpdate {
 		fmt.Print("\n❓ Do you want to update now? (y/N): ")
 		reader := bufio.NewReader(os.Stdin)
-		response, err := reader.ReadString('\n')
-		if err != nil {
-			return fmt.Errorf("failed to read response: %w", err)
+		response, readErr := reader.ReadString('\n')
+		if readErr != nil {
+			return fmt.Errorf("failed to read response: %w", readErr)
 		}
 		
 		response = strings.TrimSpace(strings.ToLower(response))

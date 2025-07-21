@@ -325,13 +325,13 @@ func TestFormatter_FormatForNotification(t *testing.T) {
 			expected: func() string {
 				// Build expected output by formatting with 500 char limit
 				longText := strings.Repeat("Very long text ", 100)
-				f := &Formatter{
+				formatter := &Formatter{
 					MaxLength:           500,
 					RemoveANSI:          true,
 					NormalizeWhitespace: true,
 					HighlightErrors:     false,
 				}
-				formatted := f.Format(longText)
+				formatted := formatter.Format(longText)
 				// Replace newlines with spaces and collapse multiple spaces
 				result := strings.ReplaceAll(formatted, "\n", " ")
 				result = strings.TrimSpace(result)

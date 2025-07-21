@@ -44,7 +44,7 @@ func TestLinuxManager_Install(t *testing.T) {
 
 		// Check if desktop file was created
 		desktopPath := filepath.Join(tmpHome, ".config/autostart/silentcast.desktop")
-		if _, err := os.Stat(desktopPath); os.IsNotExist(err) {
+		if _, statErr := os.Stat(desktopPath); os.IsNotExist(statErr) {
 			t.Error("Desktop file was not created")
 		}
 
@@ -117,7 +117,7 @@ func TestLinuxManager_Uninstall(t *testing.T) {
 
 		// Check if desktop file was removed
 		desktopPath := filepath.Join(tmpHome, ".config/autostart/silentcast.desktop")
-		if _, err := os.Stat(desktopPath); err == nil {
+		if _, statErr := os.Stat(desktopPath); statErr == nil {
 			t.Error("Desktop file was not removed")
 		}
 

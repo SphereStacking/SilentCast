@@ -81,14 +81,16 @@ func NewResourceManager(config Config) *ResourceManager {
 	// Initialize string pool
 	rm.stringPool = sync.Pool{
 		New: func() interface{} {
-			return make([]string, 0, 16)
+			slice := make([]string, 0, 16)
+			return &slice
 		},
 	}
 	
 	// Initialize buffer pool
 	rm.bufferPool = sync.Pool{
 		New: func() interface{} {
-			return make([]byte, 0, config.BufferSize)
+			buffer := make([]byte, 0, config.BufferSize)
+			return &buffer
 		},
 	}
 	
@@ -125,7 +127,9 @@ func (rm *ResourceManager) GetStringSlice() []string {
 // PutStringSlice returns a string slice to the pool
 func (rm *ResourceManager) PutStringSlice(slice []string) {
 	if cap(slice) > 0 {
-		rm.stringPool.Put(slice)
+		// Clear the slice before returning to pool to avoid memory leaks
+		slice = slice[:0]
+		rm.stringPool.Put(&slice)
 	}
 }
 
@@ -149,7 +153,9 @@ func (rm *ResourceManager) GetBuffer() []byte {
 // PutBuffer returns a byte buffer to the pool
 func (rm *ResourceManager) PutBuffer(buffer []byte) {
 	if cap(buffer) > 0 && cap(buffer) <= rm.config.BufferSize*2 {
-		rm.bufferPool.Put(buffer)
+		// Clear the buffer before returning to pool to avoid memory leaks
+		buffer = buffer[:0]
+		rm.bufferPool.Put(&buffer)
 	}
 }
 

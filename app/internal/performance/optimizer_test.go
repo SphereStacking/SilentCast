@@ -179,7 +179,7 @@ func BenchmarkStringPool(b *testing.B) {
 	b.Run("without pool", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			slice := make([]string, 0, 16)
-			slice = append(slice, "test", "data", "benchmark")
+			_ = append(slice, "test", "data", "benchmark")
 			// No reuse
 		}
 	})
@@ -205,7 +205,7 @@ func BenchmarkBufferPool(b *testing.B) {
 	b.Run("without pool", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			buffer := make([]byte, 0, 1024)
-			buffer = append(buffer, data...)
+			_ = append(buffer, data...)
 			// No reuse
 		}
 	})

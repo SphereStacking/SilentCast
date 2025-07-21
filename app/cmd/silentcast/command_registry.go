@@ -93,7 +93,7 @@ func (cr *CommandRegistry) GenerateHelp() string {
 	// Get groups from registry and display organized commands
 	groups := cr.registry.GetGroups()
 	for _, group := range groups {
-		title := strings.Title(group.Name)
+		title := toTitle(group.Name)
 		sb.WriteString(fmt.Sprintf("📋 %s Commands - %s:\n", title, group.Description))
 
 		for _, cmd := range group.Commands {
@@ -253,4 +253,20 @@ func (cr *CommandRegistry) GenerateHelp() string {
 	sb.WriteString("  • Issue reporting: GitHub issues\n")
 
 	return sb.String()
+}
+
+// toTitle converts the first letter of each word to uppercase
+func toTitle(s string) string {
+	if s == "" {
+		return s
+	}
+	
+	words := strings.Fields(s)
+	for i, word := range words {
+		if len(word) > 0 {
+			words[i] = strings.ToUpper(word[:1]) + strings.ToLower(word[1:])
+		}
+	}
+	
+	return strings.Join(words, " ")
 }
