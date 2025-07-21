@@ -5,7 +5,7 @@ package permission
 import "context"
 
 // NewManager creates a new permission manager for Linux
-func NewManager() (Manager, error) {
+func NewManager() (manager Manager, err error) {
 	return &linuxManager{}, nil
 }
 

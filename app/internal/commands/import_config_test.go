@@ -83,12 +83,12 @@ grimoire:
 			// Create existing config for backup test
 			if tt.name == "import with backup" {
 				existingConfig := filepath.Join(tmpDir, "spellbook.yml")
-				os.WriteFile(existingConfig, []byte("existing: config"), 0644)
+				os.WriteFile(existingConfig, []byte("existing: config"), 0o644)
 			}
 
 			// Create import file
 			importPath := filepath.Join(tmpDir, tt.importFile)
-			if err := os.WriteFile(importPath, []byte(tt.inputContent), 0644); err != nil {
+			if err := os.WriteFile(importPath, []byte(tt.inputContent), 0o644); err != nil {
 				t.Fatalf("Failed to create test file: %v", err)
 			}
 
@@ -145,7 +145,7 @@ grimoire:
 
 	header := &tar.Header{
 		Name: "spellbook.yml",
-		Mode: 0644,
+		Mode: 0o644,
 		Size: int64(len(configContent)),
 	}
 
@@ -163,7 +163,7 @@ grimoire:
 
 	// Write tar.gz file
 	archivePath := filepath.Join(tmpDir, "backup.tar.gz")
-	if err := os.WriteFile(archivePath, buf.Bytes(), 0644); err != nil {
+	if err := os.WriteFile(archivePath, buf.Bytes(), 0o644); err != nil {
 		t.Fatalf("Failed to write archive: %v", err)
 	}
 

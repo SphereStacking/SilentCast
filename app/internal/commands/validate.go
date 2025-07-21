@@ -104,7 +104,8 @@ func (c *ValidateConfigCommand) Execute(flags interface{}) error {
 
 	// Check action configurations
 	fmt.Println("\n🔍 Checking action configurations...")
-	for name, action := range cfg.Actions {
+	for name := range cfg.Actions {
+		action := cfg.Actions[name]
 		issues := validateAction(name, &action)
 		if len(issues) > 0 {
 			fmt.Printf("   ❌ Action '%s' has issues:\n", name)
@@ -304,8 +305,8 @@ func mergeConfigs(target, source *config.Config) {
 	}
 
 	// Merge actions
-	for key, value := range source.Actions {
-		target.Actions[key] = value
+	for key := range source.Actions {
+		target.Actions[key] = source.Actions[key]
 	}
 
 	// Merge other fields if they're not zero values

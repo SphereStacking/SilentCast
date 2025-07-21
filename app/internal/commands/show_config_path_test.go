@@ -20,8 +20,8 @@ func TestShowConfigPathCommand(t *testing.T) {
 	}
 
 	// Create config in path2
-	os.MkdirAll(configPaths[1], 0755)
-	err := os.WriteFile(filepath.Join(configPaths[1], "spellbook.yml"), []byte("test: config"), 0644)
+	os.MkdirAll(configPaths[1], 0o755)
+	err := os.WriteFile(filepath.Join(configPaths[1], "spellbook.yml"), []byte("test: config"), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}

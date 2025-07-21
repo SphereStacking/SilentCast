@@ -10,9 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/SphereStacking/silentcast/internal/config"
 	"github.com/SphereStacking/silentcast/pkg/logger"
-	"gopkg.in/yaml.v3"
 )
 
 // ExportConfigCommand exports configuration for backup/sharing

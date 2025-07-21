@@ -158,7 +158,7 @@ func TestScriptExecutorErrorMessages(t *testing.T) {
 func TestScriptExecutorContextPropagation(t *testing.T) {
 	// Skip this test for now as it depends on system behavior that varies
 	t.Skip("Timeout behavior varies across systems - skipping for CI stability")
-	
+
 	config := config.ActionConfig{
 		Type:    "script",
 		Command: "sleep 5", // Long-running command

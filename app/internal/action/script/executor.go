@@ -158,7 +158,7 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 
 		// Determine notification level based on error
 		// Notification errors are logged but don't affect script execution
-		if err != nil {
+		if err != nil { //nolint:gocritic // Simple if-else is clearer than switch here
 			if notifyErr := e.notifier.Error(ctx, title, fmt.Sprintf("Failed: %v\n\nOutput:\n%s", err, capturedOutput)); notifyErr != nil {
 				logger.Warn("Failed to send error notification: %v", notifyErr)
 			}

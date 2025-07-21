@@ -118,7 +118,7 @@ func (e *ElevatedExecutor) executeElevatedDarwin(ctx context.Context) error {
 	logger.Debug("Requesting sudo privileges for: %s", cmdStr)
 
 	// Use osascript to prompt for admin privileges
-	script := fmt.Sprintf(`do shell script "%s" with administrator privileges`,
+	script := fmt.Sprintf(`do shell script %q with administrator privileges`,
 		escapeForAppleScript(cmdStr))
 
 	cmd := exec.CommandContext(ctx, "osascript", "-e", script)
@@ -170,7 +170,7 @@ func (e *ElevatedExecutor) executeElevatedLinux(ctx context.Context) error {
 	for _, tool := range elevationTools {
 		if _, err := exec.LookPath(tool.name); err == nil {
 			args := tool.args(cmdStr)
-			cmd := exec.CommandContext(ctx, tool.name, args...)
+			cmd := exec.CommandContext(ctx, tool.name, args...) // nosec G204: tool.name is from predefined trusted list
 
 			// Set SUDO_ASKPASS for graphical password prompt
 			if tool.name == "sudo" {

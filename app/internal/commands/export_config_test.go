@@ -74,7 +74,7 @@ grimoire:
     type: app
     command: vi`
 
-			if err := os.WriteFile(configFile, []byte(configContent), 0644); err != nil {
+			if err := os.WriteFile(configFile, []byte(configContent), 0o644); err != nil {
 				t.Fatalf("Failed to create test config: %v", err)
 			}
 

@@ -102,7 +102,7 @@ func (c *ShowConfigPathCommand) Execute(flags interface{}) error {
 		}
 
 		// Show path details based on actual position
-		if os.Getenv("SILENTCAST_CONFIG") != "" {
+		if os.Getenv("SILENTCAST_CONFIG") != "" { //nolint:gocritic // Multiple conditions make switch less readable here
 			if i == 0 {
 				fmt.Print(" (from SILENTCAST_CONFIG env)")
 			} else if i == 1 {

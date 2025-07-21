@@ -11,9 +11,10 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/SphereStacking/silentcast/internal/config"
 	"github.com/SphereStacking/silentcast/pkg/logger"
-	"gopkg.in/yaml.v3"
 )
 
 // ImportConfigCommand imports configuration from backup
@@ -126,7 +127,7 @@ func (c *ImportConfigCommand) importYAML(reader io.Reader) error {
 	configPath := filepath.Join(configDir, "spellbook.yml")
 
 	// Create config directory if it doesn't exist
-	if err := os.MkdirAll(configDir, 0755); err != nil {
+	if err := os.MkdirAll(configDir, 0o755); err != nil {
 		return fmt.Errorf("failed to create config directory: %w", err)
 	}
 
@@ -136,7 +137,7 @@ func (c *ImportConfigCommand) importYAML(reader io.Reader) error {
 	}
 
 	// Write the new configuration
-	if err := os.WriteFile(configPath, data, 0644); err != nil {
+	if err := os.WriteFile(configPath, data, 0o600); err != nil {
 		return fmt.Errorf("failed to write configuration: %w", err)
 	}
 
@@ -190,7 +191,7 @@ func (c *ImportConfigCommand) importTarGz(reader io.Reader) error {
 		}
 
 		// Determine target path
-		targetPath := filepath.Join(configDir, header.Name)
+		targetPath := filepath.Join(configDir, header.Name) // nosec G305: Path validation performed below
 
 		// Ensure the file goes into the config directory
 		if !strings.HasPrefix(filepath.Clean(targetPath), filepath.Clean(configDir)) {
@@ -216,7 +217,7 @@ func (c *ImportConfigCommand) importTarGz(reader io.Reader) error {
 		}
 
 		// Write the file
-		if err := os.WriteFile(targetPath, content, 0644); err != nil {
+		if err := os.WriteFile(targetPath, content, 0o600); err != nil {
 			return fmt.Errorf("failed to write %s: %w", targetPath, err)
 		}
 
@@ -256,7 +257,7 @@ func (c *ImportConfigCommand) backupExistingConfig(configPath string) error {
 	}
 
 	// Write backup
-	if err := os.WriteFile(backupPath, data, 0644); err != nil {
+	if err := os.WriteFile(backupPath, data, 0o600); err != nil {
 		return fmt.Errorf("failed to write backup: %w", err)
 	}
 

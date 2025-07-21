@@ -4,6 +4,6 @@
 package permission
 
 // NewManager creates a new permission manager for unsupported platforms
-func NewManager() (Manager, error) {
+func NewManager() (manager Manager, err error) {
 	return newStubManager(), nil
 }

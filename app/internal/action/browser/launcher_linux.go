@@ -52,7 +52,7 @@ func launchURLFallback(ctx context.Context, url string) error {
 		if _, err := exec.LookPath(opener); err != nil {
 			continue
 		}
-		
+
 		cmd := exec.CommandContext(ctx, opener, validatedURL)
 
 		// Detach from terminal

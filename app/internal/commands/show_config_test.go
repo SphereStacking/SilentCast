@@ -37,8 +37,8 @@ logger:
 
 	// Create config file
 	configPath := filepath.Join(tempDir, "test")
-	os.MkdirAll(configPath, 0755)
-	err := os.WriteFile(filepath.Join(configPath, "spellbook.yml"), []byte(testConfig), 0644)
+	os.MkdirAll(configPath, 0o755)
+	err := os.WriteFile(filepath.Join(configPath, "spellbook.yml"), []byte(testConfig), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}

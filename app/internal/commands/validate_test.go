@@ -81,8 +81,8 @@ grimoire:
 		t.Run(tt.name, func(t *testing.T) {
 			// Create config file
 			configPath := filepath.Join(tempDir, tt.name)
-			os.MkdirAll(configPath, 0755)
-			err := os.WriteFile(filepath.Join(configPath, "spellbook.yml"), []byte(tt.configContent), 0644)
+			os.MkdirAll(configPath, 0o755)
+			err := os.WriteFile(filepath.Join(configPath, "spellbook.yml"), []byte(tt.configContent), 0o644)
 			if err != nil {
 				t.Fatalf("Failed to write config: %v", err)
 			}
