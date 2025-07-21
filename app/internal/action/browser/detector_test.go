@@ -26,7 +26,7 @@ func TestDetectBrowsers(t *testing.T) {
 	}
 
 	detector := NewDetector()
-	
+
 	// Add timeout to prevent hanging in CI
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
