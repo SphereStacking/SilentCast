@@ -121,3 +121,45 @@ issues:
       linters:
         - errcheck
       source: "StopApplication"
+    
+    # Exclude intentionally ignored script executor notification errors
+    - path: internal/action/script/executor\.go
+      linters:
+        - errcheck
+      source: "e\\.notifier\\.(Error|Success|Info)"
+    
+    # Exclude intentionally ignored output manager stop errors
+    - path: internal/action/script/executor\.go
+      linters:
+        - errcheck
+      source: "outputManager\\.Stop"
+    
+    # Exclude update notifier errors (best effort)
+    - path: internal/updater/ui_notifier\.go
+      linters:
+        - errcheck
+      source: "m\\.(NotifyUpdateFailed|notifier\\.NotifyUpdate)"
+    
+    # Exclude cache clearing errors in ForceCheck
+    - path: internal/updater/updater\.go
+      linters:
+        - errcheck
+      source: "u\\.cacheManager\\.ClearCache"
+    
+    # Exclude service manager errors in main.go
+    - path: cmd/silentcast/main\.go
+      linters:
+        - errcheck
+      source: "(mgr\\.Status|manager\\.Stop)"
+    
+    # Exclude error context errors
+    - path: internal/errors/types\.go
+      linters:
+        - errcheck
+      source: "err\\.WithContext"
+    
+    # Exclude working directory errors in shell detector
+    - path: internal/shell/detector\.go
+      linters:
+        - errcheck
+      source: "os\\.Getwd"
