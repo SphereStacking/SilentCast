@@ -135,7 +135,8 @@ func (m *manager) CreateInterpreterCommand(ctx context.Context, interpreter *She
 	cmdArgs = append(cmdArgs, args...)
 
 	// Create command
-	cmd := exec.CommandContext(ctx, interpreter.Executable, cmdArgs...) // nosec G204: interpreter.Executable is from trusted shell detection
+	// nosec G204: interpreter.Executable is from trusted shell detection
+	cmd := exec.CommandContext(ctx, interpreter.Executable, cmdArgs...)
 
 	// Set environment
 	if len(env) > 0 {

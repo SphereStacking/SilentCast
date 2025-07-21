@@ -1,0 +1,58 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T081
+title: "環境変数デフォルト値構文の実装"
+type: feature
+priority: medium
+status: todo  # todo, in_progress, review, testing, completed, blocked
+created: "2025-07-22"
+updated: "2025-07-22"
+assignee: null
+labels:
+  - configuration
+  - enhancement
+
+description: |
+  環境変数展開にデフォルト値構文 ${VAR:-default} をサポートします。
+  
+  実装内容:
+  - 現在: $VAR または ${VAR} のみ対応
+  - 追加: ${VAR:-default} 形式（VARが未定義の場合defaultを使用）
+  
+  使用例:
+  - ${EDITOR:-vim}
+  - ${LOG_DIR:-/tmp/silentcast}
+  - ${SHELL:-/bin/bash}
+  
+tasks:
+  - [ ] config/env.goに展開関数を実装
+  - [ ] os.ExpandEnvの代わりに新関数を使用
+  - [ ] validator.goでの使用箇所を更新
+  - [ ] script/executor.goでの使用箇所を更新
+  - [ ] app/executor.goでの使用箇所を更新
+  - [ ] ユニットテストの作成
+  - [ ] ドキュメントの更新
+  
+acceptance_criteria:
+  - ${VAR:-default}形式が正しく展開される
+  - 環境変数が存在する場合はその値を使用
+  - 環境変数が存在しない場合はデフォルト値を使用
+  - 既存の$VAR形式も引き続き動作する
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files:
+  - app/internal/config/env.go (新規)
+  - app/internal/config/validator.go
+  - app/internal/action/script/executor.go
+  - app/internal/action/app/executor.go
+  - docs/config/configuration-guide.md
+
+time_estimate: 3h
+time_spent: 0h
+
+notes: |
+  設定の柔軟性が向上し、環境に依存しない設定ファイルが書けるようになります。

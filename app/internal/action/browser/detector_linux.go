@@ -367,21 +367,3 @@ func (d *linuxDetector) getBrowserNameFromExecutable(executable string) string {
 	}
 }
 
-func openURLFallback(ctx context.Context, url string) error {
-	// Try xdg-open first
-	if _, err := exec.LookPath("xdg-open"); err == nil {
-		cmd := exec.CommandContext(ctx, "xdg-open", url)
-		return cmd.Start()
-	}
-
-	// Try common desktop environment specific openers
-	openers := []string{"gnome-open", "kde-open", "exo-open"}
-	for _, opener := range openers {
-		if _, err := exec.LookPath(opener); err == nil {
-			cmd := exec.CommandContext(ctx, opener, url)
-			return cmd.Start()
-		}
-	}
-
-	return fmt.Errorf("no URL opener found")
-}

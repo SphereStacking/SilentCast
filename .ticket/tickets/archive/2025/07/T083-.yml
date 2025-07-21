@@ -1,0 +1,68 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T083
+title: "ドキュメントから削除すべき未実装機能の文書更新"
+type: docs
+priority: critical
+status: completed
+created: "2025-07-22"
+updated: "2025-07-22"
+assignee: null
+labels:
+  - documentation
+  - critical
+  - consistency
+
+description: |
+  実装判断リスト（IMPLEMENTATION_DECISION.md）に基づき、実装しないと決定した機能を
+  ドキュメントから削除し、現状を正確に反映させます。
+  
+  削除対象:
+  1. F13-F24ファンクションキーのサポート
+  2. パフォーマンス監視機能全般
+  3. macOSアクセシビリティAPI統合の詳細
+  
+  制限事項として記載:
+  1. Windows UAC簡略実装
+  2. macOS権限チェック（NotDetermined）
+  
+tasks:
+  - [ ] docs/api/key-names.md からF13-F24の記述を削除
+  - [ ] docs/guide/performance-optimization.md のランタイム監視部分を削除
+  - [ ] docs/performance/ ディレクトリの監視関連ドキュメントを削除/更新
+  - [ ] docs/guide/platforms.md に制限事項セクションを追加
+  - [ ] docs/troubleshooting/permissions.md にmacOS権限の手動設定手順を追加
+  - [ ] CLAUDE.md のパフォーマンス監視に関する記述を削除
+  - [ ] README.md の機能一覧を現状に合わせて更新
+  
+acceptance_criteria:
+  - ドキュメントに記載されている全機能が実装済みである
+  - 未実装機能は制限事項として明記されている
+  - ユーザーが誤解なく現在の機能を理解できる
+
+dependencies: []  # List of ticket IDs this depends on
+
+related:
+  - T077  # CLI短縮フラグ（実装予定）
+  - T078  # 終了コード（実装予定）
+
+files:
+  - docs/api/key-names.md
+  - docs/guide/performance-optimization.md
+  - docs/performance/README.md
+  - docs/guide/platforms.md
+  - docs/troubleshooting/permissions.md
+  - CLAUDE.md
+  - README.md
+  - README.ja.md
+
+time_estimate: 3h
+time_spent: 0h
+
+notes: |
+  これは緊急度が高いタスクです。ユーザーの混乱を避けるため、
+  ドキュメントは常に実装の現状を正確に反映すべきです。
+  
+  将来実装予定の機能については、ロードマップやFuture Featuresセクションに
+  移動することを検討してください。

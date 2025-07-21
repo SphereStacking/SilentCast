@@ -184,7 +184,7 @@ func (n *LinuxNotifier) sendGDBusNotification(ctx context.Context, notification 
 	}
 
 	// Build the notification ID (use timestamp)
-	notificationID := uint32(time.Now().Unix())
+	notificationID := uint32(time.Now().Unix()) // nosec G115: Unix timestamp fits in uint32 for many decades
 
 	title := notification.Title
 	if title == "" {

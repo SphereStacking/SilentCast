@@ -1,0 +1,49 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T077
+title: "CLI短縮フラグの実装 (-h, -v, -d, -l, -o)"
+type: feature
+priority: high
+status: todo  # todo, in_progress, review, testing, completed, blocked
+created: "2025-07-22"
+updated: "2025-07-22"
+assignee: null
+labels:
+  - cli
+  - usability
+
+description: |
+  標準的なCLI慣習に従い、主要なフラグに短縮形を追加します。
+  
+  実装対象:
+  - --help → -h
+  - --version → -v
+  - --debug → -d
+  - --list-spells → -l
+  - --once → -o
+  
+tasks:
+  - [ ] commands.goにflag.StringVar/BoolVarで短縮形を追加
+  - [ ] 既存フラグ定義の更新
+  - [ ] ヘルプテキストの更新
+  - [ ] 動作確認とテスト
+  
+acceptance_criteria:
+  - 各短縮フラグが長い形式と同じ動作をする
+  - --helpで短縮形が表示される
+  - 既存の長い形式も引き続き動作する
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files:
+  - app/cmd/silentcast/commands.go
+  - app/internal/commands/flags.go
+
+time_estimate: 2h
+time_spent: 0h
+
+notes: |
+  比較的簡単な実装で、ユーザビリティが大幅に向上します。

@@ -1,0 +1,51 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T080
+title: "elevatedパッケージのテストカバレッジ改善"
+type: test
+priority: high
+status: todo  # todo, in_progress, review, testing, completed, blocked
+created: "2025-07-22"
+updated: "2025-07-22"
+assignee: null
+labels:
+  - testing
+  - security
+
+description: |
+  elevatedパッケージのテストカバレッジを41.3%から77%以上に改善します。
+  セキュリティに関わる重要なコードのため、高い優先度で対応が必要です。
+  
+  現状の問題:
+  - プラットフォーム固有の実装のため、モックが不十分
+  - 管理者権限が必要な操作のテストが困難
+  
+tasks:
+  - [ ] テスト可能な構造へのリファクタリング
+  - [ ] 各プラットフォームのモック実装
+  - [ ] ユニットテストの追加
+  - [ ] エラーケースのテスト
+  - [ ] カバレッジレポートの確認
+  
+acceptance_criteria:
+  - テストカバレッジが77%以上になる
+  - 全てのパブリック関数にテストがある
+  - エラーケースが網羅されている
+  - CI/CDでテストが安定して動作する
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files:
+  - app/internal/elevated/executor.go
+  - app/internal/elevated/executor_test.go (新規または更新)
+  - app/internal/elevated/mock.go (新規)
+
+time_estimate: 4h
+time_spent: 0h
+
+notes: |
+  セキュリティ重要コードのため、十分なテストが必要です。
+  モックを使用して、実際の権限昇格なしでテストできるようにします。

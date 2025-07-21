@@ -359,7 +359,7 @@ func (d *detector) deduplicateShells(shells []Shell) []Shell {
 }
 
 // GetShellCommand returns the command and arguments to execute a script
-func GetShellCommand(shell *Shell, script string) (string, []string) {
+func GetShellCommand(shell *Shell, script string) (command string, arguments []string) {
 	if shell == nil {
 		// Use default shell
 		detector := NewDetector()

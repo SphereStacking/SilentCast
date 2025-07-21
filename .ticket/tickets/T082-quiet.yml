@@ -1,0 +1,54 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T082
+title: "quietフラグの実装"
+type: feature
+priority: medium
+status: todo  # todo, in_progress, review, testing, completed, blocked
+created: "2025-07-22"
+updated: "2025-07-22"
+assignee: null
+labels:
+  - cli
+  - logging
+
+description: |
+  スクリプト統合のため、出力を抑制する--quiet/-qフラグを実装します。
+  
+  実装内容:
+  - コンソール出力の抑制
+  - エラー出力のみ表示（または完全に無音）
+  - 長い形式: --quiet
+  - 短縮形: -q
+  
+tasks:
+  - [ ] commands.goにquietフラグの追加
+  - [ ] ロガー初期化時にquietモードの処理追加
+  - [ ] バナー出力の条件分岐
+  - [ ] 通常の出力（fmt.Print系）の制御
+  - [ ] テストの追加
+  
+acceptance_criteria:
+  - --quiet/-qで通常の出力が抑制される
+  - エラーは引き続き表示される（または設定可能）
+  - ログファイルへの出力は影響を受けない
+  - 終了コードは正しく設定される
+
+dependencies:
+  - T077  # 短縮フラグの実装
+
+related:
+  - T078  # 終了コードの実装
+
+files:
+  - app/cmd/silentcast/commands.go
+  - app/cmd/silentcast/main.go
+  - app/pkg/logger/logger.go
+
+time_estimate: 2h
+time_spent: 0h
+
+notes: |
+  スクリプトからSilentCastを呼び出す際に重要な機能です。
+  cronジョブなどでの利用を想定しています。

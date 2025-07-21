@@ -1,0 +1,52 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T079
+title: "configフラグの実装"
+type: feature
+priority: high
+status: todo  # todo, in_progress, review, testing, completed, blocked
+created: "2025-07-22"
+updated: "2025-07-22"
+assignee: null
+labels:
+  - cli
+  - configuration
+
+description: |
+  複数設定ファイルの切り替えを可能にする--config/-cフラグを実装します。
+  
+  実装内容:
+  - カスタム設定ファイルパスの指定
+  - 長い形式: --config
+  - 短縮形: -c
+  - デフォルトの検索パスを上書き
+  
+tasks:
+  - [ ] commands.goにconfigフラグの追加
+  - [ ] config.NewLoader()にカスタムパスの渡し方を実装
+  - [ ] getConfigPath()関数の修正
+  - [ ] ヘルプテキストの更新
+  - [ ] 動作確認とテスト
+  
+acceptance_criteria:
+  - --config path/to/config.ymlで指定した設定ファイルが読み込まれる
+  - -c path/to/config.ymlも同様に動作する
+  - 指定されない場合は従来の検索パスで動作する
+  - 存在しないファイルを指定した場合は適切なエラー
+
+dependencies: []  # List of ticket IDs this depends on
+
+related:
+  - T077  # 短縮フラグの実装
+
+files:
+  - app/cmd/silentcast/main.go
+  - app/cmd/silentcast/commands.go
+  - app/internal/config/loader.go
+
+time_estimate: 2h
+time_spent: 0h
+
+notes: |
+  開発時や複数環境での利用に重要な機能です。

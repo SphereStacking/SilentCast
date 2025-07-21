@@ -1,0 +1,56 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T078
+title: "終了コード（2-9）の実装"
+type: feature
+priority: high
+status: todo  # todo, in_progress, review, testing, completed, blocked
+created: "2025-07-22"
+updated: "2025-07-22"
+assignee: null
+labels:
+  - cli
+  - error-handling
+
+description: |
+  スクリプト統合とエラー診断のため、適切な終了コードを実装します。
+  
+  終了コードマッピング:
+  - 0: Success (成功)
+  - 1: General error (一般エラー)
+  - 2: Usage error (使用方法エラー)
+  - 3: Configuration error (設定エラー)
+  - 4: Permission error (権限エラー)
+  - 5: Not found (見つかりません)
+  - 6: Timeout (タイムアウト)
+  - 7: Interrupt (中断)
+  - 8: Hotkey error (ホットキーエラー)
+  - 9: Already running (既に実行中)
+  
+tasks:
+  - [ ] 終了コード定数の定義
+  - [ ] main.goでエラータイプに基づく終了コード設定
+  - [ ] 各エラーハンドリング箇所の更新
+  - [ ] ドキュメントの更新
+  - [ ] テストの追加
+  
+acceptance_criteria:
+  - 各エラータイプが適切な終了コードで終了する
+  - スクリプトから終了コードで状態を判定できる
+  - ドキュメントに終了コードの説明がある
+
+dependencies: []  # List of ticket IDs this depends on
+
+related: []  # List of related ticket IDs
+
+files:
+  - app/cmd/silentcast/main.go
+  - app/cmd/silentcast/exit_codes.go (新規)
+  - docs/api/exit-codes.md
+
+time_estimate: 3h
+time_spent: 0h
+
+notes: |
+  エラータイプ（errors.ErrorType）と終了コードのマッピングが重要です。

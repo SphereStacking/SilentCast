@@ -170,7 +170,8 @@ func (e *ElevatedExecutor) executeElevatedLinux(ctx context.Context) error {
 	for _, tool := range elevationTools {
 		if _, err := exec.LookPath(tool.name); err == nil {
 			args := tool.args(cmdStr)
-			cmd := exec.CommandContext(ctx, tool.name, args...) // nosec G204: tool.name is from predefined trusted list
+			// nosec G204: tool.name is from predefined trusted list
+			cmd := exec.CommandContext(ctx, tool.name, args...)
 
 			// Set SUDO_ASKPASS for graphical password prompt
 			if tool.name == "sudo" {

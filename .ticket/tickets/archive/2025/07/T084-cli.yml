@@ -1,0 +1,58 @@
+# Ticket Template
+# Copy this file and fill in the fields for new tickets
+
+id: T084
+title: "現在未実装のCLI機能をドキュメントから削除"
+type: docs
+priority: critical
+status: completed
+created: "2025-07-22"
+updated: "2025-07-22"
+assignee: null
+labels:
+  - documentation
+  - critical
+  - cli
+
+description: |
+  現在未実装のCLI機能に関するドキュメントを削除または「今後実装予定」として明記します。
+  
+  未実装のCLI機能:
+  1. 短縮フラグ (-h, -v, -d, -l, -o)
+  2. --quiet/-q フラグ
+  3. --config/-c フラグ
+  4. 終了コード 2-9
+  
+tasks:
+  - [ ] docs/guide/cli-reference.md から短縮フラグの記述を削除
+  - [ ] docs/guide/cli-reference.md から--quiet/-qの記述を削除
+  - [ ] docs/guide/cli-reference.md から--config/-cの記述を削除
+  - [ ] docs/api/exit-codes.md の終了コード2-9を「今後実装予定」と明記
+  - [ ] README.md のCLIオプション一覧を現状に合わせて更新
+  - [ ] 「Future Features」セクションを追加し、実装予定機能をリスト化
+  
+acceptance_criteria:
+  - 実装済みのCLI機能のみがドキュメントに記載されている
+  - 未実装機能は「今後実装予定」として明確に区別されている
+  - ユーザーが現在利用可能な機能を正確に把握できる
+
+dependencies: []  # List of ticket IDs this depends on
+
+related:
+  - T077  # CLI短縮フラグの実装
+  - T078  # 終了コードの実装
+  - T079  # configフラグの実装
+  - T082  # quietフラグの実装
+
+files:
+  - docs/guide/cli-reference.md
+  - docs/api/exit-codes.md
+  - README.md
+  - README.ja.md
+
+time_estimate: 2h
+time_spent: 0h
+
+notes: |
+  これらの機能は実装予定（T077-T082）ですが、現時点では未実装です。
+  ユーザーの混乱を避けるため、現状を正確に反映したドキュメントが必要です。

@@ -46,7 +46,8 @@ func (m *baseManager) ExecuteInTerminal(ctx context.Context, cmd *exec.Cmd, opti
 	}
 
 	// Create the terminal command
-	termCmd := exec.CommandContext(ctx, terminal.Command, args...) // nosec G204: terminal.Command is from predefined list of trusted terminals
+	// nosec G204: terminal.Command is from predefined list of trusted terminals
+	termCmd := exec.CommandContext(ctx, terminal.Command, args...)
 
 	// Set working directory if specified
 	if options.WorkingDir != "" {
