@@ -41,7 +41,7 @@ func (d *darwinDetector) GetDefaultBrowser(ctx context.Context) (*Browser, error
 	cmd := exec.CommandContext(ctx, "defaults", "read",
 		"com.apple.LaunchServices/com.apple.launchservices.secure",
 		"LSHandlers")
-	output, err := cmd.Output()
+	_, err := cmd.Output()
 	if err != nil {
 		// Try alternative method using open command
 		return d.getDefaultBrowserUsingOpen(ctx)
@@ -53,9 +53,6 @@ func (d *darwinDetector) GetDefaultBrowser(ctx context.Context) (*Browser, error
 }
 
 func (d *darwinDetector) getDefaultBrowserUsingOpen(ctx context.Context) (*Browser, error) {
-	// Use AppleScript to get default browser
-	script := `tell application "System Events" to get name of first process whose frontmost is true`
-
 	// First, open a URL to ensure browser is running
 	openCmd := exec.CommandContext(ctx, "open", "-g", "https://")
 	_ = openCmd.Run()

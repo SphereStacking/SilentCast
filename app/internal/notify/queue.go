@@ -194,7 +194,12 @@ func (q *NotificationQueue) dispatcher() {
 			q.mu.Lock()
 			// Move items from heap to channel
 			for len(q.items) > 0 {
-				item := heap.Pop(&q.items).(*QueueItem)
+				poppedItem := heap.Pop(&q.items)
+				item, ok := poppedItem.(*QueueItem)
+				if !ok {
+					// This should never happen, log and continue
+					continue
+				}
 				select {
 				case q.ch <- item:
 					// Successfully sent

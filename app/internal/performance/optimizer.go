@@ -110,7 +110,12 @@ func (rm *ResourceManager) GetStringSlice() []string {
 	rm.metrics.mu.Lock()
 	defer rm.metrics.mu.Unlock()
 	
-	slice := rm.stringPool.Get().([]string)
+	value := rm.stringPool.Get()
+	slice, ok := value.([]string)
+	if !ok {
+		// This should never happen, but handle gracefully
+		slice = make([]string, 0, 8)
+	}
 	slice = slice[:0] // Reset length but keep capacity
 	
 	rm.metrics.StringPoolHits++
@@ -129,7 +134,12 @@ func (rm *ResourceManager) GetBuffer() []byte {
 	rm.metrics.mu.Lock()
 	defer rm.metrics.mu.Unlock()
 	
-	buffer := rm.bufferPool.Get().([]byte)
+	value := rm.bufferPool.Get()
+	buffer, ok := value.([]byte)
+	if !ok {
+		// This should never happen, but handle gracefully
+		buffer = make([]byte, 0, 1024)
+	}
 	buffer = buffer[:0] // Reset length but keep capacity
 	
 	rm.metrics.BufferPoolHits++
