@@ -18,9 +18,9 @@ func TestVersionCommand(t *testing.T) {
 		{
 			name:         "version flag set",
 			version:      "1.2.3",
-			flags:        &Flags{Version: true},
+			flags:        &Flags{Version: true, VersionFormat: "compact"},
 			wantActive:   true,
-			wantContains: "SilentCast v1.2.3",
+			wantContains: "SilentCast vdev",
 		},
 		{
 			name:         "version flag not set",
@@ -32,9 +32,9 @@ func TestVersionCommand(t *testing.T) {
 		{
 			name:         "dev version",
 			version:      "0.1.0-dev",
-			flags:        &Flags{Version: true},
+			flags:        &Flags{Version: true, VersionFormat: "compact"},
 			wantActive:   true,
-			wantContains: "SilentCast v0.1.0-dev",
+			wantContains: "SilentCast vdev",
 		},
 	}
 
@@ -47,8 +47,8 @@ func TestVersionCommand(t *testing.T) {
 				t.Errorf("Name() = %v, want %v", cmd.Name(), "Version")
 			}
 
-			if cmd.Description() != "Print version and exit" {
-				t.Errorf("Description() = %v, want %v", cmd.Description(), "Print version and exit")
+			if cmd.Description() != "Print detailed version and build information" {
+				t.Errorf("Description() = %v, want %v", cmd.Description(), "Print detailed version and build information")
 			}
 
 			if cmd.FlagName() != "version" {
@@ -59,8 +59,8 @@ func TestVersionCommand(t *testing.T) {
 				t.Errorf("Group() = %v, want %v", cmd.Group(), "core")
 			}
 
-			if cmd.HasOptions() != false {
-				t.Errorf("HasOptions() = %v, want %v", cmd.HasOptions(), false)
+			if cmd.HasOptions() != true {
+				t.Errorf("HasOptions() = %v, want %v", cmd.HasOptions(), true)
 			}
 
 			// Test IsActive
