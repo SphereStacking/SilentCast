@@ -127,3 +127,9 @@ issues:
       linters:
         - errcheck
       source: "m\\.(NotifyUpdateFailed|notifier\\.NotifyUpdate)"
+    
+    # Exclude heap interface type assertions (guaranteed by container/heap)
+    - path: internal/notify/queue\.go
+      text: "Error return value is not checked"
+      linters:
+        - errcheck

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/SphereStacking/silentcast/internal/config"
+	"github.com/SphereStacking/silentcast/pkg/logger"
 	"gopkg.in/yaml.v3"
 )
 
@@ -89,7 +90,9 @@ func (c *ImportConfigCommand) Execute(flags interface{}) error {
 	}
 
 	if closeFunc != nil {
-		closeFunc()
+		if closeErr := closeFunc(); closeErr != nil {
+			logger.Warn("Failed to close input file: %v", closeErr)
+		}
 	}
 
 	if err != nil {

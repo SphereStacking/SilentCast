@@ -92,14 +92,18 @@ func (c *ExportConfigCommand) Execute(flags interface{}) error {
 		err = c.exportTarGz(cfg, configDir, writer)
 	default:
 		if closeFunc != nil {
-			closeFunc()
+			if closeErr := closeFunc(); closeErr != nil {
+				logger.Warn("Failed to close export file: %v", closeErr)
+			}
 		}
 		return fmt.Errorf("unsupported export format: %s (supported: yaml, tar.gz)", f.ExportFormat)
 	}
 
 	if err != nil {
 		if closeFunc != nil {
-			closeFunc()
+			if closeErr := closeFunc(); closeErr != nil {
+				logger.Warn("Failed to close export file: %v", closeErr)
+			}
 		}
 		return fmt.Errorf("export failed: %w", err)
 	}
