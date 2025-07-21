@@ -44,7 +44,7 @@ silentcast --version
 SilentCast v1.0.0
 Build: 2024-01-15T10:30:00Z
 Commit: abc123def
-Go: 1.21.5
+Go: 1.23.5
 ```
 
 ### `--no-tray`

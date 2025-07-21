@@ -44,7 +44,7 @@ By participating in this project, you agree to abide by our Code of Conduct:
 ### Prerequisites
 
 ```bash
-# Install Go 1.21+
+# Install Go 1.23+
 # Install Git
 # Install Make (optional)
 ```

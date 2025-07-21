@@ -111,7 +111,7 @@ silentcast --version --version-format compact
 SilentCast v1.0.0
 Built: 2024-01-15T10:30:00Z
 Commit: abc123def456
-Go: 1.21.0
+Go: 1.23.0
 Platform: linux/amd64
 ```
 

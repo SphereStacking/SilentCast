@@ -36,11 +36,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        go-version: ['1.21']
-        include:
-          # Test latest Go only on Ubuntu for faster feedback
-          - os: ubuntu-latest
-            go-version: '1.22'
+        go-version: ['1.23']
       fail-fast: true
 
     steps:
@@ -91,6 +87,7 @@ jobs:
 
     - name: Build application for E2E testing
       working-directory: app
+      shell: bash
       run: |
         # Check if binary is already cached
         if [ -f build/silentcast ] || [ -f build/silentcast.exe ]; then
@@ -177,6 +174,7 @@ jobs:
 
     - name: Collect test logs
       if: always()
+      shell: bash
       run: |
         echo "Collecting E2E test logs and artifacts..."
         mkdir -p e2e-logs
@@ -196,6 +194,7 @@ jobs:
 
     - name: Generate E2E test report
       if: always()
+      shell: bash
       run: |
         echo "# E2E Test Report" > e2e-report.md
         echo "" >> e2e-report.md
@@ -242,6 +241,7 @@ jobs:
         path: all-e2e-results
 
     - name: Generate comprehensive E2E summary
+      shell: bash
       run: |
         echo "# SilentCast E2E Test Summary" > e2e-summary.md
         echo "" >> e2e-summary.md
@@ -253,21 +253,14 @@ jobs:
         
         echo "## Platform Results" >> e2e-summary.md
         echo "" >> e2e-summary.md
-        echo "| Platform | Go 1.21 | Go 1.22 |" >> e2e-summary.md
-        echo "|----------|---------|---------|" >> e2e-summary.md
+        echo "| Platform | Go 1.23 |" >> e2e-summary.md
+        echo "|----------|---------|" >> e2e-summary.md
         
         for os in ubuntu-latest windows-latest macos-latest; do
           echo -n "| $os | " >> e2e-summary.md
           
-          # Check Go 1.21 result
-          if [ -d "all-e2e-results/e2e-report-$os-go1.21" ]; then
-            echo -n "✅ | " >> e2e-summary.md
-          else
-            echo -n "❌ | " >> e2e-summary.md
-          fi
-          
-          # Check Go 1.22 result
-          if [ -d "all-e2e-results/e2e-report-$os-go1.22" ]; then
+          # Check Go 1.23 result
+          if [ -d "all-e2e-results/e2e-report-$os-go1.23" ]; then
             echo "✅ |" >> e2e-summary.md
           else
             echo "❌ |" >> e2e-summary.md
