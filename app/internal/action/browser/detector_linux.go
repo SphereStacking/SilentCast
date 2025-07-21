@@ -5,7 +5,6 @@ package browser
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
