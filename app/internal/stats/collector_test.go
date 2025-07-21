@@ -278,7 +278,7 @@ func TestGenerateReport(t *testing.T) {
 }
 
 func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(s) > 0 && (s[:len(substr)] == substr || contains(s[1:], substr)))
+	return len(s) >= len(substr) && (s == substr || s != "" && (s[:len(substr)] == substr || contains(s[1:], substr)))
 }
 
 func TestStart(t *testing.T) {

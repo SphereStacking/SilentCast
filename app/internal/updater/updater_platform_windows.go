@@ -23,7 +23,7 @@ func (w *windowsPlatformUpdater) CanReplaceRunningExecutable() bool {
 
 func (w *windowsPlatformUpdater) ReplaceExecutable(src, dst string) error {
 	// Rename current executable
-	oldPath := dst + ".old"
+	oldPath := dst + ".old" //nolint:gocritic // Simple suffix, not a path component
 	if err := os.Rename(dst, oldPath); err != nil {
 		return err
 	}

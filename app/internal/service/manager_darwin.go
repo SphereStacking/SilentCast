@@ -134,7 +134,7 @@ func (m *DarwinManager) Install() error {
 	}
 
 	plistDir := filepath.Dir(plistPath)
-	if err := os.MkdirAll(plistDir, 0755); err != nil {
+	if err := os.MkdirAll(plistDir, 0o755); err != nil {
 		return fmt.Errorf("failed to create LaunchAgents directory: %w", err)
 	}
 
@@ -183,7 +183,7 @@ func (m *DarwinManager) Install() error {
 	}
 
 	// Write plist file
-	if err := os.WriteFile(plistPath, buf.Bytes(), 0644); err != nil {
+	if err := os.WriteFile(plistPath, buf.Bytes(), 0o644); err != nil {
 		return fmt.Errorf("failed to write plist file: %w", err)
 	}
 

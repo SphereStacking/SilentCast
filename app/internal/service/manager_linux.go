@@ -203,7 +203,7 @@ func (m *LinuxManager) installSystemdService() error {
 	}
 
 	// Write service file
-	if err := os.WriteFile(servicePath, buf.Bytes(), 0o644); err != nil {
+	if err := os.WriteFile(servicePath, buf.Bytes(), 0o600); err != nil {
 		return fmt.Errorf("failed to write service file: %w", err)
 	}
 
@@ -277,7 +277,7 @@ func (m *LinuxManager) installXDGAutostart() error {
 	}
 
 	// Write desktop file
-	if err := os.WriteFile(desktopPath, buf.Bytes(), 0o644); err != nil {
+	if err := os.WriteFile(desktopPath, buf.Bytes(), 0o600); err != nil {
 		return fmt.Errorf("failed to write desktop file: %w", err)
 	}
 
@@ -505,7 +505,7 @@ func (m *LinuxManager) Run() error {
 }
 
 // execCombinedOutput runs a command and returns combined output
-func (m *LinuxManager) execCombinedOutput(name string, args ...string) ([]byte, error) {
+func (m *LinuxManager) execCombinedOutput(name string, args ...string) ([]byte, error) { // nolint:unparam // name parameter used for testing flexibility
 	if m.execCommand != nil {
 		// For testing, just use regular output
 		return m.execCommand(name, args...)

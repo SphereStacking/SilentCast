@@ -39,7 +39,7 @@ func NewCacheManager(configDir string, cacheDuration time.Duration) *CacheManage
 // GetCached retrieves cached update check result
 func (cm *CacheManager) GetCached() (*UpdateCache, error) {
 	// Ensure cache directory exists
-	if err := os.MkdirAll(cm.cacheDir, 0755); err != nil {
+	if err := os.MkdirAll(cm.cacheDir, 0o755); err != nil {
 		return nil, err
 	}
 
@@ -68,7 +68,7 @@ func (cm *CacheManager) GetCached() (*UpdateCache, error) {
 // SaveCache saves update check result to cache
 func (cm *CacheManager) SaveCache(info *UpdateInfo, nextCheck time.Time) error {
 	// Ensure cache directory exists
-	if err := os.MkdirAll(cm.cacheDir, 0755); err != nil {
+	if err := os.MkdirAll(cm.cacheDir, 0o755); err != nil {
 		return err
 	}
 
@@ -84,7 +84,7 @@ func (cm *CacheManager) SaveCache(info *UpdateInfo, nextCheck time.Time) error {
 		return err
 	}
 
-	return os.WriteFile(cm.cacheFile, data, 0644)
+	return os.WriteFile(cm.cacheFile, data, 0o600)
 }
 
 // ClearCache removes cached update check result

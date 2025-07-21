@@ -350,7 +350,7 @@ func (c *Collector) save() {
 	}
 
 	// Write atomically
-	tmpFile := c.dataFile + ".tmp"
+	tmpFile := c.dataFile + ".tmp" //nolint:gocritic // Simple suffix, not a path component
 	if err := os.WriteFile(tmpFile, data, 0o600); err != nil {
 		logger.Error("Failed to write statistics: %v", err)
 		return

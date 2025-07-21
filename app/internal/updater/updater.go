@@ -236,7 +236,7 @@ func (u *Updater) ApplyUpdate(updatePath string) error {
 	}
 
 	// Create backup of current version
-	backupPath := currentPath + ".backup"
+	backupPath := currentPath + ".backup" //nolint:gocritic // Simple suffix, not a path component
 	if err := u.createBackup(currentPath, backupPath); err != nil {
 		return fmt.Errorf("failed to create backup: %w", err)
 	}
