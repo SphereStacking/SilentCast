@@ -285,7 +285,7 @@ func TestValidator_ValidateGrimoire(t *testing.T) {
 				Actions: map[string]ActionConfig{
 					"app_action": {
 						Type:    "app",
-						Command: "notepad",
+						Command: "/bin/sh",
 					},
 					"script_action": {
 						Type:    "script",

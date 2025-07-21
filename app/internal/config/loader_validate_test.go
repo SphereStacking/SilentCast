@@ -32,23 +32,14 @@ grimoire:
 			wantErrors: []string{},
 		},
 		{
-			name: "missing prefix",
-			config: `
-hotkeys:
-  timeout: 1000
-  sequence_timeout: 2000
-`,
-			wantErrors: []string{"hotkeys.prefix is required"},
-		},
-		{
 			name: "invalid timeout",
 			config: `
 hotkeys:
   prefix: "alt+space"
-  timeout: 0
+  timeout: -1
   sequence_timeout: 2000
 `,
-			wantErrors: []string{"hotkeys.timeout must be positive"},
+			wantErrors: []string{"hotkeys.timeout: timeout must be non-negative"},
 		},
 		{
 			name: "invalid sequence timeout",
@@ -58,7 +49,7 @@ hotkeys:
   timeout: 1000
   sequence_timeout: -100
 `,
-			wantErrors: []string{"hotkeys.sequence_timeout must be positive"},
+			wantErrors: []string{"hotkeys.sequence_timeout: sequence timeout must be non-negative"},
 		},
 		{
 			name: "action missing type",
@@ -71,7 +62,7 @@ grimoire:
   bad_action:
     command: echo
 `,
-			wantErrors: []string{"action 'bad_action': type is required"},
+			wantErrors: []string{"grimoire.bad_action.type: type is required"},
 		},
 		{
 			name: "action missing command",
@@ -84,7 +75,7 @@ grimoire:
   bad_action:
     type: script
 `,
-			wantErrors: []string{"action 'bad_action': command is required"},
+			wantErrors: []string{"grimoire.bad_action.command: command is required"},
 		},
 		{
 			name: "spell references non-existent action",
@@ -100,12 +91,13 @@ grimoire:
     type: app
     command: vim
 `,
-			wantErrors: []string{"spell 'x' references non-existent action 'missing'"},
+			wantErrors: []string{"spells.x: references non-existent grimoire action 'missing'"},
 		},
 		{
 			name: "multiple errors",
 			config: `
 hotkeys:
+  prefix: "alt+space"
   timeout: -1
 spells:
   x: "missing1"
@@ -115,18 +107,18 @@ grimoire:
     type: app
 `,
 			wantErrors: []string{
-				"hotkeys.prefix is required",
-				"hotkeys.timeout must be positive",
-				"action 'incomplete': command is required",
-				"spell 'x' references non-existent action 'missing1'",
-				"spell 'y' references non-existent action 'missing2'",
+				"hotkeys.timeout: timeout must be non-negative",
+				"grimoire.incomplete.command: command is required",
+				"spells.x: references non-existent grimoire action 'missing1'",
+				"spells.y: references non-existent grimoire action 'missing2'",
 			},
 		},
 		{
 			name: "invalid yaml",
 			config: `
-this is not: valid yaml
-  - list item without proper structure
+invalid: yaml: with: too: many: colons:
+  - unclosed [bracket
+  - invalid "quote
 `,
 			wantErrLoading: true,
 		},
@@ -214,7 +206,7 @@ func TestLoader_Validate_EmptyConfig(t *testing.T) {
 	// Check for specific required field errors
 	foundPrefixError := false
 	for _, e := range errors {
-		if e == "hotkeys.prefix is required" {
+		if e == "hotkeys.prefix: prefix key is required" {
 			foundPrefixError = true
 			break
 		}
@@ -355,8 +347,8 @@ spells:
 grimoire:
   app_action:
     type: app
-    command: "notepad"
-    description: "Open notepad"
+    command: "/bin/sh"
+    description: "Open shell"
   script_action:
     type: script
     command: "echo hello"

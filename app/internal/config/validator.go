@@ -131,7 +131,7 @@ func (v *Validator) validateHotkeys() {
 		v.addError("hotkeys.timeout", v.config.Hotkeys.Timeout,
 			"timeout must be non-negative",
 			"Use 0 for no timeout or a positive millisecond value")
-	} else if v.config.Hotkeys.Timeout > 0 && v.config.Hotkeys.Timeout < 100 {
+	} else if v.config.Hotkeys.Timeout > 0 && v.config.Hotkeys.Timeout.ToDuration() < 100*time.Millisecond {
 		v.addError("hotkeys.timeout", v.config.Hotkeys.Timeout,
 			"timeout is very short (less than 100ms)",
 			"Consider using a value between 500-2000ms for better usability")
@@ -249,7 +249,7 @@ func (v *Validator) validateGrimoire() {
 		validTypes := map[string]bool{"app": true, "script": true, "url": true}
 		if !validTypes[action.Type] {
 			v.addError(fieldPrefix+".type", action.Type,
-				fmt.Sprintf("invalid type '%s'", action.Type),
+				fmt.Sprintf("invalid type '%s', must be 'app', 'script', or 'url'", action.Type),
 				"Use 'app', 'script', or 'url'")
 			continue
 		}
