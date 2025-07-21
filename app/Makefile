@@ -30,13 +30,23 @@ build:
 build-dev:
 	@echo "🚀 Building development version (fast)..."
 	@mkdir -p $(BUILD_DIR)
-	@CGO_ENABLED=0 go build -ldflags "\
-		-X 'github.com/SphereStacking/silentcast/internal/version.Version=${VERSION}' \
-		-X 'github.com/SphereStacking/silentcast/internal/version.GitCommit=${GIT_COMMIT}' \
-		-X 'github.com/SphereStacking/silentcast/internal/version.BuildTime=${BUILD_TIME}' \
-		-X 'github.com/SphereStacking/silentcast/internal/version.BuildTags=nogohook,notray' \
-		-s -w" -tags "nogohook notray" -o $(BUILD_DIR)/$(BINARY_NAME) $(MAIN_PATH)
-	@echo "✅ Dev build complete: $(BUILD_DIR)/$(BINARY_NAME)"
+	@if [ "$$OS" = "Windows_NT" ] || [ "$$(go env GOOS)" = "windows" ]; then \
+		CGO_ENABLED=0 go build -ldflags "\
+			-X 'github.com/SphereStacking/silentcast/internal/version.Version=${VERSION}' \
+			-X 'github.com/SphereStacking/silentcast/internal/version.GitCommit=${GIT_COMMIT}' \
+			-X 'github.com/SphereStacking/silentcast/internal/version.BuildTime=${BUILD_TIME}' \
+			-X 'github.com/SphereStacking/silentcast/internal/version.BuildTags=nogohook,notray' \
+			-s -w" -tags "nogohook notray" -o $(BUILD_DIR)/$(BINARY_NAME).exe $(MAIN_PATH); \
+		echo "✅ Dev build complete: $(BUILD_DIR)/$(BINARY_NAME).exe"; \
+	else \
+		CGO_ENABLED=0 go build -ldflags "\
+			-X 'github.com/SphereStacking/silentcast/internal/version.Version=${VERSION}' \
+			-X 'github.com/SphereStacking/silentcast/internal/version.GitCommit=${GIT_COMMIT}' \
+			-X 'github.com/SphereStacking/silentcast/internal/version.BuildTime=${BUILD_TIME}' \
+			-X 'github.com/SphereStacking/silentcast/internal/version.BuildTags=nogohook,notray' \
+			-s -w" -tags "nogohook notray" -o $(BUILD_DIR)/$(BINARY_NAME) $(MAIN_PATH); \
+		echo "✅ Dev build complete: $(BUILD_DIR)/$(BINARY_NAME)"; \
+	fi
 	@echo "💡 Note: Hotkeys disabled in dev build"
 
 # Alias for backward compatibility

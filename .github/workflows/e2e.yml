@@ -92,7 +92,11 @@ jobs:
         # Check if binary is already cached
         if [ -f build/silentcast ] || [ -f build/silentcast.exe ]; then
           echo "Using cached binary"
-          ./build/silentcast --version || echo "Version check failed but continuing"
+          if [ -f build/silentcast.exe ]; then
+            ./build/silentcast.exe --version || echo "Version check failed but continuing"
+          else
+            ./build/silentcast --version || echo "Version check failed but continuing"
+          fi
         else
           echo "Building new binary"
           make build-stub
@@ -100,6 +104,13 @@ jobs:
         
         # Verify binary exists
         ls -la build/
+        if [ "${{ runner.os }}" = "Windows" ] && [ ! -f build/silentcast.exe ]; then
+          echo "ERROR: silentcast.exe not found on Windows"
+          exit 1
+        elif [ "${{ runner.os }}" != "Windows" ] && [ ! -f build/silentcast ]; then
+          echo "ERROR: silentcast binary not found"
+          exit 1
+        fi
 
     - name: Setup virtual display (Linux)
       if: runner.os == 'Linux'
