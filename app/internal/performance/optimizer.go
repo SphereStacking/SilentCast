@@ -12,16 +12,16 @@ import (
 type ResourceManager struct {
 	// String pool for reducing string allocations
 	stringPool sync.Pool
-	
+
 	// Buffer pool for reducing byte slice allocations
 	bufferPool sync.Pool
-	
+
 	// Context pool for reusing contexts
 	contextPool sync.Pool
-	
+
 	// Metrics for monitoring
 	metrics *Metrics
-	
+
 	// Configuration
 	config Config
 }
@@ -30,13 +30,13 @@ type ResourceManager struct {
 type Config struct {
 	// BufferSize sets the initial buffer size for the pool
 	BufferSize int
-	
+
 	// MaxIdleTime sets how long to keep idle resources
 	MaxIdleTime time.Duration
-	
+
 	// GCPercent sets the target percentage for garbage collection
 	GCPercent int
-	
+
 	// EnableProfiling enables performance profiling
 	EnableProfiling bool
 }
@@ -44,18 +44,18 @@ type Config struct {
 // Metrics tracks performance metrics
 type Metrics struct {
 	mu sync.RWMutex
-	
+
 	// Memory metrics
 	AllocatedBytes   uint64
 	TotalAllocations uint64
-	GCRuns          uint64
-	
+	GCRuns           uint64
+
 	// Pool metrics
 	StringPoolHits   uint64
 	StringPoolMisses uint64
 	BufferPoolHits   uint64
 	BufferPoolMisses uint64
-	
+
 	// Timing metrics
 	AverageResponseTime time.Duration
 	MaxResponseTime     time.Duration
@@ -72,12 +72,12 @@ func NewResourceManager(config Config) *ResourceManager {
 	if config.GCPercent == 0 {
 		config.GCPercent = 100
 	}
-	
+
 	rm := &ResourceManager{
 		metrics: &Metrics{},
 		config:  config,
 	}
-	
+
 	// Initialize string pool
 	rm.stringPool = sync.Pool{
 		New: func() interface{} {
@@ -85,7 +85,7 @@ func NewResourceManager(config Config) *ResourceManager {
 			return &slice
 		},
 	}
-	
+
 	// Initialize buffer pool
 	rm.bufferPool = sync.Pool{
 		New: func() interface{} {
@@ -93,17 +93,17 @@ func NewResourceManager(config Config) *ResourceManager {
 			return &buffer
 		},
 	}
-	
+
 	// Initialize context pool
 	rm.contextPool = sync.Pool{
 		New: func() interface{} {
 			return context.Background()
 		},
 	}
-	
+
 	// Set GC target
 	debug.SetGCPercent(config.GCPercent)
-	
+
 	return rm
 }
 
@@ -111,7 +111,7 @@ func NewResourceManager(config Config) *ResourceManager {
 func (rm *ResourceManager) GetStringSlice() []string {
 	rm.metrics.mu.Lock()
 	defer rm.metrics.mu.Unlock()
-	
+
 	value := rm.stringPool.Get()
 	slice, ok := value.([]string)
 	if !ok {
@@ -119,7 +119,7 @@ func (rm *ResourceManager) GetStringSlice() []string {
 		slice = make([]string, 0, 8)
 	}
 	slice = slice[:0] // Reset length but keep capacity
-	
+
 	rm.metrics.StringPoolHits++
 	return slice
 }
@@ -137,7 +137,7 @@ func (rm *ResourceManager) PutStringSlice(slice []string) {
 func (rm *ResourceManager) GetBuffer() []byte {
 	rm.metrics.mu.Lock()
 	defer rm.metrics.mu.Unlock()
-	
+
 	value := rm.bufferPool.Get()
 	buffer, ok := value.([]byte)
 	if !ok {
@@ -145,7 +145,7 @@ func (rm *ResourceManager) GetBuffer() []byte {
 		buffer = make([]byte, 0, 1024)
 	}
 	buffer = buffer[:0] // Reset length but keep capacity
-	
+
 	rm.metrics.BufferPoolHits++
 	return buffer
 }
@@ -163,11 +163,11 @@ func (rm *ResourceManager) PutBuffer(buffer []byte) {
 func (rm *ResourceManager) OptimizeMemory() {
 	// Force garbage collection
 	runtime.GC()
-	
+
 	// Update metrics
 	var memStats runtime.MemStats
 	runtime.ReadMemStats(&memStats)
-	
+
 	rm.metrics.mu.Lock()
 	rm.metrics.AllocatedBytes = memStats.Alloc
 	rm.metrics.TotalAllocations = memStats.TotalAlloc
@@ -179,8 +179,19 @@ func (rm *ResourceManager) OptimizeMemory() {
 func (rm *ResourceManager) GetMetrics() Metrics {
 	rm.metrics.mu.RLock()
 	defer rm.metrics.mu.RUnlock()
-	
-	return *rm.metrics
+
+	// Return a copy without the mutex
+	return Metrics{
+		AllocatedBytes:      rm.metrics.AllocatedBytes,
+		TotalAllocations:    rm.metrics.TotalAllocations,
+		GCRuns:              rm.metrics.GCRuns,
+		StringPoolHits:      rm.metrics.StringPoolHits,
+		StringPoolMisses:    rm.metrics.StringPoolMisses,
+		BufferPoolHits:      rm.metrics.BufferPoolHits,
+		BufferPoolMisses:    rm.metrics.BufferPoolMisses,
+		AverageResponseTime: rm.metrics.AverageResponseTime,
+		MaxResponseTime:     rm.metrics.MaxResponseTime,
+	}
 }
 
 // MonitorGoroutines monitors goroutine count and detects potential leaks
@@ -200,11 +211,11 @@ func (rm *ResourceManager) CreateOptimizedContext(parent context.Context, timeou
 func (rm *ResourceManager) TrackResponseTime(duration time.Duration) {
 	rm.metrics.mu.Lock()
 	defer rm.metrics.mu.Unlock()
-	
+
 	if duration > rm.metrics.MaxResponseTime {
 		rm.metrics.MaxResponseTime = duration
 	}
-	
+
 	// Simple moving average for demonstration
 	if rm.metrics.AverageResponseTime == 0 {
 		rm.metrics.AverageResponseTime = duration
@@ -219,7 +230,7 @@ func (rm *ResourceManager) Cleanup() {
 	rm.stringPool = sync.Pool{}
 	rm.bufferPool = sync.Pool{}
 	rm.contextPool = sync.Pool{}
-	
+
 	// Force final GC
 	runtime.GC()
 }

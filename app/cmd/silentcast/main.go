@@ -92,7 +92,7 @@ func main() {
 	if registry.ExecuteCommands() {
 		os.Exit(0)
 	}
-	
+
 	// Check if we should run as a service (Windows)
 	svcManager := service.NewManager(mainRun)
 	if err := svcManager.Run(); err != nil {
@@ -140,7 +140,6 @@ func main() {
 		os.Exit(0)
 	}
 
-
 	// No command specified, run the main application
 	if err := run(flags.NoTray, flags.Debug); err != nil {
 		// Print user-friendly error message
@@ -152,7 +151,7 @@ func main() {
 	}
 }
 
-func run(noTray bool, debug bool) error {
+func run(noTray, debug bool) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -201,7 +200,7 @@ func run(noTray bool, debug bool) error {
 
 	logger.Info("%s starting up v%s", config.AppDisplayName, version.GetVersionString())
 	logger.Info("Configuration loaded from %s", configPath)
-	
+
 	if debug {
 		logger.Debug("Debug logging enabled")
 		logger.Debug("Logger configuration: level=%s, file=%s", logLevel, logFile)
@@ -273,7 +272,7 @@ func run(noTray bool, debug bool) error {
 				newHotkeyManager, newHotkeyErr := hotkey.NewManager(&newCfg.Hotkeys)
 				if newHotkeyErr != nil {
 					logger.Error("Failed to create new hotkey manager: %v", newHotkeyErr)
-					if notifyErr := notifier.Error(ctx, "Hotkey Reload Failed", 
+					if notifyErr := notifier.Error(ctx, "Hotkey Reload Failed",
 						"Failed to reload hotkey configuration"); notifyErr != nil {
 						logger.Error("Failed to send error notification: %v", notifyErr)
 					}
@@ -283,18 +282,18 @@ func run(noTray bool, debug bool) error {
 				// Set up handler with same logic
 				newHotkeyManager.SetHandler(hotkey.HandlerFunc(func(event hotkey.Event) error {
 					logger.Info("Spell cast: %s → %s", event.Sequence.String(), event.SpellName)
-					if err := notifier.Info(ctx, "Spell Cast",
-						fmt.Sprintf("🎯 %s → %s", event.Sequence.String(), event.SpellName)); err != nil {
-						logger.Error("Failed to send info notification: %v", err)
+					if notifyErr := notifier.Info(ctx, "Spell Cast",
+						fmt.Sprintf("🎯 %s → %s", event.Sequence.String(), event.SpellName)); notifyErr != nil {
+						logger.Error("Failed to send info notification: %v", notifyErr)
 					}
 
 					// Execute the action
-					if err := actionManager.Execute(ctx, event.SpellName); err != nil {
-						logger.Error("Failed to execute spell %s: %v", event.SpellName, err)
-						if notifyErr := notifier.Error(ctx, "Spell Failed", err.Error()); notifyErr != nil {
+					if execErr := actionManager.Execute(ctx, event.SpellName); execErr != nil {
+						logger.Error("Failed to execute spell %s: %v", event.SpellName, execErr)
+						if notifyErr := notifier.Error(ctx, "Spell Failed", execErr.Error()); notifyErr != nil {
 							logger.Error("Failed to send error notification: %v", notifyErr)
 						}
-						return err
+						return execErr
 					}
 
 					logger.Info("Successfully executed spell: %s", event.SpellName)
@@ -303,15 +302,15 @@ func run(noTray bool, debug bool) error {
 
 				// Register all new hotkeys
 				for sequence, spellName := range newCfg.Shortcuts {
-					if err := newHotkeyManager.Register(sequence, spellName); err != nil {
-						logger.Warn("Failed to register hotkey %s: %v", sequence, err)
+					if regErr := newHotkeyManager.Register(sequence, spellName); regErr != nil {
+						logger.Warn("Failed to register hotkey %s: %v", sequence, regErr)
 					}
 				}
 
 				// Start new hotkey manager
-				if err := newHotkeyManager.Start(); err != nil {
-					logger.Error("Failed to start new hotkey manager: %v", err)
-					if notifyErr := notifier.Error(ctx, "Hotkey Reload Failed", 
+				if startErr := newHotkeyManager.Start(); startErr != nil {
+					logger.Error("Failed to start new hotkey manager: %v", startErr)
+					if notifyErr := notifier.Error(ctx, "Hotkey Reload Failed",
 						"Failed to start new hotkey manager"); notifyErr != nil {
 						logger.Error("Failed to send error notification: %v", notifyErr)
 					}
@@ -320,7 +319,7 @@ func run(noTray bool, debug bool) error {
 
 				// Replace the hotkey manager
 				hotkeyManager = newHotkeyManager
-				
+
 				logger.Info("Hotkeys reloaded successfully")
 			}
 
@@ -328,9 +327,9 @@ func run(noTray bool, debug bool) error {
 			cfg = newCfg
 
 			// Notify user of successful reload
-			if err := notifier.Success(ctx, "Configuration Reloaded", 
-				"SilentCast configuration has been updated"); err != nil {
-				logger.Error("Failed to send success notification: %v", err)
+			if notifyErr := notifier.Success(ctx, "Configuration Reloaded",
+				"SilentCast configuration has been updated"); notifyErr != nil {
+				logger.Error("Failed to send success notification: %v", notifyErr)
 			}
 
 			logger.Info("Configuration reload completed successfully")
@@ -585,7 +584,7 @@ func getSpellList(shortcuts map[string]string) []string {
 }
 
 // testSpell tests a spell with detailed debug information
-func testSpell(spellName string, debug bool) error {
+func testSpell(spellName string, _ bool) error {
 	if spellName == "" {
 		return fmt.Errorf("spell name is required when using --test-spell flag")
 	}
@@ -597,7 +596,7 @@ func testSpell(spellName string, debug bool) error {
 	// Load configuration
 	configPath := getConfigPath()
 	fmt.Printf("📁 Loading configuration from: %s\n", configPath)
-	
+
 	loader := config.NewLoader(configPath)
 	cfg, err := loader.Load()
 	if err != nil {
@@ -696,11 +695,11 @@ func testSpell(spellName string, debug bool) error {
 	fmt.Printf("🔬 Type-Specific Analysis (%s):\n", action.Type)
 	switch action.Type {
 	case "app":
-		return testAppAction(action)
+		return testAppAction(&action)
 	case "script":
-		return testScriptAction(action)
+		return testScriptAction(&action)
 	case "url":
-		return testURLAction(action)
+		return testURLAction(&action)
 	default:
 		fmt.Printf("❌ Unknown action type: %s\n", action.Type)
 		return fmt.Errorf("unknown action type: %s", action.Type)
@@ -708,7 +707,7 @@ func testSpell(spellName string, debug bool) error {
 }
 
 // testAppAction tests app-specific aspects
-func testAppAction(action config.ActionConfig) error {
+func testAppAction(action *config.ActionConfig) error {
 	expandedCmd := os.ExpandEnv(action.Command)
 	fmt.Printf("   Command: %s\n", action.Command)
 	if expandedCmd != action.Command {
@@ -739,9 +738,9 @@ func testAppAction(action config.ActionConfig) error {
 }
 
 // testScriptAction tests script-specific aspects
-func testScriptAction(action config.ActionConfig) error {
+func testScriptAction(action *config.ActionConfig) error {
 	fmt.Printf("   Script Command: %s\n", action.Command)
-	
+
 	// Show expanded command
 	expandedCmd := os.ExpandEnv(action.Command)
 	if expandedCmd != action.Command {
@@ -786,7 +785,7 @@ func testScriptAction(action config.ActionConfig) error {
 }
 
 // testURLAction tests URL-specific aspects
-func testURLAction(action config.ActionConfig) error {
+func testURLAction(action *config.ActionConfig) error {
 	urlStr := strings.TrimSpace(action.Command)
 	fmt.Printf("   URL: %s\n", urlStr)
 
@@ -800,7 +799,7 @@ func testURLAction(action config.ActionConfig) error {
 	u, err := url.Parse(urlStr)
 	if err != nil {
 		fmt.Printf("   ❌ Invalid URL format: %v\n", err)
-		return fmt.Errorf("invalid URL format: %v", err)
+		return fmt.Errorf("invalid URL format: %w", err)
 	}
 
 	fmt.Printf("   ✅ URL is valid\n")
@@ -858,7 +857,7 @@ func dryRun(spellName string, debug bool) error {
 	// Load configuration
 	configPath := getConfigPath()
 	fmt.Printf("📁 Loading configuration from: %s\n", configPath)
-	
+
 	loader := config.NewLoader(configPath)
 	cfg, err := loader.Load()
 	if err != nil {
@@ -905,7 +904,7 @@ func dryRun(spellName string, debug bool) error {
 	fmt.Println("🚀 Would Execute:")
 	fmt.Printf("   Type: %s\n", action.Type)
 	fmt.Printf("   Command: %s\n", action.Command)
-	
+
 	// Expand environment variables for display
 	expandedCmd := os.ExpandEnv(action.Command)
 	if expandedCmd != action.Command {
@@ -986,11 +985,11 @@ func dryRun(spellName string, debug bool) error {
 	fmt.Printf("🔬 Type-Specific Analysis (%s):\n", action.Type)
 	switch action.Type {
 	case "app":
-		return dryRunAppAction(action)
+		return dryRunAppAction(&action)
 	case "script":
-		return dryRunScriptAction(action)
+		return dryRunScriptAction(&action)
 	case "url":
-		return dryRunURLAction(action)
+		return dryRunURLAction(&action)
 	default:
 		fmt.Printf("❌ Unknown action type: %s\n", action.Type)
 		return fmt.Errorf("unknown action type: %s", action.Type)
@@ -998,7 +997,7 @@ func dryRun(spellName string, debug bool) error {
 }
 
 // dryRunAppAction shows what would happen for app actions
-func dryRunAppAction(action config.ActionConfig) error {
+func dryRunAppAction(action *config.ActionConfig) error {
 	expandedCmd := os.ExpandEnv(action.Command)
 	fmt.Printf("   Would launch application: %s\n", action.Command)
 	if expandedCmd != action.Command {
@@ -1031,9 +1030,9 @@ func dryRunAppAction(action config.ActionConfig) error {
 }
 
 // dryRunScriptAction shows what would happen for script actions
-func dryRunScriptAction(action config.ActionConfig) error {
+func dryRunScriptAction(action *config.ActionConfig) error {
 	fmt.Printf("   Would execute script: %s\n", action.Command)
-	
+
 	// Show expanded command
 	expandedCmd := os.ExpandEnv(action.Command)
 	if expandedCmd != action.Command {
@@ -1109,7 +1108,7 @@ func shortcutsEqual(a, b map[string]string) bool {
 }
 
 // dryRunURLAction shows what would happen for URL actions
-func dryRunURLAction(action config.ActionConfig) error {
+func dryRunURLAction(action *config.ActionConfig) error {
 	urlStr := strings.TrimSpace(action.Command)
 	fmt.Printf("   Would open URL: %s\n", urlStr)
 
@@ -1157,4 +1156,3 @@ func dryRunURLAction(action config.ActionConfig) error {
 	fmt.Println("\n✅ Dry run analysis completed successfully")
 	return nil
 }
-

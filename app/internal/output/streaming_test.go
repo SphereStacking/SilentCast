@@ -78,7 +78,9 @@ func TestStreamingManager_StartCapture(t *testing.T) {
 	}
 
 	// Stop the manager and verify StartCapture returns nil
-	manager.Stop()
+	if stopErr := manager.Stop(); stopErr != nil {
+		t.Fatalf("Stop failed: %v", stopErr)
+	}
 	writer2 := manager.StartCapture()
 	if writer2 != nil {
 		t.Error("StartCapture should return nil after Stop")
@@ -96,7 +98,10 @@ func TestStreamingManager_GetOutput(t *testing.T) {
 
 	// Even after writing data, GetOutput should return empty
 	writer := manager.StartCapture()
-	writer.Write([]byte("test data"))
+	_, err := writer.Write([]byte("test data"))
+	if err != nil {
+		t.Fatalf("Write failed: %v", err)
+	}
 
 	output = manager.GetOutput()
 	if output != "" {
@@ -117,7 +122,10 @@ func TestStreamingManager_Stream(t *testing.T) {
 	// Start capturing and write data
 	writer := manager.StartCapture()
 	testData := "Hello, streaming!"
-	writer.Write([]byte(testData))
+	_, err = writer.Write([]byte(testData))
+	if err != nil {
+		t.Fatalf("Write failed: %v", err)
+	}
 
 	// Verify data was streamed to destination
 	if buf.String() != testData {
@@ -125,7 +133,9 @@ func TestStreamingManager_Stream(t *testing.T) {
 	}
 
 	// Test that Stream fails after Stop
-	manager.Stop()
+	if stopErr := manager.Stop(); stopErr != nil {
+		t.Fatalf("Stop failed: %v", stopErr)
+	}
 	var buf2 bytes.Buffer
 	err = manager.Stream(&buf2)
 	if err == nil {
@@ -138,14 +148,20 @@ func TestStreamingManager_MultipleDestinations(t *testing.T) {
 
 	// Add multiple destinations
 	var buf1, buf2, buf3 bytes.Buffer
-	manager.Stream(&buf1)
+	err := manager.Stream(&buf1)
+	if err != nil {
+		t.Fatalf("Stream failed: %v", err)
+	}
 	manager.Stream(&buf2)
 	manager.Stream(&buf3)
 
 	// Write data
 	writer := manager.StartCapture()
 	testData := "Multi-destination test"
-	writer.Write([]byte(testData))
+	_, err = writer.Write([]byte(testData))
+	if err != nil {
+		t.Fatalf("Write failed: %v", err)
+	}
 
 	// Verify all destinations received the data
 	destinations := []*bytes.Buffer{&buf1, &buf2, &buf3}
