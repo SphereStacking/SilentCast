@@ -188,6 +188,20 @@ lint:
 	fi
 	@PATH="$(PATH):$$(go env GOPATH)/bin" golangci-lint run ./...
 
+# Auto-fix linting issues
+lint-fix:
+	@echo "🔧 Auto-fixing lint issues..."
+	@if ! command -v golangci-lint &> /dev/null; then \
+		echo "golangci-lint not found. Installing..."; \
+		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
+	fi
+	@PATH="$(PATH):$$(go env GOPATH)/bin" golangci-lint run --fix ./...
+	@echo "✅ Auto-fixable issues resolved"
+
+# Format and auto-fix all issues
+fix-all: fmt lint-fix
+	@echo "🎉 All auto-fixable issues resolved"
+
 # Clean build artifacts
 clean:
 	@echo "🧹 Cleaning..."
@@ -265,6 +279,8 @@ help:
 	@echo "  install                  Install the application"
 	@echo "  fmt                      Format code"
 	@echo "  lint                     Lint code"
+	@echo "  lint-fix                 Auto-fix lint issues"
+	@echo "  fix-all                  Format and auto-fix all issues"
 	@echo "  clean                    Clean build artifacts"
 	@echo "  deps                     Download dependencies"
 	@echo "  build-all                Build for Windows and macOS"
