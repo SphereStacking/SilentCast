@@ -286,6 +286,24 @@ spells:
 2. **Secure Input**: Some apps (password managers) block hotkeys
 3. **Full Disk Access**: May need for certain file operations
 
+## Current Implementation Limitations
+
+### Windows UAC Integration
+The current Windows implementation provides basic UAC elevation support through the `admin: true` configuration option. However, this uses a simplified approach:
+
+- **What works**: Prompts for UAC elevation when launching admin-required applications
+- **Limitation**: Cannot determine UAC requirements automatically or provide advanced UAC bypass methods
+- **Workaround**: Manually specify `admin: true` in grimoire entries that require elevation
+
+### macOS Permission System
+The macOS permission checking currently provides basic functionality:
+
+- **What works**: Detects when accessibility permissions are completely denied
+- **Limitation**: Cannot distinguish between "not determined" and "granted" states through the full Accessibility API
+- **Workaround**: Users must manually configure accessibility permissions in System Preferences
+
+For full permission setup instructions, see [Permission Troubleshooting](/troubleshooting/permissions).
+
 ## Cross-Platform Best Practices
 
 ### 1. Use Platform Overrides

@@ -8,6 +8,13 @@ SilentCast uses standard exit codes to indicate the result of operations. Unders
 |------|----------|-------------|
 | 0 | `EXIT_SUCCESS` | Successful execution |
 | 1 | `EXIT_ERROR` | General error |
+
+## Future Implementation (Planned)
+
+The following exit codes are planned for implementation in future versions:
+
+| Code | Constant | Description |
+|------|----------|-------------|
 | 2 | `EXIT_USAGE` | Invalid command line usage |
 | 3 | `EXIT_CONFIG` | Configuration error |
 | 4 | `EXIT_PERMISSION` | Permission denied |
@@ -17,7 +24,7 @@ SilentCast uses standard exit codes to indicate the result of operations. Unders
 | 8 | `EXIT_HOTKEY` | Hotkey registration failed |
 | 9 | `EXIT_ALREADY_RUNNING` | Another instance is running |
 
-## Exit Code Details
+## Currently Implemented Exit Codes
 
 ### 0 - Success
 
@@ -30,113 +37,12 @@ echo $?  # 0
 
 ### 1 - General Error
 
-Unspecified error occurred.
+Unspecified error occurred. Currently, all error conditions return this code.
 
 ```bash
-# Example: Unknown internal error
+# Example: Any error condition
 silentcast
 echo $?  # 1
-```
-
-### 2 - Usage Error
-
-Invalid command line arguments or options.
-
-```bash
-silentcast --invalid-option
-echo $?  # 2
-
-silentcast --config  # Missing argument
-echo $?  # 2
-```
-
-### 3 - Configuration Error
-
-Problems with configuration files.
-
-```bash
-# Invalid YAML syntax
-silentcast --config invalid.yml
-echo $?  # 3
-
-# Missing required configuration
-silentcast --validate-config
-echo $?  # 3
-```
-
-### 4 - Permission Error
-
-Insufficient permissions for operation.
-
-```bash
-# macOS: Missing accessibility permissions
-silentcast
-echo $?  # 4
-
-# Cannot write to log file
-silentcast --log-file /root/silentcast.log
-echo $?  # 4
-```
-
-### 5 - Not Found
-
-Required file or command not found.
-
-```bash
-# Configuration file doesn't exist
-silentcast --config /path/to/missing.yml
-echo $?  # 5
-
-# Spell references non-existent action
-# When executing a spell with missing grimoire entry
-echo $?  # 5
-```
-
-### 6 - Timeout
-
-Operation exceeded time limit.
-
-```bash
-# Script execution timeout
-# When a script action exceeds its timeout
-echo $?  # 6
-```
-
-### 7 - Interrupt
-
-User interrupted execution.
-
-```bash
-# User pressed Ctrl+C
-silentcast
-^C
-echo $?  # 7
-```
-
-### 8 - Hotkey Error
-
-Failed to register global hotkeys.
-
-```bash
-# Hotkey already in use by another application
-silentcast
-echo $?  # 8
-
-# Invalid hotkey format in configuration
-echo $?  # 8
-```
-
-### 9 - Already Running
-
-Another instance is already running.
-
-```bash
-# First instance
-silentcast &
-
-# Second instance
-silentcast
-echo $?  # 9
 ```
 
 ## Using Exit Codes in Scripts

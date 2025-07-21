@@ -6,8 +6,6 @@ Complete command-line interface reference for SilentCast, including all options,
 
 ```bash
 silentcast [OPTIONS]
-silentcast --once --spell=SPELL [OPTIONS]
-silentcast --test-spell --spell=SPELL [OPTIONS]
 silentcast --validate-config [OPTIONS]
 ```
 
@@ -20,8 +18,6 @@ silentcast --no-tray              # Start without tray
 silentcast --debug                # Debug mode
 silentcast --validate-config      # Validate spellbook
 silentcast --list-spells          # Show all spells
-silentcast --once --spell=e       # Execute spell once
-silentcast --dry-run --spell=g,s  # Preview execution
 silentcast --test-hotkey          # Test key detection
 silentcast --version              # Show version
 silentcast --help                 # Show help
@@ -29,20 +25,18 @@ silentcast --help                 # Show help
 
 ## 🎯 Core Options
 
-### `--help, -h`
+### `--help`
 Display help information and exit.
 
 ```bash
 silentcast --help
-silentcast -h
 ```
 
-### `--version, -v`
+### `--version`
 Display version information and exit.
 
 ```bash
 silentcast --version
-silentcast -v
 ```
 
 **Output example:**
@@ -65,12 +59,11 @@ silentcast --no-tray
 silentcast --no-tray --debug
 ```
 
-### `--debug, -d`
+### `--debug`
 Enable debug-level logging for detailed output.
 
 ```bash
 silentcast --debug
-silentcast -d
 ```
 
 **Debug output includes:**
@@ -82,13 +75,6 @@ silentcast -d
 - Action execution steps
 - Error details with stack traces
 
-### `--quiet, -q`
-Suppress all non-error output.
-
-```bash
-silentcast --quiet
-silentcast -q --once --spell=backup
-```
 
 ### `--log-level`
 Set logging verbosity level.
@@ -102,13 +88,6 @@ silentcast --log-level=error    # Errors only
 
 ## 📁 Configuration Commands
 
-### `--config, -c`
-Use a specific configuration file instead of the default search paths.
-
-```bash
-silentcast --config=/path/to/spellbook.yml
-silentcast -c ./test-config.yml
-```
 
 ### `--validate-config`
 Validate configuration syntax and references.
@@ -180,23 +159,12 @@ Using: /home/user/.config/silentcast/spellbook.yml
 
 ## 🪄 Spell Management
 
-### `--list-spells, -l`
+### `--list-spells`
 List all configured spells.
 
 ```bash
 # List all spells
 silentcast --list-spells
-silentcast -l
-
-# Filter by keyword
-silentcast --list-spells --filter=git
-silentcast --list-spells --filter="docker"
-
-# Compact format
-silentcast --list-spells --compact
-
-# JSON format
-silentcast --list-spells --format=json
 ```
 
 **Output formats:**
@@ -218,100 +186,10 @@ Spells:
 └─────────┴─────────────┴─────────────────────────────┘
 ```
 
-### `--test-spell`
-Test a specific spell configuration.
-
-```bash
-# Test single-key spell
-silentcast --test-spell --spell=e
-
-# Test sequence spell
-silentcast --test-spell --spell=g,s
-
-# Test with debug output
-silentcast --test-spell --spell=docker,up --debug
-```
-
-**Test includes:**
-- Spell existence
-- Action mapping
-- Command validation
-- Permission checks
-- Environment resolution
-- Working directory access
-
-### `--dry-run`
-Preview spell execution without running.
-
-```bash
-# Preview single spell
-silentcast --dry-run --spell=deploy
-
-# Preview with environment
-silentcast --dry-run --spell=backup --debug
-
-# Show expanded command
-silentcast --dry-run --spell=e --show-expanded
-```
-
-**Output includes:**
-- Action type and name
-- Full command to execute
-- Working directory
-- Environment variables
-- Shell to use
-- Action options
-
-**Example output:**
-```
-Dry run for spell 'g,s':
-  Action: git_status
-  Type: script
-  Command: git status --short
-  Working Dir: /home/user/project
-  Shell: /bin/bash
-  Options:
-    - show_output: true
-    - timeout: 30s
-```
 
 ## 🎯 Execution Modes
 
-### `--once, -o`
-Execute a single spell and exit.
 
-```bash
-# Execute and exit
-silentcast --once --spell=editor
-silentcast -o --spell=g,s
-
-# With output capture
-silentcast --once --spell=backup > backup.log
-
-# Silent execution
-silentcast --once --spell=deploy --quiet
-```
-
-**Exit codes:**
-- `0` - Success
-- `1` - General error
-- `2` - Spell not found
-- `3` - Action execution failed
-- `4` - Permission denied
-
-### `--spell, -s`
-Specify spell for execution (used with --once, --dry-run, --test-spell).
-
-```bash
-silentcast --once --spell=e
-silentcast --dry-run --spell=g,s
-silentcast --test-spell --spell=d,u
-```
-
-**Spell formats:**
-- Single key: `e`, `t`, `b`
-- Sequence: `g,s`, `d,u`, `w,m`
-- Special chars: `ctrl+s`, `shift+f1`
 
 ## 🧪 Testing & Debugging
 
@@ -321,12 +199,6 @@ Interactive hotkey testing mode.
 ```bash
 # Test until Ctrl+C
 silentcast --test-hotkey
-
-# Test for specific duration
-silentcast --test-hotkey --duration=30
-
-# Test with specific prefix
-silentcast --test-hotkey --prefix="ctrl+alt+space"
 ```
 
 **Shows:**
@@ -351,33 +223,6 @@ Prefix key: alt+space
 [10:30:47] Would execute spell: git_status
 ```
 
-### `--benchmark`
-Run performance benchmarks.
-
-```bash
-# Run all benchmarks
-silentcast --benchmark
-
-# Benchmark specific operations
-silentcast --benchmark --type=config-load
-silentcast --benchmark --type=spell-lookup
-silentcast --benchmark --type=action-exec
-```
-
-### `--diagnose`
-Run system diagnostics.
-
-```bash
-silentcast --diagnose
-```
-
-**Checks:**
-- Configuration validity
-- File permissions
-- Command availability
-- System tray support
-- Hotkey system status
-- Platform-specific requirements
 
 ## 🌍 Environment Variables
 
@@ -424,53 +269,6 @@ Override configured prefix key.
 SILENTCAST_PREFIX_KEY="ctrl+shift+space" silentcast
 ```
 
-## 📊 Advanced Options
-
-### `--format`
-Output format for various commands.
-
-```bash
-# Configuration output
-silentcast --show-config --format=json
-silentcast --show-config --format=yaml
-
-# Spell listing
-silentcast --list-spells --format=json
-silentcast --list-spells --format=csv
-silentcast --list-spells --format=table
-```
-
-### `--filter`
-Filter output for list commands.
-
-```bash
-# Filter spells
-silentcast --list-spells --filter=git
-silentcast --list-spells --filter="^d,"  # Regex
-
-# Case-insensitive
-silentcast --list-spells --filter=GIT --ignore-case
-```
-
-### `--timeout`
-Set operation timeout.
-
-```bash
-# Set global timeout
-silentcast --timeout=60s
-
-# For specific operations
-silentcast --once --spell=backup --timeout=5m
-silentcast --test-spell --spell=deploy --timeout=30s
-```
-
-### `--workers`
-Set number of concurrent workers.
-
-```bash
-silentcast --workers=4
-silentcast --workers=1 --debug  # Sequential for debugging
-```
 
 ## 💡 Usage Examples
 
@@ -483,50 +281,8 @@ silentcast --debug --no-tray
 # Validate after config changes
 silentcast --validate-config
 
-# Test new spell
-silentcast --test-spell --spell=new_spell
-silentcast --dry-run --spell=new_spell
-
-# Execute once for testing
-silentcast --once --spell=new_spell --debug
-```
-
-### CI/CD Integration
-
-```bash
-#!/bin/bash
-# CI/CD script
-
-# Validate configuration
-if ! silentcast --validate-config; then
-    echo "Invalid configuration"
-    exit 1
-fi
-
-# Run tests
-silentcast --once --spell=test || exit 1
-
-# Build
-silentcast --once --spell=build || exit 1
-
-# Deploy with timeout
-silentcast --once --spell=deploy --timeout=10m || exit 1
-```
-
-### Automation Scripts
-
-```bash
-# Backup script
-#!/bin/bash
-LOG_FILE="/var/log/backup.log"
-
-# Run backup spell
-if silentcast --once --spell=backup >> "$LOG_FILE" 2>&1; then
-    echo "Backup completed successfully"
-else
-    echo "Backup failed with exit code $?"
-    exit 1
-fi
+# Test hotkey detection
+silentcast --test-hotkey
 ```
 
 ### Debugging Issues
@@ -536,13 +292,10 @@ fi
 silentcast --debug --log-level=debug 2>&1 | tee debug.log
 
 # Test hotkey detection
-silentcast --test-hotkey --debug
+silentcast --test-hotkey
 
-# Diagnose system
-silentcast --diagnose > diagnosis.txt
-
-# Test specific spell with full output
-silentcast --test-spell --spell=problematic --debug
+# Check configuration paths
+silentcast --show-config-path
 ```
 
 ## 🚦 Exit Codes
@@ -551,13 +304,8 @@ silentcast --test-spell --spell=problematic --debug
 |------|---------|-------------|
 | 0 | Success | Operation completed successfully |
 | 1 | General Error | Unspecified error occurred |
-| 2 | Config Error | Configuration file invalid or not found |
-| 3 | Spell Error | Spell not found or invalid |
-| 4 | Permission Error | Insufficient permissions |
-| 5 | Hotkey Error | Failed to register hotkeys |
-| 6 | Execution Error | Action execution failed |
-| 7 | Timeout | Operation timed out |
-| 8 | Cancelled | Operation cancelled by user |
+
+**Future Implementation**: Additional exit codes (2-9) are planned for implementation to provide more specific error reporting for different failure scenarios.
 
 ## 🔧 Troubleshooting
 
@@ -566,10 +314,7 @@ silentcast --test-spell --spell=problematic --debug
 **Hotkeys not working:**
 ```bash
 # Test hotkey system
-silentcast --test-hotkey --debug
-
-# Check permissions (macOS)
-silentcast --diagnose | grep "Accessibility"
+silentcast --test-hotkey
 ```
 
 **Configuration not loading:**
@@ -578,16 +323,13 @@ silentcast --diagnose | grep "Accessibility"
 silentcast --show-config-path
 
 # Validate syntax
-silentcast --validate-config --debug
+silentcast --validate-config
 ```
 
 **Spell not found:**
 ```bash
 # List all spells
 silentcast --list-spells
-
-# Test specific spell
-silentcast --test-spell --spell=myspell --debug
 ```
 
 ## 📚 See Also

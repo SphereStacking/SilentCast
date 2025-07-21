@@ -281,41 +281,6 @@ func (vc *ValidationCache) Validate(config Config) ValidationResult {
 }
 ```
 
-## Performance Monitoring
-
-### Runtime Metrics
-
-```go
-// Collect runtime metrics
-func collectMetrics() Metrics {
-    var m runtime.MemStats
-    runtime.ReadMemStats(&m)
-    
-    return Metrics{
-        HeapAlloc:    m.HeapAlloc,
-        HeapObjects:  m.HeapObjects,
-        NumGoroutine: runtime.NumGoroutine(),
-        NumGC:        m.NumGC,
-    }
-}
-```
-
-### Application Metrics
-
-```go
-// Track application-specific metrics
-type AppMetrics struct {
-    ActionExecutions    counter
-    ConfigReloads      counter
-    AverageActionTime  histogram
-    ErrorRate          gauge
-}
-
-func (m *AppMetrics) RecordActionExecution(duration time.Duration) {
-    m.ActionExecutions.Inc()
-    m.AverageActionTime.Observe(duration.Seconds())
-}
-```
 
 ## CI/CD Integration
 

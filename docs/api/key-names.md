@@ -85,19 +85,6 @@ spells:
   f10: "menu"
   f11: "fullscreen"
   f12: "dev_tools"
-  # Some keyboards have extended function keys
-  f13: "action_13"
-  f14: "action_14"
-  f15: "action_15"
-  f16: "action_16"
-  f17: "action_17"
-  f18: "action_18"
-  f19: "action_19"
-  f20: "action_20"
-  f21: "action_21"
-  f22: "action_22"
-  f23: "action_23"
-  f24: "action_24"
 ```
 
 ### Navigation Keys

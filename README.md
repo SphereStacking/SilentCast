@@ -122,12 +122,10 @@ silentcast --show-config             # Display merged configuration
 silentcast --list-spells             # Show all available spells
 
 # Testing & Debugging
-silentcast --test-spell --spell=e    # Test a specific spell
-silentcast --dry-run --spell=g,s     # Preview without executing
 silentcast --test-hotkey             # Test hotkey detection
 
-# One-time Execution
-silentcast --once --spell=e          # Execute spell and exit
+# Help
+silentcast --help                    # Show help
 ```
 
 ### Advanced Configuration

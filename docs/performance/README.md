@@ -32,41 +32,26 @@ SilentCast prioritizes **responsiveness** and **efficiency** to provide a seamle
 
 ### Running Benchmarks
 ```bash
-# Run all benchmarks
-./scripts/benchmark.sh all
+# Run all Go benchmarks
+cd app && go test -bench=. ./...
 
-# Run specific benchmark category
-./scripts/benchmark.sh startup
+# Run benchmarks for specific packages
+cd app && go test -bench=. ./internal/action/...
+cd app && go test -bench=. ./internal/config/...
 
-# Run with profiling
-./scripts/benchmark.sh memory -c -m
-
-# Compare benchmark results
-./scripts/benchmark.sh compare baseline.txt new.txt
+# Run with memory profiling
+cd app && go test -bench=. -benchmem ./internal/...
 ```
 
-### Generating Reports
+### Basic Benchmarking
 ```bash
-# Generate performance dashboard
-./scripts/performance-report.sh dashboard
+# Run Go benchmarks for specific packages
+cd app && go test -bench=. ./internal/action/...
+cd app && go test -bench=. -benchmem ./internal/...
 
-# Generate trend analysis
-./scripts/performance-report.sh trend -d 7
-
-# Generate HTML report
-./scripts/performance-report.sh html
-```
-
-### Performance Monitoring
-```bash
-# Check for regressions
-./scripts/benchmark.sh regression
-
-# Update performance baseline
-./scripts/benchmark.sh baseline
-
-# Generate system performance report
-./scripts/performance-report.sh summary
+# Generate profiles for analysis
+cd app && go test -bench=. -cpuprofile=cpu.prof ./internal/...
+cd app && go tool pprof cpu.prof
 ```
 
 ## 📊 Current Performance Status
@@ -127,43 +112,25 @@ SilentCast prioritizes **responsiveness** and **efficiency** to provide a seamle
 
 ## 🎛️ Performance Configuration
 
-### Configuration Options
-```yaml
-# spellbook.yml
-performance:
-  enable_optimization: true    # Enable performance optimizations
-  buffer_size: 2048           # I/O buffer size
-  gc_percent: 75              # Garbage collection target percentage
-  max_idle_time: 10m          # Maximum idle time before resource cleanup
-  enable_profiling: false     # Enable runtime profiling (dev only)
-  
-daemon:
-  log_level: warn             # Reduce logging overhead
-  config_watch: true          # File monitoring (can be disabled for performance)
-  
-logger:
-  level: warn                 # Minimize log output
-  max_size: 10               # Log rotation settings
-  max_backups: 3
-  compress: true
+### Environment Variables for Performance
+```bash
+# Go runtime configuration
+export GOGC=100              # Garbage collection target percentage (default)
+export GOMAXPROCS=0          # Use all available CPUs (default)
+
+# SilentCast performance tuning
+export SILENTCAST_LOG_LEVEL=warn    # Reduce logging overhead
+export SILENTCAST_DEBUG=false       # Disable debug features for performance
 ```
 
-### Platform-Specific Optimizations
+### Configuration File Performance Tips
 ```yaml
-# Linux-specific optimizations
-performance.linux:
-  use_epoll: true            # Use epoll for event handling
-  thread_pool_size: 4        # Optimize thread pool
+# spellbook.yml - optimize for performance
+daemon:
+  log_level: warn             # Reduce logging overhead
   
-# macOS-specific optimizations  
-performance.darwin:
-  use_kqueue: true           # Use kqueue for file monitoring
-  cf_optimization: true      # Core Foundation optimizations
-  
-# Windows-specific optimizations
-performance.windows:
-  use_iocp: true            # Use I/O completion ports
-  com_initialization: false # Disable COM if not needed
+logger:
+  level: warn                 # Minimize log output in production
 ```
 
 ## 🔧 Development Guidelines
@@ -190,11 +157,11 @@ performance.windows:
 
 ## 📈 Continuous Improvement
 
-### Performance Monitoring
-- **Automated Benchmarking**: CI/CD integration for regression detection
-- **Performance Dashboards**: Regular performance reporting
-- **Trend Analysis**: Long-term performance trend monitoring
-- **Alert Systems**: Automated alerts for performance regressions
+### Manual Performance Testing
+- **Go Benchmarks**: Use built-in Go benchmark tools
+- **Profile Analysis**: Manual profiling with pprof
+- **Cross-Platform Testing**: Test performance on different operating systems
+- **Memory Usage Monitoring**: Monitor memory allocation patterns
 
 ### Optimization Roadmap
 1. **Q1 2025**: Memory optimization and garbage collection tuning
