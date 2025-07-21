@@ -14,11 +14,11 @@ import (
 // TestWindowsNotificationErrorHandling tests that Windows notification errors use unified error handling
 func TestWindowsNotificationErrorHandling(t *testing.T) {
 	tests := []struct {
-		name         string
-		setupMock    func() *MockWindowsNotifier
-		notification Notification
-		expectError  bool
-		expectType   customErrors.ErrorType
+		name          string
+		setupMock     func() *MockWindowsNotifier
+		notification  Notification
+		expectError   bool
+		expectType    customErrors.ErrorType
 		expectContext map[string]interface{}
 	}{
 		{
@@ -39,8 +39,8 @@ func TestWindowsNotificationErrorHandling(t *testing.T) {
 			expectType:  customErrors.ErrorTypeSystem,
 			expectContext: map[string]interface{}{
 				"notification_title": "Test Alert",
-				"platform":          "windows",
-				"tried_methods":     "toast,msg,balloon",
+				"platform":           "windows",
+				"tried_methods":      "toast,msg,balloon",
 			},
 		},
 		{
@@ -246,7 +246,7 @@ func (m *MockWindowsNotifier) Notify(ctx context.Context, notification Notificat
 	if !m.msgFails && m.msgError == "" {
 		return nil // Success with fallback
 	}
-	
+
 	if m.msgError != "" {
 		// msg specific error - but continue to balloon
 		// Don't return here, try balloon as final fallback

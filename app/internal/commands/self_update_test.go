@@ -35,46 +35,46 @@ func TestSelfUpdateCommand_HasOptions(t *testing.T) {
 func TestSelfUpdateCommand_Execute_DryRun(t *testing.T) {
 	// Create a buffer to capture output
 	var output bytes.Buffer
-	
+
 	// Create command with mock config path
 	cmd := NewSelfUpdateCommand(func() string { return "/tmp" })
-	
+
 	// Test with dry run flag (which should be safe)
 	flags := map[string]interface{}{
 		"check-only": true,
 	}
-	
+
 	// Note: This might fail if GitHub API is unreachable, but that's expected
 	err := cmd.Execute(flags)
-	
+
 	// We expect this to either succeed (if GitHub is reachable) or fail with a network/API error
 	// The important thing is that it doesn't panic or crash
 	if err != nil {
 		// Check that it's a reasonable error message
 		errMsg := err.Error()
 		if !strings.Contains(errMsg, "update check failed") &&
-		   !strings.Contains(errMsg, "failed to get latest release") &&
-		   !strings.Contains(errMsg, "GitHub API") &&
-		   !strings.Contains(errMsg, "network") &&
-		   !strings.Contains(errMsg, "timeout") &&
-		   !strings.Contains(errMsg, "context deadline exceeded") {
+			!strings.Contains(errMsg, "failed to get latest release") &&
+			!strings.Contains(errMsg, "GitHub API") &&
+			!strings.Contains(errMsg, "network") &&
+			!strings.Contains(errMsg, "timeout") &&
+			!strings.Contains(errMsg, "context deadline exceeded") {
 			t.Errorf("Unexpected error type: %v", err)
 		}
 	}
-	
+
 	// Test that output is captured (even if command fails)
 	_ = output.String() // Just verify we can get output
 }
 
 func TestSelfUpdateCommand_Execute_InvalidFlags(t *testing.T) {
 	cmd := NewSelfUpdateCommand(func() string { return "/tmp" })
-	
+
 	// Test with invalid flags type
 	err := cmd.Execute("invalid")
 	if err == nil {
 		t.Error("Expected error for invalid flags type")
 	}
-	
+
 	expectedMsg := "invalid flags type"
 	if !strings.Contains(err.Error(), expectedMsg) {
 		t.Errorf("Expected error to contain '%s', got '%s'", expectedMsg, err.Error())
@@ -83,16 +83,16 @@ func TestSelfUpdateCommand_Execute_InvalidFlags(t *testing.T) {
 
 func TestSelfUpdateCommand_Execute_DevVersion(t *testing.T) {
 	cmd := NewSelfUpdateCommand(func() string { return "/tmp" })
-	
+
 	// This test simulates running with development version
 	// Since we can't easily mock the version package, we'll test the error handling
 	flags := map[string]interface{}{
 		"check-only": true,
 	}
-	
+
 	// Execute and expect either success or a reasonable error
 	err := cmd.Execute(flags)
-	
+
 	// For dev versions, it might succeed (no update available) or fail with network error
 	// We just want to ensure it doesn't crash
 	if err != nil {
@@ -107,7 +107,7 @@ func TestSelfUpdateCommand_Execute_DevVersion(t *testing.T) {
 			"context deadline exceeded",
 			"no suitable update found",
 		}
-		
+
 		hasAcceptableError := false
 		for _, acceptable := range acceptableErrors {
 			if strings.Contains(errMsg, acceptable) {
@@ -115,7 +115,7 @@ func TestSelfUpdateCommand_Execute_DevVersion(t *testing.T) {
 				break
 			}
 		}
-		
+
 		if !hasAcceptableError {
 			t.Errorf("Unexpected error message: %v", err)
 		}

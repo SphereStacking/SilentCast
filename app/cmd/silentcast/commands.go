@@ -49,12 +49,12 @@ func ParseFlags() *CommandFlags {
 	flag.StringVar(&flags.SpellName, "spell", "", "Spell to execute in once mode")
 	flag.BoolVar(&flags.TestSpell, "test-spell", false, "Test a spell with detailed debug information")
 	flag.BoolVar(&flags.DryRun, "dry-run", false, "Show what would be executed without actually running it")
-	
+
 	// Export/Import commands
 	flag.StringVar(&flags.ExportConfig, "export-config", "", "Export configuration to file (or stdout if empty)")
 	flag.StringVar(&flags.ExportFormat, "export-format", "yaml", "Export format: yaml, tar.gz")
 	flag.StringVar(&flags.ImportConfig, "import-config", "", "Import configuration from file")
-	
+
 	// Service management (Windows only)
 	flag.BoolVar(&flags.ServiceInstall, "service-install", false, "Install SilentCast as system service (Windows)")
 	flag.BoolVar(&flags.ServiceUninstall, "service-uninstall", false, "Uninstall SilentCast service (Windows)")

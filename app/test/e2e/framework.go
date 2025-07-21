@@ -29,33 +29,33 @@ type TestEnvironment struct {
 func NewTestEnvironment(t *testing.T) *TestEnvironment {
 	tempDir := t.TempDir()
 	configDir := filepath.Join(tempDir, "config")
-	
+
 	// Create config directory
-	if err := os.MkdirAll(configDir, 0755); err != nil {
+	if err := os.MkdirAll(configDir, 0o755); err != nil {
 		t.Fatalf("Failed to create config directory: %v", err)
 	}
-	
+
 	// Determine binary path based on build
 	binaryName := "silentcast"
 	if runtime.GOOS == "windows" {
 		binaryName += ".exe"
 	}
-	
+
 	// Look for binary in build directory (relative to current working directory)
 	wd, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("Failed to get working directory: %v", err)
 	}
-	
+
 	// Try multiple possible locations for the binary
 	possiblePaths := []string{
-		filepath.Join(wd, "build", binaryName),                    // ./build/silentcast
-		filepath.Join(wd, "..", "build", binaryName),              // ../build/silentcast 
-		filepath.Join(wd, "..", "..", "build", binaryName),        // ../../build/silentcast (from test/e2e)
-		filepath.Join(wd, binaryName),                             // ./silentcast (current directory)
-		filepath.Join(filepath.Dir(wd), "build", binaryName),      // parent/build/silentcast
+		filepath.Join(wd, "build", binaryName),               // ./build/silentcast
+		filepath.Join(wd, "..", "build", binaryName),         // ../build/silentcast
+		filepath.Join(wd, "..", "..", "build", binaryName),   // ../../build/silentcast (from test/e2e)
+		filepath.Join(wd, binaryName),                        // ./silentcast (current directory)
+		filepath.Join(filepath.Dir(wd), "build", binaryName), // parent/build/silentcast
 	}
-	
+
 	var appBinary string
 	for _, path := range possiblePaths {
 		if _, err := os.Stat(path); err == nil {
@@ -63,7 +63,7 @@ func NewTestEnvironment(t *testing.T) *TestEnvironment {
 			break
 		}
 	}
-	
+
 	if appBinary == "" {
 		// Default to the most likely location relative to app directory
 		appDir := wd
@@ -74,9 +74,9 @@ func NewTestEnvironment(t *testing.T) *TestEnvironment {
 		}
 		appBinary = filepath.Join(appDir, "build", binaryName)
 	}
-	
+
 	ctx, cancel := context.WithCancel(context.Background())
-	
+
 	return &TestEnvironment{
 		t:              t,
 		TempDir:        tempDir,
@@ -93,7 +93,7 @@ func NewTestEnvironment(t *testing.T) *TestEnvironment {
 // SetupSpellbook creates a test spellbook configuration
 func (env *TestEnvironment) SetupSpellbook(spellbookContent string) error {
 	spellbookPath := filepath.Join(env.ConfigDir, "spellbook.yml")
-	return os.WriteFile(spellbookPath, []byte(spellbookContent), 0644)
+	return os.WriteFile(spellbookPath, []byte(spellbookContent), 0o644)
 }
 
 // StartApplication starts the SilentCast application in the test environment
@@ -102,37 +102,38 @@ func (env *TestEnvironment) StartApplication(args ...string) error {
 	if _, err := os.Stat(env.AppBinary); os.IsNotExist(err) {
 		return fmt.Errorf("application binary not found at %s", env.AppBinary)
 	}
-	
+
 	// Default arguments for E2E testing
 	defaultArgs := []string{
 		"--config", env.ConfigDir,
 		"--log-file", env.LogFile,
-		"--no-tray",  // Run without system tray for testing
-		"--debug",    // Enable debug logging
+		"--no-tray", // Run without system tray for testing
+		"--debug",   // Enable debug logging
 	}
-	
-	allArgs := append(defaultArgs, args...)
-	
+
+	allArgs := append([]string{}, defaultArgs...)
+	allArgs = append(allArgs, args...)
+
 	env.appProcess = exec.CommandContext(env.ctx, env.AppBinary, allArgs...)
 	env.appProcess.Dir = env.TempDir
-	
+
 	// Set environment variables
 	env.appProcess.Env = append(os.Environ(),
 		fmt.Sprintf("SILENTCAST_CONFIG_DIR=%s", env.ConfigDir),
-		fmt.Sprintf("SILENTCAST_LOG_LEVEL=debug"),
+		"SILENTCAST_LOG_LEVEL=debug",
 	)
-	
+
 	// Start the application
 	if err := env.appProcess.Start(); err != nil {
 		return fmt.Errorf("failed to start application: %w", err)
 	}
-	
+
 	// Write PID file for monitoring
 	pidContent := fmt.Sprintf("%d\n", env.appProcess.Process.Pid)
-	if err := os.WriteFile(env.PidFile, []byte(pidContent), 0644); err != nil {
+	if err := os.WriteFile(env.PidFile, []byte(pidContent), 0o644); err != nil {
 		env.t.Logf("Warning: Failed to write PID file: %v", err)
 	}
-	
+
 	return nil
 }
 
@@ -140,10 +141,10 @@ func (env *TestEnvironment) StartApplication(args ...string) error {
 func (env *TestEnvironment) WaitForStartup() error {
 	ctx, cancel := context.WithTimeout(env.ctx, env.startupTimeout)
 	defer cancel()
-	
+
 	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -153,7 +154,7 @@ func (env *TestEnvironment) WaitForStartup() error {
 			if env.appProcess.ProcessState != nil && env.appProcess.ProcessState.Exited() {
 				return fmt.Errorf("application exited during startup")
 			}
-			
+
 			// Check if log file indicates successful startup
 			if env.isApplicationReady() {
 				return nil
@@ -169,9 +170,9 @@ func (env *TestEnvironment) isApplicationReady() bool {
 	if err != nil {
 		return false
 	}
-	
+
 	logStr := string(logContent)
-	
+
 	// Look for indicators that the application is ready
 	readyIndicators := []string{
 		"Application started",
@@ -179,13 +180,13 @@ func (env *TestEnvironment) isApplicationReady() bool {
 		"Configuration loaded",
 		"Ready to receive hotkeys",
 	}
-	
+
 	for _, indicator := range readyIndicators {
 		if contains(logStr, indicator) {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
@@ -194,20 +195,20 @@ func (env *TestEnvironment) StopApplication() error {
 	if env.appProcess == nil || env.appProcess.Process == nil {
 		return nil
 	}
-	
+
 	// Send termination signal
 	if err := env.appProcess.Process.Signal(os.Interrupt); err != nil {
 		env.t.Logf("Failed to send interrupt signal: %v", err)
 		// Force kill if interrupt fails
 		return env.appProcess.Process.Kill()
 	}
-	
+
 	// Wait for graceful shutdown with timeout
 	done := make(chan error, 1)
 	go func() {
 		done <- env.appProcess.Wait()
 	}()
-	
+
 	select {
 	case err := <-done:
 		return err
@@ -231,11 +232,11 @@ func (env *TestEnvironment) Cleanup() {
 	if env.cancel != nil {
 		env.cancel()
 	}
-	
+
 	if env.appProcess != nil {
 		_ = env.StopApplication()
 	}
-	
+
 	// Clean up PID file
 	if env.PidFile != "" {
 		_ = os.Remove(env.PidFile)
@@ -247,27 +248,27 @@ func (env *TestEnvironment) SimulateHotkey(sequence string) error {
 	// For E2E testing, we'll send a signal to the application
 	// In a real implementation, this might use platform-specific APIs
 	// For now, we'll use a test endpoint or signal
-	
+
 	// This is a placeholder - in real implementation, you'd:
 	// 1. Use platform-specific key simulation APIs
 	// 2. Send test signals to the application
 	// 3. Use automation frameworks like Selenium or similar
-	
+
 	env.t.Logf("Simulating hotkey sequence: %s", sequence)
-	
+
 	// For testing, we can create a test file that the application monitors
 	testSignalFile := filepath.Join(env.TempDir, "test_signal")
-	return os.WriteFile(testSignalFile, []byte(sequence), 0644)
+	return os.WriteFile(testSignalFile, []byte(sequence), 0o644)
 }
 
 // WaitForAction waits for a specific action to complete
 func (env *TestEnvironment) WaitForAction(actionName string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(env.ctx, timeout)
 	defer cancel()
-	
+
 	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -277,7 +278,7 @@ func (env *TestEnvironment) WaitForAction(actionName string, timeout time.Durati
 			if err != nil {
 				continue
 			}
-			
+
 			// Look for action completion in logs
 			if contains(logs, fmt.Sprintf("Action completed: %s", actionName)) ||
 				contains(logs, fmt.Sprintf("Executed action: %s", actionName)) {
@@ -293,7 +294,7 @@ func (env *TestEnvironment) AssertNoErrors() {
 	if err != nil {
 		env.t.Fatalf("Failed to read logs: %v", err)
 	}
-	
+
 	// Check for error indicators in logs
 	errorIndicators := []string{
 		"ERROR",
@@ -301,7 +302,7 @@ func (env *TestEnvironment) AssertNoErrors() {
 		"panic:",
 		"runtime error",
 	}
-	
+
 	for _, indicator := range errorIndicators {
 		if contains(logs, indicator) {
 			env.t.Errorf("Found error in logs: %s", indicator)
@@ -311,12 +312,12 @@ func (env *TestEnvironment) AssertNoErrors() {
 
 // Helper function to check if a string contains a substring (case-insensitive)
 func contains(s, substr string) bool {
-	return len(s) >= len(substr) && 
-		   (s == substr || 
-		    (len(s) > len(substr) && 
-		     (s[:len(substr)] == substr || 
-		      s[len(s)-len(substr):] == substr || 
-		      containsMiddle(s, substr))))
+	return len(s) >= len(substr) &&
+		(s == substr ||
+			(len(s) > len(substr) &&
+				(s[:len(substr)] == substr ||
+					s[len(s)-len(substr):] == substr ||
+					containsMiddle(s, substr))))
 }
 
 func containsMiddle(s, substr string) bool {

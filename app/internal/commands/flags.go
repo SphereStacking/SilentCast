@@ -14,7 +14,7 @@ type Flags struct {
 	ShowConfigPath bool
 	ShowFormat     string
 	ShowPaths      bool
-	
+
 	// Version options
 	VersionFormat string
 
@@ -30,21 +30,21 @@ type Flags struct {
 	ExportConfig string
 	ExportFormat string
 	ImportConfig string
-	
+
 	// Service management
 	ServiceInstall   bool
 	ServiceUninstall bool
 	ServiceStart     bool
 	ServiceStop      bool
 	ServiceStatus    bool
-	
+
 	// Update commands
 	CheckUpdate      bool
 	ForceUpdateCheck bool
 	SelfUpdate       bool
 	ForceSelfUpdate  bool
 	UpdateStatus     bool
-	
+
 	// Future commands (ready for implementation)
 	DryRun    bool
 	Once      bool

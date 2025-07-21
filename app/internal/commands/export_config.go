@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/SphereStacking/silentcast/internal/config"
+	"github.com/SphereStacking/silentcast/pkg/logger"
 	"gopkg.in/yaml.v3"
 )
 
@@ -70,7 +71,7 @@ func (c *ExportConfigCommand) Execute(flags interface{}) error {
 	// Determine output writer
 	var writer io.Writer
 	var closeFunc func() error
-	
+
 	if f.ExportConfig == "-" || f.ExportConfig == "" {
 		// Export to stdout
 		writer = os.Stdout
@@ -126,16 +127,16 @@ func (c *ExportConfigCommand) Execute(flags interface{}) error {
 func (c *ExportConfigCommand) exportYAML(cfg *config.Config, writer io.Writer) error {
 	encoder := yaml.NewEncoder(writer)
 	encoder.SetIndent(2)
-	
+
 	if err := encoder.Encode(cfg); err != nil {
 		return fmt.Errorf("failed to encode configuration: %w", err)
 	}
-	
+
 	return encoder.Close()
 }
 
 // exportTarGz exports configuration as tar.gz archive
-func (c *ExportConfigCommand) exportTarGz(cfg *config.Config, configDir string, writer io.Writer) error {
+func (c *ExportConfigCommand) exportTarGz(_ *config.Config, configDir string, writer io.Writer) error {
 	// Create gzip writer
 	gzWriter := gzip.NewWriter(writer)
 	defer gzWriter.Close()
@@ -167,19 +168,19 @@ func (c *ExportConfigCommand) exportTarGz(cfg *config.Config, configDir string, 
 	}
 
 	// Add metadata file with export info
-	metadata := fmt.Sprintf("# SilentCast Configuration Export\n# Exported at: %s\n", 
+	metadata := fmt.Sprintf("# SilentCast Configuration Export\n# Exported at: %s\n",
 		time.Now().Format(time.RFC3339))
-	
+
 	metadataHeader := &tar.Header{
 		Name: "EXPORT_INFO.txt",
-		Mode: 0644,
+		Mode: 0o644,
 		Size: int64(len(metadata)),
 	}
-	
+
 	if err := tarWriter.WriteHeader(metadataHeader); err != nil {
 		return fmt.Errorf("failed to write metadata header: %w", err)
 	}
-	
+
 	if _, err := tarWriter.Write([]byte(metadata)); err != nil {
 		return fmt.Errorf("failed to write metadata: %w", err)
 	}

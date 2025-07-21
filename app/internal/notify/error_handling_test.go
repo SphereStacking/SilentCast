@@ -12,11 +12,11 @@ import (
 // TestNotificationErrorHandling tests that notification errors use the unified error handling pattern
 func TestNotificationErrorHandling(t *testing.T) {
 	tests := []struct {
-		name        string
+		name          string
 		setupNotifier func() Notifier
-		notification Notification
-		expectError bool
-		expectType  customErrors.ErrorType
+		notification  Notification
+		expectError   bool
+		expectType    customErrors.ErrorType
 	}{
 		{
 			name: "mock notifier with error",
@@ -34,13 +34,13 @@ func TestNotificationErrorHandling(t *testing.T) {
 			expectType:  customErrors.ErrorTypeSystem,
 		},
 		{
-			name: "mock notifier success", 
+			name: "mock notifier success",
 			setupNotifier: func() Notifier {
 				return NewMockNotifier(true)
 			},
 			notification: Notification{
 				Title:   "Test",
-				Message: "Test message", 
+				Message: "Test message",
 				Level:   LevelInfo,
 			},
 			expectError: false,
@@ -52,35 +52,35 @@ func TestNotificationErrorHandling(t *testing.T) {
 			ctx := context.Background()
 			notifier := tt.setupNotifier()
 			err := notifier.Notify(ctx, tt.notification)
-			
+
 			if tt.expectError {
 				if err == nil {
 					t.Error("expected error but got none")
 					return
 				}
-				
+
 				// Check if error uses unified error pattern
 				var spellErr *customErrors.SpellbookError
 				if !errors.As(err, &spellErr) {
 					t.Errorf("error should be SpellbookError, got %T", err)
 					return
 				}
-				
+
 				// Check error type
 				if spellErr.Type != tt.expectType {
 					t.Errorf("expected error type %v, got %v", tt.expectType, spellErr.Type)
 				}
-				
+
 				// Check context is included
 				if spellErr.Context == nil || len(spellErr.Context) == 0 {
 					t.Error("error should include context information")
 				}
-				
+
 				// Check specific context fields
 				if title, ok := spellErr.Context["notification_title"]; !ok || title != tt.notification.Title {
 					t.Errorf("error context should include notification_title=%v", tt.notification.Title)
 				}
-				
+
 			} else if err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
@@ -91,20 +91,20 @@ func TestNotificationErrorHandling(t *testing.T) {
 // TestNotificationRetryWithContext tests retry logic with contextual errors
 func TestNotificationRetryWithContext(t *testing.T) {
 	ctx := context.Background()
-	
+
 	// Create a notifier that fails multiple times then succeeds
 	mockNotifier := NewRetryMockNotifier(3)
-	
+
 	notification := Notification{
 		Title:   "Retry Test",
 		Message: "Testing retry logic",
 		Level:   LevelInfo,
 	}
-	
+
 	// Use an enhanced notifier with retry logic
 	enhancedNotifier := NewNotifierWithRetry(mockNotifier, 3)
 	err := enhancedNotifier.Notify(ctx, notification)
-	
+
 	if err != nil {
 		var spellErr *customErrors.SpellbookError
 		if errors.As(err, &spellErr) {
@@ -123,8 +123,8 @@ func TestNotificationRetryWithContext(t *testing.T) {
 // TestNotificationErrorUserMessages tests user-friendly error messages
 func TestNotificationErrorUserMessages(t *testing.T) {
 	tests := []struct {
-		name         string
-		error        error
+		name           string
+		error          error
 		expectContains string
 	}{
 		{
@@ -147,7 +147,7 @@ func TestNotificationErrorUserMessages(t *testing.T) {
 			expectContains: "Permission error",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			userMsg := customErrors.GetUserMessage(tt.error)
@@ -167,23 +167,23 @@ func TestNotificationErrorLogging(t *testing.T) {
 			WithContext("fallback_tried", "terminal-notifier").
 			WithContext("exit_code", 1)
 	}()
-	
+
 	var spellErr *customErrors.SpellbookError
 	if !errors.As(err, &spellErr) {
 		t.Fatal("error should be SpellbookError")
 	}
-	
+
 	fields := spellErr.LogFields()
-	
+
 	expectedFields := map[string]interface{}{
 		"error_type":         "system",
-		"message":           "notification delivery failed",
+		"message":            "notification delivery failed",
 		"notification_title": "Build Failed",
-		"platform":          "darwin",
-		"fallback_tried":    "terminal-notifier",
-		"exit_code":         1,
+		"platform":           "darwin",
+		"fallback_tried":     "terminal-notifier",
+		"exit_code":          1,
 	}
-	
+
 	for key, expectedValue := range expectedFields {
 		if actual, ok := fields[key]; !ok {
 			t.Errorf("LogFields() missing key %q", key)
@@ -235,29 +235,29 @@ func NewNotifierWithRetry(notifier Notifier, maxRetries int) *NotifierWithRetry 
 
 func (n *NotifierWithRetry) Notify(ctx context.Context, notification Notification) error {
 	var lastErr error
-	
+
 	for attempt := 1; attempt <= n.maxRetries; attempt++ {
 		err := n.notifier.Notify(ctx, notification)
 		if err == nil {
 			return nil
 		}
-		
+
 		lastErr = err
-		
+
 		// Add retry context to the error
 		var spellErr *customErrors.SpellbookError
 		if errors.As(err, &spellErr) {
-			spellErr.WithContext("retry_attempt", attempt)
+			spellErr = spellErr.WithContext("retry_attempt", attempt)
 		}
 	}
-	
+
 	// Wrap final error with retry information
 	var spellErr *customErrors.SpellbookError
 	if errors.As(lastErr, &spellErr) {
 		return spellErr.WithContext("retry_attempts", n.maxRetries).
 			WithContext("max_retries_exceeded", true)
 	}
-	
+
 	return customErrors.Wrap(customErrors.ErrorTypeSystem, "notification failed after retries", lastErr).
 		WithContext("retry_attempts", n.maxRetries)
 }

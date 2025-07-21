@@ -12,11 +12,11 @@ import (
 // TestActionManagerErrorHandling tests that action manager errors use unified error handling
 func TestActionManagerErrorHandling(t *testing.T) {
 	tests := []struct {
-		name         string
-		setupManager func() *Manager
-		spellName    string
-		expectError  bool
-		expectType   customErrors.ErrorType
+		name          string
+		setupManager  func() *Manager
+		spellName     string
+		expectError   bool
+		expectType    customErrors.ErrorType
 		expectContext map[string]interface{}
 	}{
 		{
@@ -30,9 +30,9 @@ func TestActionManagerErrorHandling(t *testing.T) {
 			expectError: true,
 			expectType:  customErrors.ErrorTypeConfig,
 			expectContext: map[string]interface{}{
-				"spell_name":        "nonexistent",
-				"available_spells":  []string{"existing"},
-				"error_type":        "spell_not_found",
+				"spell_name":       "nonexistent",
+				"available_spells": []string{"existing"},
+				"error_type":       "spell_not_found",
 			},
 		},
 		{
@@ -46,9 +46,9 @@ func TestActionManagerErrorHandling(t *testing.T) {
 			expectError: true,
 			expectType:  customErrors.ErrorTypeConfig,
 			expectContext: map[string]interface{}{
-				"spell_name":   "invalid",
-				"action_type":  "unknown",
-				"valid_types":  []string{"app", "script", "url"},
+				"spell_name":  "invalid",
+				"action_type": "unknown",
+				"valid_types": []string{"app", "script", "url"},
 			},
 		},
 		{
@@ -121,10 +121,10 @@ func TestActionManagerErrorHandling(t *testing.T) {
 // TestActionExecutorErrorPropagation tests that executor errors are properly wrapped
 func TestActionExecutorErrorPropagation(t *testing.T) {
 	tests := []struct {
-		name         string
-		action       config.ActionConfig
-		expectError  bool
-		expectType   customErrors.ErrorType
+		name        string
+		action      config.ActionConfig
+		expectError bool
+		expectType  customErrors.ErrorType
 	}{
 		{
 			name: "script execution error with context",
@@ -217,7 +217,7 @@ func TestActionUserFriendlyMessages(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			userMsg := customErrors.GetUserMessage(tt.error)
-			if len(userMsg) == 0 {
+			if userMsg == "" {
 				t.Error("user message should not be empty")
 			}
 			// Note: We're just checking that GetUserMessage works

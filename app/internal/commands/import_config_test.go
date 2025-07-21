@@ -34,13 +34,13 @@ grimoire:
 				if _, err := os.Stat(configPath); err != nil {
 					t.Errorf("Config file not created: %v", err)
 				}
-				
+
 				// Read and verify content
 				content, err := os.ReadFile(configPath)
 				if err != nil {
 					t.Errorf("Failed to read config: %v", err)
 				}
-				
+
 				if !strings.Contains(string(content), "editor") {
 					t.Error("Imported config missing expected content")
 				}
@@ -79,13 +79,13 @@ grimoire:
 		t.Run(tt.name, func(t *testing.T) {
 			// Create temp directory
 			tmpDir := t.TempDir()
-			
+
 			// Create existing config for backup test
 			if tt.name == "import with backup" {
 				existingConfig := filepath.Join(tmpDir, "spellbook.yml")
 				os.WriteFile(existingConfig, []byte("existing: config"), 0644)
 			}
-			
+
 			// Create import file
 			importPath := filepath.Join(tmpDir, tt.importFile)
 			if err := os.WriteFile(importPath, []byte(tt.inputContent), 0644); err != nil {
@@ -110,11 +110,11 @@ grimoire:
 
 			// Execute
 			err := cmd.Execute(flags)
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Execute() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			
+
 			if !tt.wantErr && tt.checkResult != nil {
 				tt.checkResult(t, tmpDir)
 			}
@@ -125,16 +125,16 @@ grimoire:
 func TestImportConfigCommand_TarGz(t *testing.T) {
 	// Create temp directory
 	tmpDir := t.TempDir()
-	
+
 	// Create a tar.gz with config
 	var buf bytes.Buffer
-	
+
 	// Create gzip writer
 	gzWriter := gzip.NewWriter(&buf)
-	
+
 	// Create tar writer
 	tarWriter := tar.NewWriter(gzWriter)
-	
+
 	// Add spellbook.yml
 	configContent := `spells:
   e: editor
@@ -142,31 +142,31 @@ grimoire:
   editor:
     type: app
     command: vi`
-	
+
 	header := &tar.Header{
 		Name: "spellbook.yml",
 		Mode: 0644,
 		Size: int64(len(configContent)),
 	}
-	
+
 	if err := tarWriter.WriteHeader(header); err != nil {
 		t.Fatalf("Failed to write tar header: %v", err)
 	}
-	
+
 	if _, err := tarWriter.Write([]byte(configContent)); err != nil {
 		t.Fatalf("Failed to write tar content: %v", err)
 	}
-	
+
 	// Close writers
 	tarWriter.Close()
 	gzWriter.Close()
-	
+
 	// Write tar.gz file
 	archivePath := filepath.Join(tmpDir, "backup.tar.gz")
 	if err := os.WriteFile(archivePath, buf.Bytes(), 0644); err != nil {
 		t.Fatalf("Failed to write archive: %v", err)
 	}
-	
+
 	// Create command
 	cmd := NewImportConfigCommand(
 		func() string { return tmpDir },
@@ -183,7 +183,7 @@ grimoire:
 	if err != nil {
 		t.Errorf("Execute() error = %v, want nil", err)
 	}
-	
+
 	// Check that config was imported
 	configPath := filepath.Join(tmpDir, "spellbook.yml")
 	if _, err := os.Stat(configPath); err != nil {

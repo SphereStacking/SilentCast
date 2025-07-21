@@ -185,7 +185,7 @@ func TestPermissionStatus_String(t *testing.T) {
 func TestPermissionType_String(t *testing.T) {
 	types := []PermissionType{
 		PermissionTypeAccessibility,
-		PermissionTypeNotification, 
+		PermissionTypeNotification,
 		PermissionTypeAutoStart,
 	}
 
@@ -280,7 +280,7 @@ func TestManager_OpenSettings(t *testing.T) {
 		}
 	}
 
-	// Test unknown permission type - stub manager doesn't validate types  
+	// Test unknown permission type - stub manager doesn't validate types
 	unknownType := PermissionType("unknown")
 	err = manager.OpenSettings(unknownType)
 	// Stub manager always returns error, so this is expected
@@ -295,9 +295,9 @@ func TestLinuxManager_AllPermissionTypes(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create manager: %v", err)
 	}
-	
+
 	ctx := context.Background()
-	
+
 	// Test with all defined permission types plus some custom ones
 	allTypes := []PermissionType{
 		PermissionTypeAccessibility,
@@ -306,25 +306,25 @@ func TestLinuxManager_AllPermissionTypes(t *testing.T) {
 		PermissionType("custom1"),
 		PermissionType("custom2"),
 	}
-	
+
 	for _, permType := range allTypes {
 		// Linux manager returns true only for known types
 		supported := manager.IsSupported(permType)
-		
+
 		// Check if this is a known type
-		isKnownType := permType == PermissionTypeAccessibility || 
-					   permType == PermissionTypeNotification || 
-					   permType == PermissionTypeAutoStart
-		
+		isKnownType := permType == PermissionTypeAccessibility ||
+			permType == PermissionTypeNotification ||
+			permType == PermissionTypeAutoStart
+
 		if isKnownType && !supported {
 			t.Errorf("IsSupported(%v) = false, want true for known type on Linux", permType)
 		} else if !isKnownType && supported {
 			t.Errorf("IsSupported(%v) = true, want false for unknown type on Linux", permType)
 		}
-		
+
 		// Instructions should vary based on permission type
 		instructions := manager.GetInstructions(permType)
-		
+
 		// Accessibility has special message, others have generic message
 		if permType == PermissionTypeAccessibility {
 			expectedMsg := "No special permissions needed on Linux for global hotkeys."
@@ -337,7 +337,7 @@ func TestLinuxManager_AllPermissionTypes(t *testing.T) {
 				t.Errorf("GetInstructions(%v) = %q, want %q", permType, instructions, expectedMsg)
 			}
 		}
-		
+
 		// All instructions should mention Linux somehow
 		if !strings.Contains(instructions, "Linux") || !strings.Contains(instructions, "not applicable") {
 			// Special case for accessibility which mentions Linux differently
@@ -346,18 +346,18 @@ func TestLinuxManager_AllPermissionTypes(t *testing.T) {
 			}
 		}
 	}
-	
+
 	// Check should return consistent results
 	perms1, err := manager.Check(ctx)
 	if err != nil {
 		t.Fatalf("Check() error = %v", err)
 	}
-	
+
 	perms2, err := manager.Check(ctx)
 	if err != nil {
 		t.Fatalf("Check() error = %v", err)
 	}
-	
+
 	if len(perms1) != len(perms2) {
 		t.Errorf("Check() returned inconsistent results: %d vs %d permissions", len(perms1), len(perms2))
 	}
@@ -368,22 +368,22 @@ func TestManager_ContextCancellation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create manager: %v", err)
 	}
-	
-	// Test with cancelled context
+
+	// Test with canceled context
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	
-	// Check should still work with cancelled context on Linux
+
+	// Check should still work with canceled context on Linux
 	perms, err := manager.Check(ctx)
 	if err != nil {
-		t.Logf("Check() with cancelled context error = %v (platform-dependent)", err)
+		t.Logf("Check() with canceled context error = %v (platform-dependent)", err)
 	} else {
-		t.Logf("Check() returned %d permissions with cancelled context", len(perms))
+		t.Logf("Check() returned %d permissions with canceled context", len(perms))
 	}
-	
+
 	// Request should still work
 	err = manager.Request(ctx, PermissionTypeAccessibility)
 	if err != nil {
-		t.Logf("Request() with cancelled context error = %v (platform-dependent)", err)
+		t.Logf("Request() with canceled context error = %v (platform-dependent)", err)
 	}
 }

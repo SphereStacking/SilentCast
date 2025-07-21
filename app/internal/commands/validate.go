@@ -170,7 +170,7 @@ func (c *ValidateConfigCommand) HasOptions() bool {
 }
 
 // validateAction checks an action configuration for issues
-func validateAction(name string, action *config.ActionConfig) []string {
+func validateAction(_ string, action *config.ActionConfig) []string {
 	var issues []string
 
 	// Check required fields
@@ -232,7 +232,7 @@ func validateAction(name string, action *config.ActionConfig) []string {
 }
 
 // validateWithLineNumbers validates configuration files with YAML line number reporting
-func (c *ValidateConfigCommand) validateWithLineNumbers(loader *config.Loader) ([]string, error) {
+func (c *ValidateConfigCommand) validateWithLineNumbers(_ *config.Loader) ([]string, error) {
 	// Get the config paths from the loader
 	configPaths := []string{
 		filepath.Join(c.getConfigPath(), "spellbook.yml"),
@@ -241,7 +241,7 @@ func (c *ValidateConfigCommand) validateWithLineNumbers(loader *config.Loader) (
 
 	var allErrors []string
 
-	// Load configuration without defaults for validation  
+	// Load configuration without defaults for validation
 	cfg := &config.Config{
 		Shortcuts: make(map[string]string),
 		Actions:   make(map[string]config.ActionConfig),

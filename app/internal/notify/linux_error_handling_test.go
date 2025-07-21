@@ -14,11 +14,11 @@ import (
 // TestLinuxNotificationErrorHandling tests that Linux notification errors use unified error handling
 func TestLinuxNotificationErrorHandling(t *testing.T) {
 	tests := []struct {
-		name         string
-		setupMock    func() *MockLinuxNotifier
-		notification Notification
-		expectError  bool
-		expectType   customErrors.ErrorType
+		name          string
+		setupMock     func() *MockLinuxNotifier
+		notification  Notification
+		expectError   bool
+		expectType    customErrors.ErrorType
 		expectContext map[string]interface{}
 	}{
 		{
@@ -39,8 +39,8 @@ func TestLinuxNotificationErrorHandling(t *testing.T) {
 			expectType:  customErrors.ErrorTypeSystem,
 			expectContext: map[string]interface{}{
 				"notification_title": "Test Alert",
-				"platform":          "linux",
-				"tried_methods":     "notify-send,gdbus,zenity",
+				"platform":           "linux",
+				"tried_methods":      "notify-send,gdbus,zenity",
 			},
 		},
 		{
@@ -233,10 +233,9 @@ type MockLinuxNotifier struct {
 	gdbusFails         bool
 	gdbusError         string
 	zenityFails        bool
-	zenityNotFound     bool
 }
 
-func (m *MockLinuxNotifier) Notify(ctx context.Context, notification Notification) error {
+func (m *MockLinuxNotifier) Notify(_ context.Context, notification Notification) error {
 	// Simulate notify-send first
 	if !m.notifySendNotFound && !m.notifySendFails {
 		return nil // Success
@@ -246,7 +245,7 @@ func (m *MockLinuxNotifier) Notify(ctx context.Context, notification Notificatio
 	if !m.gdbusFails && m.gdbusError == "" {
 		return nil // Success with fallback
 	}
-	
+
 	// If gdbus also failed, continue to zenity as final fallback
 
 	// Try zenity as final fallback

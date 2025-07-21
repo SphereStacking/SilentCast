@@ -32,7 +32,7 @@ func TestServiceManager(t *testing.T) {
 		if status.Installed && runtime.GOOS != "linux" {
 			t.Log("Warning: Service appears to be installed in test environment")
 		}
-		
+
 		// Run should work on supported platforms
 		if runtime.GOOS == "linux" {
 			// Linux Run() just calls onRun
@@ -57,7 +57,7 @@ func TestServiceManager(t *testing.T) {
 		if err := mgr.Stop(); err == nil {
 			t.Errorf("Stop should return error on %s", runtime.GOOS)
 		}
-		
+
 		status, err := mgr.Status()
 		if err == nil {
 			t.Errorf("Status should return error on %s", runtime.GOOS)
@@ -71,19 +71,19 @@ func TestServiceManager(t *testing.T) {
 func TestServiceStatusDefaults(t *testing.T) {
 	// Test default ServiceStatus
 	status := ServiceStatus{}
-	
+
 	if status.Installed {
 		t.Error("Default status should have Installed = false")
 	}
-	
+
 	if status.Running {
 		t.Error("Default status should have Running = false")
 	}
-	
+
 	if status.StartType != "" {
 		t.Error("Default status should have empty StartType")
 	}
-	
+
 	if status.Message != "" {
 		t.Error("Default status should have empty Message")
 	}

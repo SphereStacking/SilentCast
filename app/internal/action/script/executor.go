@@ -53,7 +53,7 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 	// Get platform-specific shell executor
 	shellExec := shell.GetShellExecutor()
 	shell, shellFlag := shellExec.GetShell()
-	
+
 	// Override shell if custom one is specified
 	if e.config.Shell != "" {
 		shell = e.config.Shell
@@ -111,7 +111,7 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 	if e.config.ShowOutput {
 		outputManager = output.NewBufferedManager(output.DefaultOptions())
 		writer := outputManager.StartCapture()
-		
+
 		// Redirect both stdout and stderr to our output manager
 		cmd.Stdout = writer
 		cmd.Stderr = writer
@@ -123,7 +123,6 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 		// Use WrapInTerminalWithOptions when available
 		cmd = shellExec.WrapInTerminalWithOptions(ctx, cmd, e.config.KeepOpen)
 	}
-
 
 	// Start the script
 	if err := cmd.Start(); err != nil {
@@ -146,17 +145,17 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 
 	// Wait for completion if needed
 	err := cmd.Wait()
-	
+
 	// Send notification with output if ShowOutput is enabled
 	if e.config.ShowOutput && outputManager != nil {
 		capturedOutput := outputManager.GetOutput()
-		
+
 		// Prepare notification
 		title := e.config.Description
 		if title == "" {
 			title = fmt.Sprintf("Script: %s", e.config.Command)
 		}
-		
+
 		// Determine notification level based on error
 		// Notification errors are logged but don't affect script execution
 		if err != nil {
@@ -172,13 +171,13 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 				logger.Warn("Failed to send info notification: %v", notifyErr)
 			}
 		}
-		
+
 		// Clean up output manager
 		if stopErr := outputManager.Stop(); stopErr != nil {
 			logger.Warn("Failed to stop output manager: %v", stopErr)
 		}
 	}
-	
+
 	if err != nil {
 		return errors.Wrap(errors.ErrorTypeSystem, "script execution failed", err).
 			WithContext("command", e.config.Command).

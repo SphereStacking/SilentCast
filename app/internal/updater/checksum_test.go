@@ -112,8 +112,8 @@ func TestGetChecksumForAsset(t *testing.T) {
 
 			// Update asset URLs to use test server
 			for i := range tt.assets {
-				if strings.Contains(strings.ToLower(tt.assets[i].Name), "checksum") || 
-				   strings.Contains(strings.ToLower(tt.assets[i].Name), "sha256") {
+				if strings.Contains(strings.ToLower(tt.assets[i].Name), "checksum") ||
+					strings.Contains(strings.ToLower(tt.assets[i].Name), "sha256") {
 					tt.assets[i].DownloadURL = server.URL
 				}
 			}

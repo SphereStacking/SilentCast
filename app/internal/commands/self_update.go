@@ -56,7 +56,7 @@ func (c *SelfUpdateCommand) Execute(flags interface{}) error {
 	// Handle test flags (map) for unit tests
 	var checkOnly bool
 	var forceUpdate bool
-	
+
 	if flagsMap, ok := flags.(map[string]interface{}); ok {
 		checkOnly = flagsMap["check-only"] == true
 		forceUpdate = flagsMap["force"] == true
@@ -65,13 +65,13 @@ func (c *SelfUpdateCommand) Execute(flags interface{}) error {
 	} else if flags != nil {
 		return fmt.Errorf("invalid flags type: expected *Flags or map[string]interface{}, got %T", flags)
 	}
-	
+
 	fmt.Println("🚀 SilentCast Self-Update")
 	fmt.Println("========================")
-	
+
 	// Check for updates first
 	fmt.Println("\n🔍 Checking for updates...")
-	
+
 	// Create updater config
 	cfg := updater.Config{
 		CurrentVersion: version.GetVersionString(),
@@ -83,7 +83,7 @@ func (c *SelfUpdateCommand) Execute(flags interface{}) error {
 	}
 
 	// Create updater
-	upd := updater.NewUpdater(cfg)
+	upd := updater.NewUpdater(&cfg)
 
 	// Check for updates
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -104,7 +104,7 @@ func (c *SelfUpdateCommand) Execute(flags interface{}) error {
 	fmt.Printf("  Current version: %s\n", cfg.CurrentVersion)
 	fmt.Printf("  Latest version:  %s\n", updateInfo.Version)
 	fmt.Printf("  Published:       %s\n", updateInfo.PublishedAt.Format("2006-01-02"))
-	
+
 	if updateInfo.Size > 0 {
 		fmt.Printf("  Download size:   %s\n", formatBytes(updateInfo.Size))
 	}
@@ -134,32 +134,32 @@ func (c *SelfUpdateCommand) Execute(flags interface{}) error {
 		if readErr != nil {
 			return fmt.Errorf("failed to read response: %w", readErr)
 		}
-		
+
 		response = strings.TrimSpace(strings.ToLower(response))
 		if response != "y" && response != "yes" {
-			fmt.Println("❌ Update cancelled")
+			fmt.Println("❌ Update canceled")
 			return nil
 		}
 	}
 
 	// Download update with progress
 	fmt.Println("\n📥 Downloading update...")
-	
+
 	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	
+
 	downloadPath, err := upd.DownloadUpdateWithProgress(ctx, updateInfo, os.Stdout)
 	if err != nil {
 		return fmt.Errorf("download failed: %w", err)
 	}
-	
+
 	// Apply update
 	fmt.Println("\n🔧 Applying update...")
-	
+
 	// Warn about restart
 	fmt.Println("\n⚠️  IMPORTANT: SilentCast will restart after the update")
 	fmt.Println("   Any running spells will be interrupted")
-	
+
 	if !c.force {
 		fmt.Print("\n❓ Continue with update? (y/N): ")
 		reader := bufio.NewReader(os.Stdin)
@@ -167,24 +167,24 @@ func (c *SelfUpdateCommand) Execute(flags interface{}) error {
 		if err != nil {
 			return fmt.Errorf("failed to read response: %w", err)
 		}
-		
+
 		response = strings.TrimSpace(strings.ToLower(response))
 		if response != "y" && response != "yes" {
 			// Clean up downloaded file
 			os.Remove(downloadPath)
-			fmt.Println("❌ Update cancelled")
+			fmt.Println("❌ Update canceled")
 			return nil
 		}
 	}
-	
+
 	// Apply the update
 	if err := upd.ApplyUpdate(downloadPath); err != nil {
 		return fmt.Errorf("failed to apply update: %w", err)
 	}
-	
+
 	fmt.Println("\n✅ Update applied successfully!")
 	fmt.Println("   SilentCast will now restart...")
-	
+
 	// Restart the application
 	// The platform-specific updater should handle the restart
 	platform := updater.GetPlatformUpdater()
@@ -192,7 +192,7 @@ func (c *SelfUpdateCommand) Execute(flags interface{}) error {
 		fmt.Printf("\n⚠️  Could not restart automatically: %v\n", err)
 		fmt.Println("   Please restart SilentCast manually")
 	}
-	
+
 	return nil
 }
 

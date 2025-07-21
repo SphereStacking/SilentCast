@@ -27,7 +27,7 @@ func TestNewUpdater(t *testing.T) {
 		CacheDuration:  2 * time.Hour,
 	}
 
-	u := NewUpdater(cfg)
+	u := NewUpdater(&cfg)
 
 	if u.currentVersion != cfg.CurrentVersion {
 		t.Errorf("Expected version %s, got %s", cfg.CurrentVersion, u.currentVersion)
@@ -136,7 +136,9 @@ func TestCheckForUpdate(t *testing.T) {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(release)
+		if err := json.NewEncoder(w).Encode(release); err != nil {
+			t.Errorf("Failed to encode response: %v", err)
+		}
 	}))
 	defer server.Close()
 
@@ -162,17 +164,17 @@ func TestCheckForUpdate(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	
+
 	// First check should hit the API
 	info, err := u.CheckForUpdate(ctx)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
-	
+
 	if info == nil {
 		t.Fatal("Expected update info, got nil")
 	}
-	
+
 	if info.Version != "v2.0.0" {
 		t.Errorf("Expected version v2.0.0, got %s", info.Version)
 	}
@@ -182,11 +184,11 @@ func TestCheckForUpdate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unexpected error on cached check: %v", err)
 	}
-	
+
 	if info2 == nil {
 		t.Fatal("Expected cached update info, got nil")
 	}
-	
+
 	if info2.Version != info.Version {
 		t.Error("Cached version should match original")
 	}
@@ -287,7 +289,9 @@ func TestGetLatestRelease(t *testing.T) {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(release)
+		if err := json.NewEncoder(w).Encode(release); err != nil {
+			t.Errorf("Failed to encode response: %v", err)
+		}
 	}))
 	defer server.Close()
 
@@ -350,7 +354,7 @@ func TestFindChecksum(t *testing.T) {
 		{Name: "checksums.sha256", Size: 150},
 	}
 
-	u := NewUpdater(Config{
+	u := NewUpdater(&Config{
 		CurrentVersion: "v0.1.0",
 		RepoOwner:      "test",
 		RepoName:       "test",
@@ -378,7 +382,7 @@ func TestStartAutoCheck(t *testing.T) {
 	tempDir := t.TempDir()
 	u := &Updater{
 		currentVersion: "v1.0.0",
-		repoOwner:      "test", 
+		repoOwner:      "test",
 		repoName:       "repo",
 		checkInterval:  100 * time.Millisecond,
 		httpClient:     &http.Client{Timeout: 1 * time.Second},
@@ -495,7 +499,7 @@ func TestApplyUpdateBackupFailure(t *testing.T) {
 
 func TestRestoreBackup(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	backupFile := filepath.Join(tempDir, "backup")
 	originalFile := filepath.Join(tempDir, "original")
 
@@ -505,7 +509,7 @@ func TestRestoreBackup(t *testing.T) {
 	}
 
 	u := &Updater{}
-	
+
 	err := u.restoreBackup(backupFile, originalFile)
 	if err != nil {
 		t.Errorf("restoreBackup failed: %v", err)
@@ -526,11 +530,11 @@ func TestForceCheck(t *testing.T) {
 	callCount := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		callCount++
-		
+
 		platform := fmt.Sprintf("test-app-%s-%s", runtime.GOOS, runtime.GOARCH)
 		release := Release{
 			TagName:     "v2.0.0",
-			Name:        "Release v2.0.0", 
+			Name:        "Release v2.0.0",
 			Body:        "New features",
 			PublishedAt: time.Now(),
 			Assets: []Asset{
@@ -543,7 +547,9 @@ func TestForceCheck(t *testing.T) {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(release)
+		if err := json.NewEncoder(w).Encode(release); err != nil {
+			t.Errorf("Failed to encode response: %v", err)
+		}
 	}))
 	defer server.Close()
 
@@ -570,7 +576,7 @@ func TestForceCheck(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	
+
 	// First check
 	u.CheckForUpdate(ctx)
 	if callCount != 1 {
@@ -579,13 +585,13 @@ func TestForceCheck(t *testing.T) {
 
 	// Wait a bit to ensure cache is written
 	time.Sleep(10 * time.Millisecond)
-	
+
 	// Second check should use cache
 	cached, _ := u.cacheManager.GetCached()
 	if cached == nil {
 		t.Log("Warning: Cache not found after first check")
 	}
-	
+
 	u.CheckForUpdate(ctx)
 	if callCount != 1 {
 		t.Errorf("Expected 1 API call (cached), got %d", callCount)

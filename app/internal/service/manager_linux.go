@@ -18,14 +18,14 @@ const (
 	serviceName        = "silentcast"
 	serviceDisplayName = "SilentCast"
 	serviceDescription = "Silent hotkey-driven task runner"
-	
+
 	// Systemd paths
 	systemdUserPath   = ".config/systemd/user"
 	systemdSystemPath = "/etc/systemd/system"
-	
+
 	// XDG autostart paths
 	xdgAutostartPath = ".config/autostart"
-	
+
 	// Service file names
 	systemdServiceFile = serviceName + ".service"
 	desktopFile        = serviceName + ".desktop"
@@ -97,18 +97,18 @@ func NewManager(onRun func() error) Manager {
 	if err != nil {
 		exe = os.Args[0]
 	}
-	
+
 	// Resolve symlinks to get actual executable
 	if resolved, err := filepath.EvalSymlinks(exe); err == nil {
 		exe = resolved
 	}
-	
+
 	return &LinuxManager{
-		executable:  exe,
-		onRun:       onRun,
-		useSystemd:  hasSystemd(),
+		executable:   exe,
+		onRun:        onRun,
+		useSystemd:   hasSystemd(),
 		isSystemWide: false, // Default to user installation
-		execCommand: defaultCommandExecutor,
+		execCommand:  defaultCommandExecutor,
 	}
 }
 
@@ -119,7 +119,7 @@ func hasSystemd() bool {
 	if err != nil {
 		return false
 	}
-	
+
 	// Check if systemd is running
 	cmd := exec.Command("systemctl", "--version")
 	return cmd.Run() == nil
@@ -128,23 +128,23 @@ func hasSystemd() bool {
 // Install installs the Linux service
 func (m *LinuxManager) Install() error {
 	var errors []error
-	
+
 	// Install systemd service if available
 	if m.useSystemd {
 		if err := m.installSystemdService(); err != nil {
 			errors = append(errors, fmt.Errorf("systemd: %w", err))
 		}
 	}
-	
+
 	// Always install XDG autostart for GUI environments
 	if err := m.installXDGAutostart(); err != nil {
 		errors = append(errors, fmt.Errorf("XDG autostart: %w", err))
 	}
-	
+
 	if len(errors) > 0 {
 		return fmt.Errorf("installation errors: %v", errors)
 	}
-	
+
 	return nil
 }
 
@@ -155,28 +155,28 @@ func (m *LinuxManager) installSystemdService() error {
 	if err != nil {
 		return fmt.Errorf("failed to get current user: %w", err)
 	}
-	
+
 	// Determine service path
 	var servicePath string
 	if m.isSystemWide {
 		servicePath = filepath.Join(systemdSystemPath, systemdServiceFile)
 	} else {
 		userServiceDir := filepath.Join(currentUser.HomeDir, systemdUserPath)
-		if err := os.MkdirAll(userServiceDir, 0755); err != nil {
-			return fmt.Errorf("failed to create systemd user directory: %w", err)
+		if mkdirErr := os.MkdirAll(userServiceDir, 0o755); mkdirErr != nil {
+			return fmt.Errorf("failed to create systemd user directory: %w", mkdirErr)
 		}
 		servicePath = filepath.Join(userServiceDir, systemdServiceFile)
 	}
-	
+
 	// Check if already installed
 	if _, statErr := os.Stat(servicePath); statErr == nil {
 		return fmt.Errorf("systemd service already installed at %s", servicePath)
 	}
-	
+
 	// Prepare template data
 	configDir := filepath.Join(currentUser.HomeDir, ".config", "silentcast")
 	logDir := filepath.Join(currentUser.HomeDir, ".local", "share", "silentcast")
-	
+
 	data := struct {
 		Description      string
 		ExecStart        string
@@ -190,40 +190,40 @@ func (m *LinuxManager) installSystemdService() error {
 		ConfigDir:        configDir,
 		LogDir:           logDir,
 	}
-	
+
 	// Generate service file from template
 	tmpl, err := template.New("systemd").Parse(systemdTemplate)
 	if err != nil {
 		return fmt.Errorf("failed to parse systemd template: %w", err)
 	}
-	
+
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, data); err != nil {
 		return fmt.Errorf("failed to execute systemd template: %w", err)
 	}
-	
+
 	// Write service file
-	if err := os.WriteFile(servicePath, buf.Bytes(), 0644); err != nil {
+	if err := os.WriteFile(servicePath, buf.Bytes(), 0o644); err != nil {
 		return fmt.Errorf("failed to write service file: %w", err)
 	}
-	
+
 	// Reload systemd
 	scope := "--user"
 	if m.isSystemWide {
 		scope = "--system"
 	}
-	
+
 	if output, err := m.execCombinedOutput("systemctl", scope, "daemon-reload"); err != nil {
 		os.Remove(servicePath)
 		return fmt.Errorf("failed to reload systemd: %w\nOutput: %s", err, output)
 	}
-	
+
 	// Enable service
 	if output, err := m.execCombinedOutput("systemctl", scope, "enable", serviceName); err != nil {
 		os.Remove(servicePath)
 		return fmt.Errorf("failed to enable service: %w\nOutput: %s", err, output)
 	}
-	
+
 	return nil
 }
 
@@ -238,20 +238,20 @@ func (m *LinuxManager) installXDGAutostart() error {
 		}
 		homeDir = currentUser.HomeDir
 	}
-	
+
 	// Create autostart directory
 	autostartDir := filepath.Join(homeDir, xdgAutostartPath)
-	if err := os.MkdirAll(autostartDir, 0755); err != nil {
+	if err := os.MkdirAll(autostartDir, 0o755); err != nil {
 		return fmt.Errorf("failed to create autostart directory: %w", err)
 	}
-	
+
 	desktopPath := filepath.Join(autostartDir, desktopFile)
-	
+
 	// Check if already installed
 	if _, err := os.Stat(desktopPath); err == nil {
 		return fmt.Errorf("XDG autostart already installed at %s", desktopPath)
 	}
-	
+
 	// Prepare template data
 	data := struct {
 		Name    string
@@ -264,46 +264,46 @@ func (m *LinuxManager) installXDGAutostart() error {
 		Exec:    m.executable + " --no-tray",
 		Icon:    serviceName,
 	}
-	
+
 	// Generate desktop file from template
 	tmpl, err := template.New("desktop").Parse(desktopTemplate)
 	if err != nil {
 		return fmt.Errorf("failed to parse desktop template: %w", err)
 	}
-	
+
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, data); err != nil {
 		return fmt.Errorf("failed to execute desktop template: %w", err)
 	}
-	
+
 	// Write desktop file
-	if err := os.WriteFile(desktopPath, buf.Bytes(), 0644); err != nil {
+	if err := os.WriteFile(desktopPath, buf.Bytes(), 0o644); err != nil {
 		return fmt.Errorf("failed to write desktop file: %w", err)
 	}
-	
+
 	return nil
 }
 
 // Uninstall removes the Linux service
 func (m *LinuxManager) Uninstall() error {
 	var errors []error
-	
+
 	// Uninstall systemd service
 	if m.useSystemd {
 		if err := m.uninstallSystemdService(); err != nil {
 			errors = append(errors, fmt.Errorf("systemd: %w", err))
 		}
 	}
-	
+
 	// Uninstall XDG autostart
 	if err := m.uninstallXDGAutostart(); err != nil {
 		errors = append(errors, fmt.Errorf("XDG autostart: %w", err))
 	}
-	
+
 	if len(errors) > 0 {
 		return fmt.Errorf("uninstallation errors: %v", errors)
 	}
-	
+
 	return nil
 }
 
@@ -313,7 +313,7 @@ func (m *LinuxManager) uninstallSystemdService() error {
 	if err != nil {
 		return fmt.Errorf("failed to get current user: %w", err)
 	}
-	
+
 	// Determine service path
 	var servicePath string
 	scope := "--user"
@@ -323,28 +323,28 @@ func (m *LinuxManager) uninstallSystemdService() error {
 	} else {
 		servicePath = filepath.Join(currentUser.HomeDir, systemdUserPath, systemdServiceFile)
 	}
-	
+
 	// Check if installed
 	if _, err := os.Stat(servicePath); os.IsNotExist(err) {
 		return fmt.Errorf("systemd service not installed")
 	}
-	
+
 	// Stop service if running
 	_ = m.execRun("systemctl", scope, "stop", serviceName) // Ignore error, service might not be running
-	
+
 	// Disable service
 	if output, err := m.execCombinedOutput("systemctl", scope, "disable", serviceName); err != nil {
 		fmt.Printf("Warning: failed to disable service: %v\nOutput: %s\n", err, output)
 	}
-	
+
 	// Remove service file
 	if err := os.Remove(servicePath); err != nil {
 		return fmt.Errorf("failed to remove service file: %w", err)
 	}
-	
+
 	// Reload systemd
 	_ = m.execRun("systemctl", scope, "daemon-reload") // Ignore error, best effort cleanup
-	
+
 	return nil
 }
 
@@ -359,19 +359,19 @@ func (m *LinuxManager) uninstallXDGAutostart() error {
 		}
 		homeDir = currentUser.HomeDir
 	}
-	
+
 	desktopPath := filepath.Join(homeDir, xdgAutostartPath, desktopFile)
-	
+
 	// Check if installed
 	if _, err := os.Stat(desktopPath); os.IsNotExist(err) {
 		return fmt.Errorf("XDG autostart not installed")
 	}
-	
+
 	// Remove desktop file
 	if err := os.Remove(desktopPath); err != nil {
 		return fmt.Errorf("failed to remove desktop file: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -380,16 +380,16 @@ func (m *LinuxManager) Start() error {
 	if !m.useSystemd {
 		return fmt.Errorf("systemd not available, cannot manage service")
 	}
-	
+
 	scope := "--user"
 	if m.isSystemWide {
 		scope = "--system"
 	}
-	
+
 	if output, err := m.execCombinedOutput("systemctl", scope, "start", serviceName); err != nil {
 		return fmt.Errorf("failed to start service: %w\nOutput: %s", err, output)
 	}
-	
+
 	return nil
 }
 
@@ -398,19 +398,19 @@ func (m *LinuxManager) Stop() error {
 	if !m.useSystemd {
 		return fmt.Errorf("systemd not available, cannot manage service")
 	}
-	
+
 	scope := "--user"
 	if m.isSystemWide {
 		scope = "--system"
 	}
-	
+
 	if output, err := m.execCombinedOutput("systemctl", scope, "stop", serviceName); err != nil {
 		return fmt.Errorf("failed to stop service: %w\nOutput: %s", err, output)
 	}
-	
+
 	// Wait a bit for service to stop
 	time.Sleep(2 * time.Second)
-	
+
 	return nil
 }
 
@@ -421,14 +421,14 @@ func (m *LinuxManager) Status() (ServiceStatus, error) {
 		Running:   false,
 		StartType: "manual",
 	}
-	
+
 	// Check systemd status
 	if m.useSystemd {
 		if status, err := m.getSystemdStatus(); err == nil {
 			result = status
 		}
 	}
-	
+
 	// Check XDG autostart
 	homeDir := os.Getenv("HOME")
 	if homeDir == "" {
@@ -436,7 +436,7 @@ func (m *LinuxManager) Status() (ServiceStatus, error) {
 			homeDir = currentUser.HomeDir
 		}
 	}
-	
+
 	if homeDir != "" {
 		desktopPath := filepath.Join(homeDir, xdgAutostartPath, desktopFile)
 		if _, err := os.Stat(desktopPath); err == nil {
@@ -446,11 +446,11 @@ func (m *LinuxManager) Status() (ServiceStatus, error) {
 			}
 		}
 	}
-	
+
 	if !result.Installed {
 		result.Message = "Service not installed"
 	}
-	
+
 	return result, nil
 }
 
@@ -461,20 +461,20 @@ func (m *LinuxManager) getSystemdStatus() (ServiceStatus, error) {
 		Running:   false,
 		StartType: "manual",
 	}
-	
+
 	scope := "--user"
 	if m.isSystemWide {
 		scope = "--system"
 	}
-	
+
 	// Check if service exists
 	output, err := m.execCommand("systemctl", scope, "list-unit-files", serviceName+".service")
 	if err != nil || !strings.Contains(string(output), serviceName) {
 		return result, fmt.Errorf("service not found")
 	}
-	
+
 	result.Installed = true
-	
+
 	// Check if enabled
 	if output, err := m.execCommand("systemctl", scope, "is-enabled", serviceName); err == nil {
 		enabled := strings.TrimSpace(string(output))
@@ -482,7 +482,7 @@ func (m *LinuxManager) getSystemdStatus() (ServiceStatus, error) {
 			result.StartType = "auto"
 		}
 	}
-	
+
 	// Check if active
 	if output, err := m.execCommand("systemctl", scope, "is-active", serviceName); err == nil {
 		active := strings.TrimSpace(string(output))
@@ -493,7 +493,7 @@ func (m *LinuxManager) getSystemdStatus() (ServiceStatus, error) {
 			result.Message = fmt.Sprintf("Service is %s", active)
 		}
 	}
-	
+
 	return result, nil
 }
 

@@ -32,7 +32,10 @@ func TestProgressReporter_UnknownTotal(t *testing.T) {
 	pr := NewProgressReporter(0, &buf)
 
 	// Write some data
-	pr.Write([]byte("test data"))
+	_, err := pr.Write([]byte("test data"))
+	if err != nil {
+		t.Fatalf("Write failed: %v", err)
+	}
 
 	// Check output
 	output := buf.String()
@@ -46,11 +49,14 @@ func TestProgressReporter_Done(t *testing.T) {
 	pr := NewProgressReporter(1024, &buf)
 
 	// Write some data
-	pr.Write([]byte("test"))
-	
+	_, err := pr.Write([]byte("test"))
+	if err != nil {
+		t.Fatalf("Write failed: %v", err)
+	}
+
 	// Clear buffer
 	buf.Reset()
-	
+
 	// Call done
 	pr.Done()
 
@@ -108,9 +114,9 @@ func TestFormatDuration(t *testing.T) {
 func TestProgressWriter(t *testing.T) {
 	var dataBuf bytes.Buffer
 	var progressBuf bytes.Buffer
-	
+
 	pw := NewProgressWriter(&dataBuf, 100, &progressBuf)
-	
+
 	// Write some data
 	testData := []byte("Hello, World!")
 	n, err := pw.Write(testData)
@@ -120,24 +126,24 @@ func TestProgressWriter(t *testing.T) {
 	if n != len(testData) {
 		t.Errorf("Expected %d bytes written, got %d", len(testData), n)
 	}
-	
+
 	// Check data was written
 	if dataBuf.String() != string(testData) {
 		t.Errorf("Data not written correctly")
 	}
-	
+
 	// Check progress was reported
 	progressOutput := progressBuf.String()
 	if !strings.Contains(progressOutput, "13.0%") {
 		t.Errorf("Expected progress percentage, got: %s", progressOutput)
 	}
-	
+
 	// Clear progress buffer
 	progressBuf.Reset()
-	
+
 	// Call done
 	pw.Done()
-	
+
 	// Check final message
 	finalOutput := progressBuf.String()
 	if !strings.Contains(finalOutput, "✅ Downloaded") {

@@ -11,20 +11,20 @@ import (
 func TestUpdateNotificationManager_NewManager(t *testing.T) {
 	notifier := NewManager()
 	manager := NewUpdateNotificationManager(notifier)
-	
+
 	if manager == nil {
 		t.Fatal("NewUpdateNotificationManager returned nil")
 	}
-	
+
 	if manager.notifier != notifier {
 		t.Error("Manager should store the provided notifier")
 	}
-	
+
 	config := manager.GetConfig()
 	if !config.Enabled {
 		t.Error("Default config should have notifications enabled")
 	}
-	
+
 	if config.CheckInterval != 24*time.Hour {
 		t.Errorf("Expected default check interval of 24h, got %v", config.CheckInterval)
 	}
@@ -33,7 +33,7 @@ func TestUpdateNotificationManager_NewManager(t *testing.T) {
 func TestUpdateNotificationManager_SetGetConfig(t *testing.T) {
 	notifier := NewManager()
 	manager := NewUpdateNotificationManager(notifier)
-	
+
 	newConfig := UpdateNotificationConfig{
 		Enabled:            false,
 		CheckInterval:      12 * time.Hour,
@@ -42,18 +42,18 @@ func TestUpdateNotificationManager_SetGetConfig(t *testing.T) {
 		AutoCheck:          false,
 		IncludePreReleases: true,
 	}
-	
+
 	manager.SetConfig(newConfig)
 	retrievedConfig := manager.GetConfig()
-	
+
 	if retrievedConfig.Enabled != newConfig.Enabled {
 		t.Errorf("Expected Enabled = %v, got %v", newConfig.Enabled, retrievedConfig.Enabled)
 	}
-	
+
 	if retrievedConfig.CheckInterval != newConfig.CheckInterval {
 		t.Errorf("Expected CheckInterval = %v, got %v", newConfig.CheckInterval, retrievedConfig.CheckInterval)
 	}
-	
+
 	if retrievedConfig.IncludePreReleases != newConfig.IncludePreReleases {
 		t.Errorf("Expected IncludePreReleases = %v, got %v", newConfig.IncludePreReleases, retrievedConfig.IncludePreReleases)
 	}
@@ -62,7 +62,7 @@ func TestUpdateNotificationManager_SetGetConfig(t *testing.T) {
 func TestUpdateNotificationManager_NotifyUpdateAvailable(t *testing.T) {
 	notifier := NewManager()
 	manager := NewUpdateNotificationManager(notifier)
-	
+
 	updateInfo := &updater.UpdateInfo{
 		Version:      "v1.2.0",
 		ReleaseNotes: "Bug fixes and improvements",
@@ -70,7 +70,7 @@ func TestUpdateNotificationManager_NotifyUpdateAvailable(t *testing.T) {
 		Size:         1024 * 1024, // 1MB
 		DownloadURL:  "https://example.com/download",
 	}
-	
+
 	ctx := context.Background()
 	err := manager.NotifyUpdateAvailable(ctx, "v1.1.0", updateInfo)
 	if err != nil {
@@ -81,17 +81,17 @@ func TestUpdateNotificationManager_NotifyUpdateAvailable(t *testing.T) {
 func TestUpdateNotificationManager_NotifyUpdateAvailable_Disabled(t *testing.T) {
 	notifier := NewManager()
 	manager := NewUpdateNotificationManager(notifier)
-	
+
 	// Disable notifications
 	config := manager.GetConfig()
 	config.Enabled = false
 	manager.SetConfig(config)
-	
+
 	updateInfo := &updater.UpdateInfo{
 		Version:     "v1.2.0",
 		PublishedAt: time.Now(),
 	}
-	
+
 	ctx := context.Background()
 	err := manager.NotifyUpdateAvailable(ctx, "v1.1.0", updateInfo)
 	if err != nil {
@@ -99,10 +99,10 @@ func TestUpdateNotificationManager_NotifyUpdateAvailable_Disabled(t *testing.T) 
 	}
 }
 
-func TestUpdateNotificationManager_NotifyUpdateCheckFailed(t *testing.T) {
+func TestUpdateNotificationManager_NotifyUpdateCheckFailed(_ *testing.T) {
 	notifier := NewManager()
 	manager := NewUpdateNotificationManager(notifier)
-	
+
 	ctx := context.Background()
 	testError := &testError{"network timeout"}
 	err := manager.NotifyUpdateCheckFailed(ctx, testError)
@@ -110,30 +110,30 @@ func TestUpdateNotificationManager_NotifyUpdateCheckFailed(t *testing.T) {
 	_ = err // We'll allow this to fail in test environments
 }
 
-func TestUpdateNotificationManager_NotifyUpdateStarted(t *testing.T) {
+func TestUpdateNotificationManager_NotifyUpdateStarted(_ *testing.T) {
 	notifier := NewManager()
 	manager := NewUpdateNotificationManager(notifier)
-	
+
 	ctx := context.Background()
 	err := manager.NotifyUpdateStarted(ctx, "v1.2.0")
 	// Allow system notification failures in test environment
 	_ = err
 }
 
-func TestUpdateNotificationManager_NotifyUpdateComplete(t *testing.T) {
+func TestUpdateNotificationManager_NotifyUpdateComplete(_ *testing.T) {
 	notifier := NewManager()
 	manager := NewUpdateNotificationManager(notifier)
-	
+
 	ctx := context.Background()
 	err := manager.NotifyUpdateComplete(ctx, "v1.2.0")
 	// Allow system notification failures in test environment
 	_ = err
 }
 
-func TestUpdateNotificationManager_NotifyUpdateFailed(t *testing.T) {
+func TestUpdateNotificationManager_NotifyUpdateFailed(_ *testing.T) {
 	notifier := NewManager()
 	manager := NewUpdateNotificationManager(notifier)
-	
+
 	ctx := context.Background()
 	testError := &testError{"checksum verification failed"}
 	err := manager.NotifyUpdateFailed(ctx, "v1.2.0", testError)
@@ -141,10 +141,10 @@ func TestUpdateNotificationManager_NotifyUpdateFailed(t *testing.T) {
 	_ = err
 }
 
-func TestUpdateNotificationManager_NotifyNoUpdatesAvailable(t *testing.T) {
+func TestUpdateNotificationManager_NotifyNoUpdatesAvailable(_ *testing.T) {
 	notifier := NewManager()
 	manager := NewUpdateNotificationManager(notifier)
-	
+
 	ctx := context.Background()
 	err := manager.NotifyNoUpdatesAvailable(ctx, "v1.1.0")
 	// Allow system notification failures in test environment
@@ -153,27 +153,27 @@ func TestUpdateNotificationManager_NotifyNoUpdatesAvailable(t *testing.T) {
 
 func TestDefaultUpdateNotificationConfig(t *testing.T) {
 	config := DefaultUpdateNotificationConfig()
-	
+
 	if !config.Enabled {
 		t.Error("Default config should be enabled")
 	}
-	
+
 	if config.CheckInterval != 24*time.Hour {
 		t.Errorf("Expected check interval of 24h, got %v", config.CheckInterval)
 	}
-	
+
 	if !config.ShowOnStartup {
 		t.Error("Default config should show on startup")
 	}
-	
+
 	if config.RemindInterval != 7*24*time.Hour {
 		t.Errorf("Expected remind interval of 7 days, got %v", config.RemindInterval)
 	}
-	
+
 	if !config.AutoCheck {
 		t.Error("Default config should have auto check enabled")
 	}
-	
+
 	if config.IncludePreReleases {
 		t.Error("Default config should not include pre-releases")
 	}
@@ -191,7 +191,7 @@ func TestFormatUpdateSize(t *testing.T) {
 		{1048576, "1.0 MB"},
 		{1073741824, "1.0 GB"},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.expected, func(t *testing.T) {
 			result := formatUpdateSize(tt.size)
@@ -205,7 +205,7 @@ func TestFormatUpdateSize(t *testing.T) {
 func TestUpdateNotificationManager_HandleUpdateAction(t *testing.T) {
 	notifier := NewManager()
 	manager := NewUpdateNotificationManager(notifier)
-	
+
 	updateInfo := UpdateNotification{
 		Notification: Notification{
 			Title:   "Update Available",
@@ -220,21 +220,21 @@ func TestUpdateNotificationManager_HandleUpdateAction(t *testing.T) {
 		DownloadURL:    "https://example.com/download",
 		Actions:        []string{"update", "view", "remind", "dismiss"},
 	}
-	
+
 	ctx := context.Background()
-	
+
 	// Test view action (allow system notification failures)
 	err := manager.HandleUpdateAction(ctx, UpdateActionView, updateInfo, nil)
 	_ = err // Allow failures in test environment
-	
+
 	// Test remind action (allow system notification failures)
 	err = manager.HandleUpdateAction(ctx, UpdateActionRemind, updateInfo, nil)
 	_ = err // Allow failures in test environment
-	
+
 	// Test dismiss action (allow system notification failures)
 	err = manager.HandleUpdateAction(ctx, UpdateActionDismiss, updateInfo, nil)
 	_ = err // Allow failures in test environment
-	
+
 	// Test unknown action
 	err = manager.HandleUpdateAction(ctx, UpdateAction("unknown"), updateInfo, nil)
 	if err == nil {

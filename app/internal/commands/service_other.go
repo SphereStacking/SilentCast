@@ -62,7 +62,7 @@ func (c *UnsupportedCommand) IsActive(flags interface{}) bool {
 	if !ok {
 		return false
 	}
-	
+
 	switch c.name {
 	case "service-install":
 		return f.ServiceInstall

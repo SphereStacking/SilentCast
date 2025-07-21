@@ -56,7 +56,7 @@ func TestError_Unwrap(t *testing.T) {
 		Msg: "context",
 	}
 
-	if unwrapped := err.Unwrap(); unwrapped != underlying {
+	if unwrapped := err.Unwrap(); !errors.Is(unwrapped, underlying) {
 		t.Errorf("Error.Unwrap() = %v, want %v", unwrapped, underlying)
 	}
 }

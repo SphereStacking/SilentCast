@@ -11,7 +11,7 @@ type PlatformUpdater interface {
 
 	// MakeExecutable sets executable permissions on the file
 	MakeExecutable(path string) error
-	
+
 	// RestartApplication restarts the application after update
 	RestartApplication() error
 }

@@ -119,10 +119,10 @@ func (d *linuxDetector) detectFromDesktopFiles() []Browser {
 	desktopDirs := []string{
 		"/usr/share/applications",
 		"/usr/local/share/applications",
-		filepath.Join(os.Getenv("HOME"), ".local/share/applications"),
+		filepath.Join(os.Getenv("HOME"), ".local", "share", "applications"),
 		"/var/lib/snapd/desktop/applications",
 		"/var/lib/flatpak/exports/share/applications",
-		filepath.Join(os.Getenv("HOME"), ".local/share/flatpak/exports/share/applications"),
+		filepath.Join(os.Getenv("HOME"), ".local", "share", "flatpak", "exports", "share", "applications"),
 	}
 
 	// Browser-related desktop files
@@ -166,7 +166,7 @@ func (d *linuxDetector) parseDesktopFile(path string) *Browser {
 	if err != nil {
 		return nil
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	var name, execLine, categories string
 	scanner := bufio.NewScanner(file)
@@ -189,11 +189,12 @@ func (d *linuxDetector) parseDesktopFile(path string) *Browser {
 			continue
 		}
 
-		if strings.HasPrefix(line, "Name=") && name == "" {
+		switch {
+		case strings.HasPrefix(line, "Name=") && name == "":
 			name = strings.TrimPrefix(line, "Name=")
-		} else if strings.HasPrefix(line, "Exec=") && execLine == "" {
+		case strings.HasPrefix(line, "Exec=") && execLine == "":
 			execLine = strings.TrimPrefix(line, "Exec=")
-		} else if strings.HasPrefix(line, "Categories=") {
+		case strings.HasPrefix(line, "Categories="):
 			categories = strings.TrimPrefix(line, "Categories=")
 		}
 	}
@@ -328,7 +329,7 @@ func (d *linuxDetector) getBrowserFromDesktopFile(desktopFile string) *Browser {
 	desktopDirs := []string{
 		"/usr/share/applications",
 		"/usr/local/share/applications",
-		filepath.Join(os.Getenv("HOME"), ".local/share/applications"),
+		filepath.Join(os.Getenv("HOME"), ".local", "share", "applications"),
 	}
 
 	for _, dir := range desktopDirs {

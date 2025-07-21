@@ -61,11 +61,11 @@ func (cv *ChecksumVerifier) GetChecksumForAsset(ctx context.Context, assets []As
 		if len(parts) >= 2 {
 			checksum := parts[0]
 			filename := parts[1]
-			
+
 			// Remove leading ./ or * from filename if present
 			filename = strings.TrimPrefix(filename, "./")
 			filename = strings.TrimPrefix(filename, "*")
-			
+
 			if filename == assetName {
 				return checksum, nil
 			}

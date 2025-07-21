@@ -90,7 +90,9 @@ func TestConsoleNotifier_Notify(t *testing.T) {
 			os.Stderr = oldStderr
 
 			var buf bytes.Buffer
-			buf.ReadFrom(r)
+			if _, err := buf.ReadFrom(r); err != nil {
+				t.Errorf("Failed to read output: %v", err)
+			}
 			output := buf.String()
 
 			// Check output contains expected strings
@@ -195,7 +197,7 @@ func TestConsoleNotifier_SetMaxOutputLength(t *testing.T) {
 	}
 }
 
-func TestConsoleNotifier_SupportsRichContent(t *testing.T) {
+func TestConsoleNotifier_SupportsRichContent(_ *testing.T) {
 	notifier := NewConsoleNotifier()
 
 	// This will depend on whether tests are run in a terminal
@@ -271,8 +273,8 @@ func TestConsoleNotifier_ShowUpdateNotification_LongReleaseNotes(t *testing.T) {
 	longNotes := strings.Repeat("This is a very long release note. ", 20) // > 300 chars
 	notification := UpdateNotification{
 		Notification: Notification{
-			Title:   "Update Available",
-			Level:   LevelInfo,
+			Title: "Update Available",
+			Level: LevelInfo,
 		},
 		CurrentVersion: "1.0.0",
 		NewVersion:     "1.1.0",
@@ -300,7 +302,7 @@ func TestConsoleNotifier_ShowUpdateNotification_LongReleaseNotes(t *testing.T) {
 
 func TestConsoleNotifier_SupportsUpdateActions(t *testing.T) {
 	notifier := NewConsoleNotifier()
-	
+
 	if notifier.SupportsUpdateActions() {
 		t.Error("ConsoleNotifier should not support interactive update actions")
 	}
@@ -308,14 +310,14 @@ func TestConsoleNotifier_SupportsUpdateActions(t *testing.T) {
 
 func TestConsoleNotifier_OnUpdateAction(t *testing.T) {
 	notifier := NewConsoleNotifier()
-	
+
 	updateInfo := UpdateNotification{}
 	err := notifier.OnUpdateAction(UpdateActionUpdate, updateInfo)
-	
+
 	if err == nil {
 		t.Error("OnUpdateAction should return error for console notifier")
 	}
-	
+
 	if !strings.Contains(err.Error(), "does not support interactive actions") {
 		t.Errorf("Error should mention interactive actions, got: %v", err)
 	}
@@ -409,7 +411,7 @@ func TestConsoleNotifier_FormatUpdateSize(t *testing.T) {
 			wantContains: "512 B",
 		},
 		{
-			name:         "kilobytes", 
+			name:         "kilobytes",
 			downloadSize: 1536, // 1.5 KB
 			wantContains: "1.5 KB",
 		},
@@ -444,7 +446,9 @@ func TestConsoleNotifier_FormatUpdateSize(t *testing.T) {
 			os.Stderr = oldStderr
 
 			var buf bytes.Buffer
-			buf.ReadFrom(r)
+			if _, err := buf.ReadFrom(r); err != nil {
+				t.Errorf("Failed to read output: %v", err)
+			}
 			output := buf.String()
 
 			if !strings.Contains(output, tt.wantContains) {
@@ -506,7 +510,9 @@ func TestManager_Notify(t *testing.T) {
 			os.Stderr = oldStderr
 
 			var buf bytes.Buffer
-			buf.ReadFrom(r)
+			if _, err := buf.ReadFrom(r); err != nil {
+				t.Errorf("Failed to read output: %v", err)
+			}
 			output := buf.String()
 
 			// Verify output is not empty

@@ -32,7 +32,7 @@ func NewManager(onRun func() error) Manager {
 	if err != nil {
 		exe = os.Args[0]
 	}
-	
+
 	return &WindowsManager{
 		executable: exe,
 		onRun:      onRun,
@@ -178,7 +178,7 @@ func (m *WindowsManager) Stop() error {
 			}
 			time.Sleep(500 * time.Millisecond)
 		}
-		
+
 		if status.State != svc.Stopped {
 			return fmt.Errorf("service did not stop within timeout")
 		}

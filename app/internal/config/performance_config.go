@@ -6,22 +6,22 @@ import "time"
 type PerformanceConfig struct {
 	// EnableOptimization enables performance optimizations
 	EnableOptimization bool `yaml:"enable_optimization"`
-	
+
 	// BufferSize sets the buffer pool size
 	BufferSize int `yaml:"buffer_size"`
-	
+
 	// GCPercent sets the garbage collection target percentage
 	GCPercent int `yaml:"gc_percent"`
-	
+
 	// MaxIdleTime sets the maximum idle time for pooled resources
 	MaxIdleTime time.Duration `yaml:"max_idle_time"`
-	
+
 	// EnableProfiling enables performance profiling
 	EnableProfiling bool `yaml:"enable_profiling"`
-	
+
 	// ProfileHost sets the profiling server host
 	ProfileHost string `yaml:"profile_host"`
-	
+
 	// ProfilePort sets the profiling server port
 	ProfilePort int `yaml:"profile_port"`
 }

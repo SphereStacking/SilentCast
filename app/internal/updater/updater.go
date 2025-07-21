@@ -69,7 +69,7 @@ type UpdateInfo struct {
 }
 
 // NewUpdater creates a new updater instance
-func NewUpdater(cfg Config) *Updater {
+func NewUpdater(cfg *Config) *Updater {
 	if cfg.CheckInterval == 0 {
 		cfg.CheckInterval = 24 * time.Hour
 	}
@@ -189,7 +189,7 @@ func (u *Updater) DownloadUpdateWithProgress(ctx context.Context, info *UpdateIn
 		// No progress tracking
 		written, err = io.Copy(out, resp.Body)
 	}
-	
+
 	if err != nil {
 		return "", fmt.Errorf("failed to save update: %w", err)
 	}
@@ -389,17 +389,17 @@ func (u *Updater) findPlatformAsset(assets []Asset) (*Asset, error) {
 func (u *Updater) findChecksum(assets []Asset, assetName string) string {
 	// Create checksum verifier
 	verifier := NewChecksumVerifier(u.httpClient)
-	
+
 	// Try to get checksum, but don't fail if we can't
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	
+
 	checksum, err := verifier.GetChecksumForAsset(ctx, assets, assetName)
 	if err != nil {
 		logger.Warn("Failed to fetch checksum: %v", err)
 		return ""
 	}
-	
+
 	return checksum
 }
 

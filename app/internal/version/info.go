@@ -14,20 +14,20 @@ type BuildInfo struct {
 	Version   string `json:"version"`
 	GitCommit string `json:"git_commit"`
 	BuildTime string `json:"build_time"`
-	
+
 	// Go information
-	GoVersion   string `json:"go_version"`
-	GoArch      string `json:"go_arch"`
-	GoOS        string `json:"go_os"`
-	CGOEnabled  string `json:"cgo_enabled"`
-	
+	GoVersion  string `json:"go_version"`
+	GoArch     string `json:"go_arch"`
+	GoOS       string `json:"go_os"`
+	CGOEnabled string `json:"cgo_enabled"`
+
 	// Build configuration
-	BuildTags   []string `json:"build_tags"`
-	Compiler    string   `json:"compiler"`
-	BuildMode   string   `json:"build_mode"`
-	
+	BuildTags []string `json:"build_tags"`
+	Compiler  string   `json:"compiler"`
+	BuildMode string   `json:"build_mode"`
+
 	// Runtime information
-	NumCPU    int `json:"num_cpu"`
+	NumCPU       int `json:"num_cpu"`
 	NumGoroutine int `json:"num_goroutine"`
 }
 
@@ -49,30 +49,30 @@ func GetBuildInfo() *BuildInfo {
 		Version:   Version,
 		GitCommit: GitCommit,
 		BuildTime: BuildTime,
-		
+
 		GoVersion: runtime.Version(),
 		GoArch:    runtime.GOARCH,
 		GoOS:      runtime.GOOS,
 		Compiler:  runtime.Compiler,
-		
+
 		NumCPU:       runtime.NumCPU(),
 		NumGoroutine: runtime.NumGoroutine(),
 	}
-	
+
 	// Determine CGO status
 	if isCGOEnabled() {
 		info.CGOEnabled = "enabled"
 	} else {
 		info.CGOEnabled = "disabled"
 	}
-	
+
 	// Parse build tags
 	if BuildTags != "" {
 		info.BuildTags = strings.Split(BuildTags, ",")
 	} else {
 		info.BuildTags = []string{}
 	}
-	
+
 	// Try to get additional build info from debug.BuildInfo
 	if buildInfo, ok := debug.ReadBuildInfo(); ok {
 		// Check build settings for additional info
@@ -93,7 +93,7 @@ func GetBuildInfo() *BuildInfo {
 			}
 		}
 	}
-	
+
 	return info
 }
 
@@ -110,16 +110,16 @@ func isCGOEnabled() bool {
 // FormatHuman returns human-readable version information
 func (info *BuildInfo) FormatHuman() string {
 	var sb strings.Builder
-	
+
 	sb.WriteString("🪄 SilentCast - Silent hotkey-driven task runner\n\n")
-	
+
 	// Version information
 	sb.WriteString("Version Information:\n")
 	sb.WriteString(fmt.Sprintf("  Version:     %s\n", info.Version))
 	sb.WriteString(fmt.Sprintf("  Git Commit:  %s\n", info.GitCommit))
 	sb.WriteString(fmt.Sprintf("  Build Time:  %s\n", info.BuildTime))
 	sb.WriteString("\n")
-	
+
 	// Go information
 	sb.WriteString("Go Information:\n")
 	sb.WriteString(fmt.Sprintf("  Go Version:  %s\n", info.GoVersion))
@@ -130,7 +130,7 @@ func (info *BuildInfo) FormatHuman() string {
 		sb.WriteString(fmt.Sprintf("  Build Mode:  %s\n", info.BuildMode))
 	}
 	sb.WriteString("\n")
-	
+
 	// Build configuration
 	sb.WriteString("Build Configuration:\n")
 	if len(info.BuildTags) > 0 {
@@ -139,12 +139,12 @@ func (info *BuildInfo) FormatHuman() string {
 		sb.WriteString("  Build Tags:  none\n")
 	}
 	sb.WriteString("\n")
-	
+
 	// Runtime information
 	sb.WriteString("Runtime Information:\n")
 	sb.WriteString(fmt.Sprintf("  CPU Cores:   %d\n", info.NumCPU))
 	sb.WriteString(fmt.Sprintf("  Goroutines:  %d\n", info.NumGoroutine))
-	
+
 	return sb.String()
 }
 
@@ -159,8 +159,8 @@ func (info *BuildInfo) FormatJSON() (string, error) {
 
 // FormatCompact returns a compact version string
 func (info *BuildInfo) FormatCompact() string {
-	return fmt.Sprintf("SilentCast v%s (%s, %s/%s, %s)", 
-		info.Version, info.GitCommit[:minInt(len(info.GitCommit), 8)], 
+	return fmt.Sprintf("SilentCast v%s (%s, %s/%s, %s)",
+		info.Version, info.GitCommit[:minInt(len(info.GitCommit), 8)],
 		info.GoOS, info.GoArch, info.CGOEnabled)
 }
 

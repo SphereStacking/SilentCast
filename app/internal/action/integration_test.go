@@ -43,9 +43,9 @@ func TestScriptExecutor_ShowOutputWithSystemNotification(t *testing.T) {
 		{
 			name: "Long output truncated",
 			config: config.ActionConfig{
-				Type:       "script",
-				Command:    "for i in {1..100}; do echo \"Line $i of output\"; done",
-				ShowOutput: true,
+				Type:        "script",
+				Command:     "for i in {1..100}; do echo \"Line $i of output\"; done",
+				ShowOutput:  true,
 				Description: "Long Output Test",
 			},
 		},
@@ -55,17 +55,17 @@ func TestScriptExecutor_ShowOutputWithSystemNotification(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			executor := script.NewScriptExecutor(&tt.config)
 			ctx := context.Background()
-			
+
 			// Execute command
 			err := executor.Execute(ctx)
-			
+
 			// Check if error is expected
 			if tt.name == "Show error with system notification" && err == nil {
 				t.Error("Expected error for failing command")
 			} else if tt.name != "Show error with system notification" && err != nil {
 				t.Errorf("Unexpected error: %v", err)
 			}
-			
+
 			// Note: We can't easily verify that system notification was shown,
 			// but if no panic occurred, the integration is working
 		})
@@ -80,10 +80,10 @@ func TestNotificationIntegration_AllPlatforms(t *testing.T) {
 		ShowOutput:  true,
 		Description: "Platform Notification Test",
 	}
-	
+
 	executor := script.NewScriptExecutor(&config)
 	ctx := context.Background()
-	
+
 	err := executor.Execute(ctx)
 	if err != nil {
 		t.Errorf("Platform notification test failed: %v", err)

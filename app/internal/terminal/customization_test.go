@@ -7,12 +7,12 @@ import (
 
 func TestTerminalCustomization(t *testing.T) {
 	tests := []struct {
-		name           string
-		terminal       Terminal
-		options        Options
-		expectedArgs   []string
-		expectError    bool
-		skipOn         string // Skip test on specific platform
+		name         string
+		terminal     Terminal
+		options      Options
+		expectedArgs []string
+		expectError  bool
+		skipOn       string // Skip test on specific platform
 	}{
 		{
 			name: "Windows Terminal with size and position",
@@ -178,10 +178,10 @@ func TestTerminalCustomization(t *testing.T) {
 
 func TestCustomizationValidation(t *testing.T) {
 	tests := []struct {
-		name           string
-		customization  *Customization
-		isValid        bool
-		description    string
+		name          string
+		customization *Customization
+		isValid       bool
+		description   string
 	}{
 		{
 			name: "Valid customization",
@@ -262,10 +262,10 @@ func TestCustomizationValidation(t *testing.T) {
 			// Create dummy builder and test
 			builder := &baseCommandBuilder{}
 			cmd := exec.Command("echo", "test")
-			
+
 			// This should not panic even with invalid input
 			_, err := builder.BuildCommand(terminal, cmd, options)
-			
+
 			// baseCommandBuilder always returns an error, but shouldn't panic
 			if err == nil {
 				t.Error("Expected error from baseCommandBuilder")

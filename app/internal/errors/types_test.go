@@ -29,7 +29,7 @@ func TestSpellbookError(t *testing.T) {
 
 	// Test WithContext
 	err = New(ErrorTypeExecution, "exec error")
-	err.WithContext("spell", "test_spell").WithContext("key", "ctrl+a")
+	err = err.WithContext("spell", "test_spell").WithContext("key", "ctrl+a")
 
 	if err.Context["spell"] != "test_spell" {
 		t.Errorf("Expected context spell='test_spell', got '%v'", err.Context["spell"])
@@ -173,7 +173,7 @@ func TestNewErrorTypes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := New(tt.errType, "test message")
 			fields := err.LogFields()
-			
+
 			assert.Equal(t, tt.expected, fields["error_type"])
 			assert.Equal(t, "test message", fields["message"])
 		})
@@ -184,7 +184,7 @@ func TestNewErrorTypes(t *testing.T) {
 func TestSentinelErrors(t *testing.T) {
 	t.Run("ErrConfigNotFound", func(t *testing.T) {
 		err := ErrConfigNotFound.WithContext("path", "/test/config.yml")
-		
+
 		assert.True(t, errors.Is(err, ErrConfigNotFound))
 		assert.True(t, IsType(err, ErrorTypeConfig))
 		assert.Equal(t, "/test/config.yml", err.Context["path"])
@@ -192,14 +192,14 @@ func TestSentinelErrors(t *testing.T) {
 
 	t.Run("ErrSpellNotFound", func(t *testing.T) {
 		err := ErrSpellNotFound.WithContext("spell", "unknown")
-		
+
 		assert.True(t, errors.Is(err, ErrSpellNotFound))
 		assert.True(t, IsType(err, ErrorTypeConfig))
 	})
 
 	t.Run("ErrBrowserNotFound", func(t *testing.T) {
 		err := ErrBrowserNotFound.WithContext("browsers_tried", []string{"chrome", "firefox"})
-		
+
 		assert.True(t, errors.Is(err, ErrBrowserNotFound))
 		assert.True(t, IsType(err, ErrorTypeNotFound))
 	})
@@ -209,7 +209,7 @@ func TestSentinelErrors(t *testing.T) {
 func TestHelperFunctions(t *testing.T) {
 	t.Run("NewValidationError", func(t *testing.T) {
 		err := NewValidationError("command", "command cannot be empty")
-		
+
 		assert.True(t, IsType(err, ErrorTypeValidation))
 		assert.Equal(t, "command cannot be empty", err.Message)
 		assert.Equal(t, "command", err.Context["field"])
@@ -217,7 +217,7 @@ func TestHelperFunctions(t *testing.T) {
 
 	t.Run("NewIOError", func(t *testing.T) {
 		err := NewIOError("/test/file.txt", "file not found")
-		
+
 		assert.True(t, IsType(err, ErrorTypeIO))
 		assert.Equal(t, "file not found", err.Message)
 		assert.Equal(t, "/test/file.txt", err.Context["path"])
@@ -225,7 +225,7 @@ func TestHelperFunctions(t *testing.T) {
 
 	t.Run("NewTimeoutError", func(t *testing.T) {
 		err := NewTimeoutError("download", "30s")
-		
+
 		assert.True(t, IsType(err, ErrorTypeTimeout))
 		assert.Contains(t, err.Message, "download timed out")
 		assert.Equal(t, "download", err.Context["operation"])
@@ -234,7 +234,7 @@ func TestHelperFunctions(t *testing.T) {
 
 	t.Run("NewNetworkError", func(t *testing.T) {
 		err := NewNetworkError("https://example.com", "connection timeout")
-		
+
 		assert.True(t, IsType(err, ErrorTypeNetwork))
 		assert.Equal(t, "connection timeout", err.Message)
 		assert.Equal(t, "https://example.com", err.Context["url"])
@@ -249,9 +249,9 @@ func TestWrapWithContext(t *testing.T) {
 		"operation": "read",
 		"size":      1024,
 	}
-	
+
 	err := WrapWithContext(ErrorTypeIO, "failed to read file", originalErr, context)
-	
+
 	assert.True(t, IsType(err, ErrorTypeIO))
 	assert.Equal(t, "failed to read file", err.Message)
 	assert.True(t, errors.Is(err, originalErr))
@@ -265,7 +265,7 @@ func TestFromStandardError(t *testing.T) {
 	t.Run("Standard error conversion", func(t *testing.T) {
 		originalErr := errors.New("standard error")
 		err := FromStandardError(originalErr, ErrorTypeSystem, "converted error")
-		
+
 		assert.True(t, IsType(err, ErrorTypeSystem))
 		assert.Equal(t, "converted error", err.Message)
 		assert.True(t, errors.Is(err, originalErr))
@@ -274,7 +274,7 @@ func TestFromStandardError(t *testing.T) {
 	t.Run("SpellbookError passthrough", func(t *testing.T) {
 		originalErr := New(ErrorTypeConfig, "original")
 		err := FromStandardError(originalErr, ErrorTypeSystem, "converted error")
-		
+
 		// Should return the original SpellbookError unchanged
 		assert.Equal(t, originalErr, err)
 	})

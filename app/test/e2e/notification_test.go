@@ -365,7 +365,7 @@ grimoire:
 
 	expectedOutputs := []string{
 		"long-output",
-		"error-output", 
+		"error-output",
 		"multiline-output",
 		"very long output message",
 		"Line 1",
@@ -433,7 +433,7 @@ grimoire:
 
 	// Rapidly trigger multiple actions to test queuing
 	actions := []string{"q1", "q2", "q3"}
-	
+
 	for _, action := range actions {
 		if err := env.SimulateHotkey(action); err != nil {
 			t.Fatalf("Failed to simulate hotkey %s: %v", action, err)
@@ -457,7 +457,7 @@ grimoire:
 
 	expectedMessages := []string{
 		"Quick action 1 executed",
-		"Quick action 2 executed", 
+		"Quick action 2 executed",
 		"Quick action 3 executed",
 	}
 

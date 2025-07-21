@@ -115,7 +115,7 @@ grimoire:
 	// Wait for startup with longer timeout for tray initialization
 	ctx, cancel := env.ctx, env.cancel
 	defer cancel()
-	
+
 	done := make(chan error, 1)
 	go func() {
 		done <- env.WaitForStartup()
@@ -344,7 +344,7 @@ func TestTrayResourceCleanup(t *testing.T) {
 		if contains(logs, "tray panic") || contains(logs, "tray error") {
 			t.Error("Tray-related errors during shutdown")
 		}
-		
+
 		// Look for clean shutdown indicators
 		cleanupIndicators := []string{
 			"shutdown",
@@ -352,7 +352,7 @@ func TestTrayResourceCleanup(t *testing.T) {
 			"stopped",
 			"exiting",
 		}
-		
+
 		found := false
 		for _, indicator := range cleanupIndicators {
 			if contains(logs, indicator) {
@@ -361,7 +361,7 @@ func TestTrayResourceCleanup(t *testing.T) {
 				break
 			}
 		}
-		
+
 		if !found {
 			t.Logf("Clean shutdown indicator not found (may be normal)")
 		}
@@ -386,7 +386,7 @@ func skipTrayTest() bool {
 		// Windows tray testing in CI environments can be problematic
 		return true
 	}
-	
+
 	return false
 }
 

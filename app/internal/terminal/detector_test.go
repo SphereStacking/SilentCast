@@ -193,7 +193,7 @@ func TestBaseDetector_FindTerminal_RealImplementation(t *testing.T) {
 	// Create a baseDetector with test terminals
 	detector := &baseDetector{
 		terminals: []Terminal{
-			{Name: "Test Terminal", Command: "sh", Priority: 10},  // Using 'sh' as it exists
+			{Name: "Test Terminal", Command: "sh", Priority: 10}, // Using 'sh' as it exists
 			{Name: "XTerm", Command: "nonexistent-xterm", Priority: 5},
 		},
 	}
@@ -223,21 +223,21 @@ func TestBaseDetector_FindTerminal_RealImplementation(t *testing.T) {
 			expectCommand: "sh",
 		},
 		{
-			name:          "terminal not available in PATH",
-			searchTerm:    "XTerm",
-			expectFound:   false,
+			name:        "terminal not available in PATH",
+			searchTerm:  "XTerm",
+			expectFound: false,
 		},
 		{
-			name:          "terminal not found",
-			searchTerm:    "Unknown Terminal",
-			expectFound:   false,
+			name:        "terminal not found",
+			searchTerm:  "Unknown Terminal",
+			expectFound: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			term, err := detector.FindTerminal(tt.searchTerm)
-			
+
 			if tt.expectFound {
 				if err != nil {
 					t.Errorf("FindTerminal() error = %v, want no error", err)

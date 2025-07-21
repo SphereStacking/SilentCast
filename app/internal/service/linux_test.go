@@ -4,7 +4,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -13,12 +12,12 @@ import (
 	"testing"
 )
 
-func TestLinuxManager_ErrorHandling(t *testing.T) {
+func TestLinuxManager_ErrorHandling(_ *testing.T) {
 	// Create manager with invalid executable
 	manager := &LinuxManager{
-		executable: "/invalid/path/executable",
-		onRun:      func() error { return nil },
-		useSystemd: false,
+		executable:   "/invalid/path/executable",
+		onRun:        func() error { return nil },
+		useSystemd:   false,
 		isSystemWide: false,
 	}
 
@@ -37,11 +36,11 @@ func TestLinuxManager_ErrorHandling(t *testing.T) {
 
 func TestLinuxManager_TemplateErrors(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	manager := &LinuxManager{
-		executable: filepath.Join(tempDir, "test"),
-		onRun:      func() error { return nil },
-		useSystemd: false,
+		executable:   filepath.Join(tempDir, "test"),
+		onRun:        func() error { return nil },
+		useSystemd:   false,
 		isSystemWide: false,
 	}
 
@@ -67,11 +66,11 @@ func TestLinuxManager_TemplateErrors(t *testing.T) {
 
 func TestLinuxManager_UninstallNotInstalled(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	manager := &LinuxManager{
-		executable: filepath.Join(tempDir, "test"),
-		onRun:      func() error { return nil },
-		useSystemd: false,
+		executable:   filepath.Join(tempDir, "test"),
+		onRun:        func() error { return nil },
+		useSystemd:   false,
 		isSystemWide: false,
 	}
 
@@ -94,11 +93,11 @@ func TestLinuxManager_UninstallNotInstalled(t *testing.T) {
 
 func TestLinuxManager_StatusEdgeCases(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	manager := &LinuxManager{
-		executable: filepath.Join(tempDir, "test"),
-		onRun:      func() error { return nil },
-		useSystemd: false,
+		executable:   filepath.Join(tempDir, "test"),
+		onRun:        func() error { return nil },
+		useSystemd:   false,
 		isSystemWide: false,
 	}
 
@@ -120,9 +119,9 @@ func TestLinuxManager_StatusEdgeCases(t *testing.T) {
 
 func TestLinuxManager_SystemdNotAvailable(t *testing.T) {
 	manager := &LinuxManager{
-		executable: "/test/executable",
-		onRun:      func() error { return nil },
-		useSystemd: false,
+		executable:   "/test/executable",
+		onRun:        func() error { return nil },
+		useSystemd:   false,
 		isSystemWide: false,
 	}
 
@@ -147,20 +146,20 @@ func TestLinuxManager_SystemdNotAvailable(t *testing.T) {
 
 func TestLinuxManager_ServicePaths(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// Test user service paths
 	userManager := &LinuxManager{
-		executable: filepath.Join(tempDir, "test"),
-		onRun:      func() error { return nil },
-		useSystemd: true,
+		executable:   filepath.Join(tempDir, "test"),
+		onRun:        func() error { return nil },
+		useSystemd:   true,
 		isSystemWide: false,
 	}
 
 	// Test system-wide service paths
 	systemManager := &LinuxManager{
-		executable: filepath.Join(tempDir, "test"),
-		onRun:      func() error { return nil },
-		useSystemd: true,
+		executable:   filepath.Join(tempDir, "test"),
+		onRun:        func() error { return nil },
+		useSystemd:   true,
 		isSystemWide: true,
 	}
 
@@ -185,9 +184,9 @@ func TestLinuxManager_OnRunExecution(t *testing.T) {
 	}
 
 	manager := &LinuxManager{
-		executable: "/test/executable",
-		onRun:      onRun,
-		useSystemd: false,
+		executable:   "/test/executable",
+		onRun:        onRun,
+		useSystemd:   false,
 		isSystemWide: false,
 	}
 
@@ -203,13 +202,13 @@ func TestLinuxManager_OnRunExecution(t *testing.T) {
 func TestLinuxManager_RunError(t *testing.T) {
 	expectedErr := "test error"
 	onRun := func() error {
-		return fmt.Errorf(expectedErr)
+		return errors.New(expectedErr)
 	}
 
 	manager := &LinuxManager{
-		executable: "/test/executable",
-		onRun:      onRun,
-		useSystemd: false,
+		executable:   "/test/executable",
+		onRun:        onRun,
+		useSystemd:   false,
 		isSystemWide: false,
 	}
 
@@ -226,7 +225,7 @@ func TestHasSystemdMocked(t *testing.T) {
 	// Test hasSystemd function behavior
 	// Note: This will vary based on test environment
 	result := hasSystemd()
-	
+
 	// Just ensure it doesn't panic and returns a boolean
 	if result {
 		t.Log("systemd detected in test environment")
@@ -238,11 +237,11 @@ func TestHasSystemdMocked(t *testing.T) {
 func TestLinuxManager_TemplateData(t *testing.T) {
 	tempDir := t.TempDir()
 	executable := filepath.Join(tempDir, "silentcast")
-	
+
 	manager := &LinuxManager{
-		executable: executable,
-		onRun:      func() error { return nil },
-		useSystemd: false,
+		executable:   executable,
+		onRun:        func() error { return nil },
+		useSystemd:   false,
 		isSystemWide: false,
 	}
 
@@ -285,7 +284,7 @@ func TestLinuxManager_TemplateData(t *testing.T) {
 func TestLinuxManager_SystemdService(t *testing.T) {
 	tempDir := t.TempDir()
 	executable := filepath.Join(tempDir, "silentcast")
-	
+
 	manager := &LinuxManager{
 		executable:   executable,
 		onRun:        func() error { return nil },
@@ -370,7 +369,7 @@ func TestLinuxManager_GetSystemdStatus_Basic(t *testing.T) {
 
 func TestLinuxManager_UninstallXDGAutostart(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	manager := &LinuxManager{
 		executable:   filepath.Join(tempDir, "silentcast"),
 		onRun:        func() error { return nil },
@@ -407,7 +406,7 @@ func TestLinuxManager_UninstallXDGAutostart(t *testing.T) {
 func TestLinuxManager_SystemdTemplate(t *testing.T) {
 	tempDir := t.TempDir()
 	executable := filepath.Join(tempDir, "silentcast")
-	
+
 	manager := &LinuxManager{
 		executable:   executable,
 		onRun:        func() error { return nil },
@@ -431,7 +430,7 @@ func TestLinuxManager_SystemdTemplate(t *testing.T) {
 	// Check if systemd service file was created (might not exist due to failure)
 	userServiceDir := filepath.Join(tempDir, systemdUserPath)
 	servicePath := filepath.Join(userServiceDir, systemdServiceFile)
-	
+
 	if _, err := os.Stat(servicePath); err == nil {
 		// Service file was created, check content
 		content, err := os.ReadFile(servicePath)
@@ -463,15 +462,15 @@ func TestLinuxManager_SystemdTemplate(t *testing.T) {
 
 func TestLinuxManager_GetSystemdStatus(t *testing.T) {
 	tests := []struct {
-		name             string
-		isSystemWide     bool
-		serviceExists    bool
-		serviceEnabled   string
-		serviceActive    string
-		expectedStatus   ServiceStatus
-		listUnitError    bool
-		isEnabledError   bool
-		isActiveError    bool
+		name           string
+		isSystemWide   bool
+		serviceExists  bool
+		serviceEnabled string
+		serviceActive  string
+		expectedStatus ServiceStatus
+		listUnitError  bool
+		isEnabledError bool
+		isActiveError  bool
 	}{
 		{
 			name:          "service not found",
@@ -536,9 +535,9 @@ func TestLinuxManager_GetSystemdStatus(t *testing.T) {
 			},
 		},
 		{
-			name:           "service with list-unit-files error",
-			isSystemWide:   false,
-			listUnitError:  true,
+			name:          "service with list-unit-files error",
+			isSystemWide:  false,
+			listUnitError: true,
 			expectedStatus: ServiceStatus{
 				Installed: false,
 				Running:   false,
@@ -605,10 +604,10 @@ func TestLinuxManager_GetSystemdStatus(t *testing.T) {
 								return nil, errors.New("is-active failed")
 							}
 							return []byte(tt.serviceActive + "\n"), nil
+						}
 					}
-				}
-				return nil, errors.New("unexpected command")
-			},
+					return nil, errors.New("unexpected command")
+				},
 			}
 
 			status, err := manager.getSystemdStatus()
@@ -756,15 +755,19 @@ func TestLinuxManager_UninstallSystemdServiceWithMock(t *testing.T) {
 			tempDir := t.TempDir()
 			var serviceDir string
 			if tt.isSystemWide {
-				serviceDir = filepath.Join(tempDir, "etc/systemd/system")
+				serviceDir = filepath.Join(tempDir, "etc", "systemd", "system")
 			} else {
-				serviceDir = filepath.Join(tempDir, ".config/systemd/user")
+				serviceDir = filepath.Join(tempDir, ".config", "systemd", "user")
 			}
-			os.MkdirAll(serviceDir, 0755)
+			if err := os.MkdirAll(serviceDir, 0o755); err != nil {
+				t.Fatalf("Failed to create service dir: %v", err)
+			}
 
 			if tt.serviceExists {
 				servicePath := filepath.Join(serviceDir, "silentcast.service")
-				os.WriteFile(servicePath, []byte("test service"), 0644)
+				if err := os.WriteFile(servicePath, []byte("test service"), 0o644); err != nil {
+					t.Fatalf("Failed to write service file: %v", err)
+				}
 			}
 
 			// Mock user.Current to return our temp directory
@@ -782,7 +785,7 @@ func TestLinuxManager_UninstallSystemdServiceWithMock(t *testing.T) {
 				},
 			}
 
-			// For system-wide tests, we rely on the mock getCurrentUser 
+			// For system-wide tests, we rely on the mock getCurrentUser
 			// to handle path resolution correctly
 
 			err := manager.uninstallSystemdService()

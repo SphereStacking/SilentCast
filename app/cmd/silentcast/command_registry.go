@@ -72,7 +72,7 @@ func (cr *CommandRegistry) GenerateHelp() string {
 	sb.WriteString("🪄 SilentCast - Silent hotkey-driven task runner\n\n")
 	sb.WriteString("SilentCast executes tasks via keyboard shortcuts. Press your prefix key\n")
 	sb.WriteString("(default: Alt+Space) followed by configured spells to trigger actions.\n\n")
-	
+
 	sb.WriteString(fmt.Sprintf("Usage: %s [options]\n\n", os.Args[0]))
 
 	// Quick start section
@@ -128,21 +128,21 @@ func (cr *CommandRegistry) GenerateHelp() string {
 	sb.WriteString("  -show-paths           Show configuration search paths\n")
 	sb.WriteString("  -filter=<text>        Filter spells by sequence, name, or description\n")
 	sb.WriteString("\n")
-	
+
 	// Export/Import options
 	sb.WriteString("💾 Backup & Restore:\n")
 	sb.WriteString("  -export-config=<file> Export configuration (use '-' for stdout)\n")
 	sb.WriteString("  -export-format=<fmt>  Export format: yaml, tar.gz (default: yaml)\n")
 	sb.WriteString("  -import-config=<file> Import configuration (use '-' for stdin)\n")
 	sb.WriteString("\n")
-	
+
 	// Update management
 	sb.WriteString("🔄 Update Management:\n")
 	sb.WriteString("  -check-update         Check for available updates\n")
 	sb.WriteString("  -force-update-check   Force update check (ignore cache)\n")
 	sb.WriteString("\n")
-	
-	// Service management 
+
+	// Service management
 	sb.WriteString("🔧 Service Management:\n")
 	sb.WriteString("  -service-install      Install as system service\n")
 	sb.WriteString("  -service-uninstall    Remove system service\n")
@@ -154,21 +154,21 @@ func (cr *CommandRegistry) GenerateHelp() string {
 	// Common workflows section
 	sb.WriteString("🔄 Common Workflows:\n")
 	sb.WriteString("\n")
-	
+
 	sb.WriteString("  Getting Started:\n")
 	sb.WriteString(fmt.Sprintf("    %s --validate-config     # Check your spellbook.yml\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --show-config         # View merged configuration\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --list-spells         # See all available spells\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --test-hotkey         # Test hotkey detection\n", os.Args[0]))
 	sb.WriteString("\n")
-	
+
 	sb.WriteString("  Development & Testing:\n")
 	sb.WriteString(fmt.Sprintf("    %s --debug --no-tray     # Debug mode without tray\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --test-spell --spell \"e\" # Test specific spell\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --dry-run --spell \"g,s\" # Preview spell execution\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --once --spell \"build\" # Execute spell once\n", os.Args[0]))
 	sb.WriteString("\n")
-	
+
 	sb.WriteString("  Configuration Management:\n")
 	sb.WriteString(fmt.Sprintf("    %s --show-config --format json # Export config as JSON\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --show-config-path      # Find config file location\n", os.Args[0]))
@@ -180,7 +180,7 @@ func (cr *CommandRegistry) GenerateHelp() string {
 	sb.WriteString(fmt.Sprintf("    %s --import-config backup.tar.gz # Import from archive\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    cat config.yml | %s --import-config - # Import from stdin\n", os.Args[0]))
 	sb.WriteString("\n")
-	
+
 	sb.WriteString("  Performance Analysis:\n")
 	sb.WriteString(fmt.Sprintf("    %s --benchmark              # Run performance tests\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --version --version-format json # Detailed build info\n", os.Args[0]))
@@ -189,7 +189,7 @@ func (cr *CommandRegistry) GenerateHelp() string {
 	// Platform-specific examples
 	sb.WriteString("🖥️  Platform-Specific Examples:\n")
 	sb.WriteString("\n")
-	
+
 	sb.WriteString("  Windows:\n")
 	sb.WriteString(fmt.Sprintf("    %s --once --spell \"notepad\"   # Open Notepad\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --once --spell \"cmd\"       # Open Command Prompt\n", os.Args[0]))
@@ -200,7 +200,7 @@ func (cr *CommandRegistry) GenerateHelp() string {
 	sb.WriteString(fmt.Sprintf("    %s --service-start      # Start service\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --service-status     # Check status\n", os.Args[0]))
 	sb.WriteString("\n")
-	
+
 	sb.WriteString("  macOS:\n")
 	sb.WriteString(fmt.Sprintf("    %s --once --spell \"finder\"    # Open Finder\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --once --spell \"terminal\"  # Open Terminal\n", os.Args[0]))
@@ -211,7 +211,7 @@ func (cr *CommandRegistry) GenerateHelp() string {
 	sb.WriteString(fmt.Sprintf("    %s --service-start      # Start service\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --service-status     # Check status\n", os.Args[0]))
 	sb.WriteString("\n")
-	
+
 	sb.WriteString("  Cross-Platform:\n")
 	sb.WriteString(fmt.Sprintf("    %s --once --spell \"e\"         # Editor (VS Code/configured)\n", os.Args[0]))
 	sb.WriteString(fmt.Sprintf("    %s --once --spell \"g,s\"       # Git status\n", os.Args[0]))
@@ -260,13 +260,13 @@ func toTitle(s string) string {
 	if s == "" {
 		return s
 	}
-	
+
 	words := strings.Fields(s)
 	for i, word := range words {
-		if len(word) > 0 {
+		if word != "" {
 			words[i] = strings.ToUpper(word[:1]) + strings.ToLower(word[1:])
 		}
 	}
-	
+
 	return strings.Join(words, " ")
 }

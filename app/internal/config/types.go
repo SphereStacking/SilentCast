@@ -131,7 +131,7 @@ type ActionConfig struct {
 	Admin          bool   `yaml:"admin,omitempty"`           // Run with elevated privileges
 	Terminal       bool   `yaml:"terminal,omitempty"`        // Force run in terminal
 	ForceTerminal  bool   `yaml:"force_terminal,omitempty"`  // Force terminal even in GUI/tray mode
-	
+
 	// Terminal customization
 	TerminalCustomization *terminal.Customization `yaml:"terminal_customization,omitempty"` // Visual customization for terminal window
 }

@@ -175,11 +175,11 @@ func (n *ConsoleNotifier) ShowUpdateNotification(ctx context.Context, notificati
 	fmt.Fprintf(os.Stderr, "%s[%s] Update Details:%s\n", color, timestamp, reset)
 	fmt.Fprintf(os.Stderr, "%s  Current: %s%s\n", color, notification.CurrentVersion, reset)
 	fmt.Fprintf(os.Stderr, "%s  Latest:  %s%s\n", color, notification.NewVersion, reset)
-	
+
 	if notification.PublishedAt != "" {
 		fmt.Fprintf(os.Stderr, "%s  Published: %s%s\n", color, notification.PublishedAt, reset)
 	}
-	
+
 	if notification.DownloadSize > 0 {
 		sizeStr := formatUpdateSize(notification.DownloadSize)
 		fmt.Fprintf(os.Stderr, "%s  Size: %s%s\n", color, sizeStr, reset)
@@ -197,7 +197,7 @@ func (n *ConsoleNotifier) ShowUpdateNotification(ctx context.Context, notificati
 
 	// Show available actions
 	if len(notification.Actions) > 0 {
-		fmt.Fprintf(os.Stderr, "%s[%s] Available actions: %s%s\n", 
+		fmt.Fprintf(os.Stderr, "%s[%s] Available actions: %s%s\n",
 			color, timestamp, strings.Join(notification.Actions, ", "), reset)
 		fmt.Fprintf(os.Stderr, "%s  Run: ./silentcast --self-update%s\n", color, reset)
 	}

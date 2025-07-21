@@ -39,7 +39,7 @@ func (n *LinuxNotifier) Notify(ctx context.Context, notification Notification) e
 			// Try zenity as last resort
 			if err := n.sendZenityNotification(ctx, notification); err != nil {
 				logger.Debug("zenity notification failed: %v", err)
-				
+
 				// Return unified error with context
 				return errors.New(errors.ErrorTypeSystem, "all notification methods failed").
 					WithContext("notification_title", notification.Title).

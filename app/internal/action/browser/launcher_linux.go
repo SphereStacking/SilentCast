@@ -49,18 +49,20 @@ func launchURLFallback(ctx context.Context, url string) error {
 	}
 
 	for _, opener := range openers {
-		if _, err := exec.LookPath(opener); err == nil {
-			cmd := exec.CommandContext(ctx, opener, validatedURL)
+		if _, err := exec.LookPath(opener); err != nil {
+			continue
+		}
+		
+		cmd := exec.CommandContext(ctx, opener, validatedURL)
 
-			// Detach from terminal
-			cmd.Stdin = nil
-			cmd.Stdout = nil
-			cmd.Stderr = nil
+		// Detach from terminal
+		cmd.Stdin = nil
+		cmd.Stdout = nil
+		cmd.Stderr = nil
 
-			if err := cmd.Start(); err == nil {
-				// Successfully started, detach process
-				return cmd.Process.Release()
-			}
+		if err := cmd.Start(); err == nil {
+			// Successfully started, detach process
+			return cmd.Process.Release()
 		}
 	}
 

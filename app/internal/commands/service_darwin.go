@@ -86,7 +86,7 @@ func (c *ServiceCommand) IsActive(flags interface{}) bool {
 	if !ok {
 		return false
 	}
-	
+
 	switch c.action {
 	case "install":
 		return f.ServiceInstall
@@ -110,7 +110,7 @@ func (c *ServiceCommand) Execute(flags interface{}) error {
 	switch c.action {
 	case "install":
 		fmt.Println("🔧 Installing SilentCast LaunchAgent...")
-		
+
 		// Check if already installed
 		status, statusErr := mgr.Status()
 		if statusErr != nil {
@@ -119,50 +119,50 @@ func (c *ServiceCommand) Execute(flags interface{}) error {
 		} else if status.Installed {
 			return fmt.Errorf("service already installed")
 		}
-		
+
 		if err := mgr.Install(); err != nil {
 			return fmt.Errorf("failed to install service: %w", err)
 		}
-		
+
 		fmt.Println("✅ LaunchAgent installed successfully")
 		fmt.Println("   • Service name: com.spherestacking.silentcast")
 		fmt.Println("   • Start type: Automatic (login)")
 		fmt.Println("   • Logs: ~/Library/Logs/silentcast.log")
 		fmt.Println("   • To start now: silentcast --service-start")
-		
+
 	case "uninstall":
 		fmt.Println("🔧 Uninstalling SilentCast LaunchAgent...")
-		
+
 		// Check if sudo is needed for system-level service
 		if c.needsSudo() {
 			return fmt.Errorf("system-level service management requires sudo")
 		}
-		
+
 		if err := mgr.Uninstall(); err != nil {
 			return fmt.Errorf("failed to uninstall service: %w", err)
 		}
 		fmt.Println("✅ LaunchAgent uninstalled successfully")
-		
+
 	case "start":
 		fmt.Println("🚀 Starting SilentCast LaunchAgent...")
 		if err := mgr.Start(); err != nil {
 			return fmt.Errorf("failed to start service: %w", err)
 		}
 		fmt.Println("✅ LaunchAgent started successfully")
-		
+
 	case "stop":
 		fmt.Println("🛑 Stopping SilentCast LaunchAgent...")
 		if err := mgr.Stop(); err != nil {
 			return fmt.Errorf("failed to stop service: %w", err)
 		}
 		fmt.Println("✅ LaunchAgent stopped successfully")
-		
+
 	case "status":
 		status, err := mgr.Status()
 		if err != nil {
 			return fmt.Errorf("failed to get service status: %w", err)
 		}
-		
+
 		fmt.Println("📊 SilentCast LaunchAgent Status")
 		fmt.Println("================================")
 		fmt.Printf("Installed: %v\n", status.Installed)

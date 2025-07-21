@@ -32,7 +32,7 @@ func NewElevatedExecutor(baseExecutor Executor, needsAdmin bool) Executor {
 		// No elevation needed
 		return baseExecutor
 	}
-	
+
 	return &ElevatedExecutor{
 		baseExecutor: baseExecutor,
 		isAdmin:      needsAdmin,
@@ -171,12 +171,12 @@ func (e *ElevatedExecutor) executeElevatedLinux(ctx context.Context) error {
 		if _, err := exec.LookPath(tool.name); err == nil {
 			args := tool.args(cmdStr)
 			cmd := exec.CommandContext(ctx, tool.name, args...)
-			
+
 			// Set SUDO_ASKPASS for graphical password prompt
 			if tool.name == "sudo" {
 				cmd.Env = append(os.Environ(), "SUDO_ASKPASS=/usr/bin/ssh-askpass")
 			}
-			
+
 			if err := cmd.Run(); err == nil {
 				return nil
 			}

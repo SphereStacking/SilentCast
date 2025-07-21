@@ -19,8 +19,8 @@ func TestLinuxUpdater_MakeExecutable(t *testing.T) {
 	// Create a temporary file
 	tmpDir := t.TempDir()
 	tmpFile := filepath.Join(tmpDir, "test_executable")
-	
-	if err := os.WriteFile(tmpFile, []byte("#!/bin/sh\necho test"), 0644); err != nil {
+
+	if err := os.WriteFile(tmpFile, []byte("#!/bin/sh\necho test"), 0o644); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
@@ -35,16 +35,16 @@ func TestLinuxUpdater_MakeExecutable(t *testing.T) {
 		t.Fatalf("Failed to stat file: %v", err)
 	}
 
-	// Check if file is executable (0755 = -rwxr-xr-x)
+	// Check if file is executable (0o755 = -rwxr-xr-x)
 	mode := info.Mode()
-	if mode.Perm() != 0755 {
-		t.Errorf("Expected permissions 0755, got %v", mode.Perm())
+	if mode.Perm() != 0o755 {
+		t.Errorf("Expected permissions 0o755, got %v", mode.Perm())
 	}
 }
 
 func TestLinuxUpdater_RestartApplication(t *testing.T) {
 	t.Skip("Skipping RestartApplication test as it would replace the test process")
-	
+
 	// The actual test would be:
 	// updater := &linuxUpdater{}
 	// err := updater.RestartApplication()

@@ -67,9 +67,9 @@ func TestScriptExecutor_ShowOutput(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			executor := NewScriptExecutor(&tt.config)
 			ctx := context.Background()
-			
+
 			err := executor.Execute(ctx)
-			
+
 			if (err != nil) != tt.hasErr {
 				t.Errorf("Execute() error = %v, hasErr = %v", err, tt.hasErr)
 			}
@@ -84,10 +84,10 @@ func TestScriptExecutor_Terminal(t *testing.T) {
 		Command:  "echo 'Terminal test'",
 		Terminal: true,
 	}
-	
+
 	executor := NewScriptExecutor(&config)
 	ctx := context.Background()
-	
+
 	// This should not error, but we can't easily test if terminal was actually opened
 	err := executor.Execute(ctx)
 	if err != nil {
@@ -127,12 +127,12 @@ func TestScriptExecutor_KeepOpen(t *testing.T) {
 			},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			executor := NewScriptExecutor(&tt.config)
 			ctx := context.Background()
-			
+
 			// This should not error, but we can't easily test if terminal stayed open
 			err := executor.Execute(ctx)
 			if err != nil {
@@ -166,7 +166,7 @@ func TestScriptExecutor_Description(t *testing.T) {
 			expected: "Run script: ls -la",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			executor := NewScriptExecutor(&tt.config)

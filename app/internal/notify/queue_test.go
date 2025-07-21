@@ -22,7 +22,11 @@ func TestNotificationQueue_BasicOperation(t *testing.T) {
 
 	queue := NewNotificationQueue(manager, opts)
 	queue.Start()
-	defer queue.Stop(5 * time.Second)
+	defer func() {
+		if err := queue.Stop(5 * time.Second); err != nil {
+			t.Errorf("Failed to stop queue: %v", err)
+		}
+	}()
 
 	// Enqueue a notification
 	notification := Notification{
@@ -172,7 +176,11 @@ func TestNotificationQueue_RateLimit(t *testing.T) {
 
 	queue := NewNotificationQueue(manager, opts)
 	queue.Start()
-	defer queue.Stop(5 * time.Second)
+	defer func() {
+		if err := queue.Stop(5 * time.Second); err != nil {
+			t.Errorf("Failed to stop queue: %v", err)
+		}
+	}()
 
 	// Enqueue multiple notifications
 	start := time.Now()
@@ -231,7 +239,11 @@ func TestNotificationQueue_Retry(t *testing.T) {
 
 	queue := NewNotificationQueue(manager, opts)
 	queue.Start()
-	defer queue.Stop(5 * time.Second)
+	defer func() {
+		if err := queue.Stop(5 * time.Second); err != nil {
+			t.Errorf("Failed to stop queue: %v", err)
+		}
+	}()
 
 	// Enqueue notification
 	err := queue.Enqueue(Notification{
@@ -349,7 +361,11 @@ func TestNotificationQueue_OutputNotification(t *testing.T) {
 	opts := DefaultQueueOptions()
 	queue := NewNotificationQueue(manager, opts)
 	queue.Start()
-	defer queue.Stop(5 * time.Second)
+	defer func() {
+		if err := queue.Stop(5 * time.Second); err != nil {
+			t.Errorf("Failed to stop queue: %v", err)
+		}
+	}()
 
 	// Enqueue output notification
 	outputNotif := OutputNotification{
@@ -394,7 +410,11 @@ func TestNotificationQueue_Concurrent(t *testing.T) {
 
 	queue := NewNotificationQueue(manager, opts)
 	queue.Start()
-	defer queue.Stop(5 * time.Second)
+	defer func() {
+		if err := queue.Stop(5 * time.Second); err != nil {
+			t.Errorf("Failed to stop queue: %v", err)
+		}
+	}()
 
 	// Concurrent enqueuers
 	var wg sync.WaitGroup
@@ -403,7 +423,7 @@ func TestNotificationQueue_Concurrent(t *testing.T) {
 
 	for i := 0; i < numGoroutines; i++ {
 		wg.Add(1)
-		go func(id int) {
+		go func(_ int) {
 			defer wg.Done()
 			for j := 0; j < itemsPerGoroutine; j++ {
 				_ = queue.Enqueue(Notification{
@@ -454,7 +474,7 @@ func TestPriorityQueue_HeapInterface(t *testing.T) {
 	// Test the heap interface methods directly
 	pq := &priorityQueue{}
 	heap.Init(pq)
-	
+
 	// Create test items
 	items := []*QueueItem{
 		{
@@ -473,16 +493,16 @@ func TestPriorityQueue_HeapInterface(t *testing.T) {
 			Timestamp:    time.Now().Add(2 * time.Second),
 		},
 	}
-	
+
 	// Push items using heap interface
 	for _, item := range items {
 		heap.Push(pq, item)
 	}
-	
+
 	if pq.Len() != 3 {
 		t.Errorf("Push: expected length 3, got %d", pq.Len())
 	}
-	
+
 	// Test Less (higher priority should come first)
 	// Note: heap maintains heap property, not sorted order
 	// So we'll pop items and check order
@@ -493,7 +513,7 @@ func TestPriorityQueue_HeapInterface(t *testing.T) {
 			poppedOrder = append(poppedOrder, notif.Title)
 		}
 	}
-	
+
 	// Should be popped in priority order: High, Medium, Low
 	expectedOrder := []string{"High", "Medium", "Low"}
 	for i, title := range poppedOrder {
@@ -506,7 +526,7 @@ func TestPriorityQueue_HeapInterface(t *testing.T) {
 func TestPriorityQueue_DirectMethods(t *testing.T) {
 	// Test the priorityQueue methods directly (not through heap interface)
 	pq := &priorityQueue{}
-	
+
 	// Test Push and Len
 	item1 := &QueueItem{
 		Notification: Notification{Title: "Item1"},
@@ -514,11 +534,11 @@ func TestPriorityQueue_DirectMethods(t *testing.T) {
 		Timestamp:    time.Now(),
 	}
 	pq.Push(item1)
-	
+
 	if pq.Len() != 1 {
 		t.Errorf("Len: expected 1, got %d", pq.Len())
 	}
-	
+
 	// Test Less with two items
 	item2 := &QueueItem{
 		Notification: Notification{Title: "Item2"},
@@ -526,12 +546,12 @@ func TestPriorityQueue_DirectMethods(t *testing.T) {
 		Timestamp:    time.Now().Add(1 * time.Second),
 	}
 	pq.Push(item2)
-	
+
 	// Higher priority (2) should be "less" than lower priority (1)
 	if !pq.Less(1, 0) {
 		t.Error("Less: higher priority item should be less")
 	}
-	
+
 	// Test Swap
 	var title0Before, title1Before string
 	if notif, ok := (*pq)[0].Notification.(Notification); ok {
@@ -541,7 +561,7 @@ func TestPriorityQueue_DirectMethods(t *testing.T) {
 		title1Before = notif.Title
 	}
 	pq.Swap(0, 1)
-	
+
 	var title0After, title1After string
 	if notif, ok := (*pq)[0].Notification.(Notification); ok {
 		title0After = notif.Title
@@ -552,15 +572,15 @@ func TestPriorityQueue_DirectMethods(t *testing.T) {
 	if title0After != title1Before || title1After != title0Before {
 		t.Error("Swap: items not properly swapped")
 	}
-	
+
 	// Test Pop
 	initialLen := pq.Len()
 	popped := pq.Pop().(*QueueItem)
-	
+
 	if pq.Len() != initialLen-1 {
 		t.Errorf("Pop: expected length %d, got %d", initialLen-1, pq.Len())
 	}
-	
+
 	// Should pop the last item
 	var poppedTitle string
 	if notif, ok := popped.Notification.(Notification); ok {

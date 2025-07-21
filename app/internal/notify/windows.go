@@ -42,7 +42,7 @@ func (n *WindowsNotifier) Notify(ctx context.Context, notification Notification)
 			// Final fallback to balloon notification
 			if err := n.sendBalloonNotification(ctx, notification); err != nil {
 				logger.Debug("Balloon notification failed: %v", err)
-				
+
 				// Return unified error with context
 				return errors.New(errors.ErrorTypeSystem, "all notification methods failed").
 					WithContext("notification_title", notification.Title).

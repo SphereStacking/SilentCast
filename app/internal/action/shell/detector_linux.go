@@ -84,7 +84,7 @@ func (d *detector) detectSystemShells(ctx context.Context) []Shell {
 }
 
 // detectSnapShells detects shells installed via Snap
-func (d *detector) detectSnapShells(ctx context.Context) []Shell {
+func (d *detector) detectSnapShells(_ context.Context) []Shell {
 	var shells []Shell
 
 	snapBin := "/snap/bin"
@@ -113,7 +113,7 @@ func (d *detector) detectSnapShells(ctx context.Context) []Shell {
 }
 
 // detectFlatpakShells detects shells installed via Flatpak
-func (d *detector) detectFlatpakShells(ctx context.Context) []Shell {
+func (d *detector) detectFlatpakShells(_ context.Context) []Shell {
 	var shells []Shell
 
 	// Flatpak typically doesn't install shells directly
@@ -150,7 +150,7 @@ func (d *detector) detectFlatpakShells(ctx context.Context) []Shell {
 }
 
 // detectUserShells detects user-installed shells
-func (d *detector) detectUserShells(ctx context.Context) []Shell {
+func (d *detector) detectUserShells(_ context.Context) []Shell {
 	var shells []Shell
 
 	// Check common user directories

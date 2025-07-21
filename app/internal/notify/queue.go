@@ -215,7 +215,7 @@ func (q *NotificationQueue) dispatcher() {
 }
 
 // worker processes notifications from the queue
-func (q *NotificationQueue) worker(id int) {
+func (q *NotificationQueue) worker(_ int) {
 	defer q.wg.Done()
 
 	for {
@@ -259,7 +259,7 @@ func (q *NotificationQueue) processItem(item *QueueItem) {
 }
 
 // handleError handles notification delivery errors
-func (q *NotificationQueue) handleError(item *QueueItem, err error) {
+func (q *NotificationQueue) handleError(item *QueueItem, _ error) {
 	item.RetryCount++
 
 	if item.RetryCount <= item.MaxRetries {

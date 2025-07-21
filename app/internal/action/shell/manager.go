@@ -27,7 +27,7 @@ type Manager interface {
 	CreateInterpreterCommand(ctx context.Context, interpreter *Shell, code string, args []string, env []string) (*exec.Cmd, error)
 
 	// GetShellForScript determines the best shell for a script
-	GetShellForScript(ctx context.Context, script string, preferredShell string) (*Shell, error)
+	GetShellForScript(ctx context.Context, script, preferredShell string) (*Shell, error)
 
 	// GetInterpreterForScript determines the best interpreter for direct execution
 	GetInterpreterForScript(ctx context.Context, script string, preferredInterpreter string) (*Shell, error)
@@ -113,7 +113,7 @@ func (m *manager) CreateCommand(ctx context.Context, shell *Shell, script string
 }
 
 // CreateInterpreterCommand creates an exec.Cmd for running code directly in an interpreter
-func (m *manager) CreateInterpreterCommand(ctx context.Context, interpreter *Shell, code string, args []string, env []string) (*exec.Cmd, error) {
+func (m *manager) CreateInterpreterCommand(ctx context.Context, interpreter *Shell, code string, args, env []string) (*exec.Cmd, error) {
 	if interpreter == nil {
 		return nil, fmt.Errorf("interpreter is required")
 	}
@@ -148,7 +148,7 @@ func (m *manager) CreateInterpreterCommand(ctx context.Context, interpreter *She
 }
 
 // GetInterpreterForScript determines the best interpreter for direct execution
-func (m *manager) GetInterpreterForScript(ctx context.Context, script string, preferredInterpreter string) (*Shell, error) {
+func (m *manager) GetInterpreterForScript(ctx context.Context, script, preferredInterpreter string) (*Shell, error) {
 	// If preferred interpreter is specified, try to use it
 	if preferredInterpreter != "" {
 		shell, err := m.GetShell(ctx, preferredInterpreter)
@@ -173,7 +173,7 @@ func (m *manager) GetInterpreterForScript(ctx context.Context, script string, pr
 }
 
 // GetShellForScript determines the best shell for a script
-func (m *manager) GetShellForScript(ctx context.Context, script string, preferredShell string) (*Shell, error) {
+func (m *manager) GetShellForScript(ctx context.Context, script, preferredShell string) (*Shell, error) {
 	// If preferred shell is specified, try to use it
 	if preferredShell != "" {
 		shell, err := m.GetShell(ctx, preferredShell)

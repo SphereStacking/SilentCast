@@ -8,9 +8,7 @@ import (
 )
 
 // baseCommandBuilder provides common command building functionality
-type baseCommandBuilder struct {
-	platformBuilders map[string]CommandBuilder
-}
+type baseCommandBuilder struct {}
 
 // NewCommandBuilder creates a platform-specific command builder
 func NewCommandBuilder() CommandBuilder {
@@ -56,20 +54,20 @@ func (b *WindowsCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, o
 		if options.Title != "" {
 			args = append(args, "--title", options.Title)
 		}
-		
+
 		// Apply customization if provided and supported
 		if options.Customization != nil && terminal.SupportedFeatures.WindowSize {
 			if options.Customization.Width > 0 && options.Customization.Height > 0 {
 				args = append(args, "--size", fmt.Sprintf("%d,%d", options.Customization.Width, options.Customization.Height))
 			}
 		}
-		
+
 		if options.Customization != nil && terminal.SupportedFeatures.WindowPosition {
 			if options.Customization.X >= 0 && options.Customization.Y >= 0 {
 				args = append(args, "--pos", fmt.Sprintf("%d,%d", options.Customization.X, options.Customization.Y))
 			}
 		}
-		
+
 		if options.Customization != nil && terminal.SupportedFeatures.WindowState {
 			if options.Customization.Maximized {
 				args = append(args, "--maximized")
@@ -77,7 +75,7 @@ func (b *WindowsCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, o
 				args = append(args, "--fullscreen")
 			}
 		}
-		
+
 		if options.Customization != nil && terminal.SupportedFeatures.ColorScheme {
 			if options.Customization.Theme != "" {
 				args = append(args, "--colorScheme", options.Customization.Theme)
@@ -95,23 +93,23 @@ func (b *WindowsCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, o
 	case "cmd.exe":
 		// Command Prompt
 		startArgs := []string{"/c", "start"}
-		
+
 		// Add title
 		startArgs = append(startArgs, fmt.Sprintf("\"%s\"", options.Title))
-		
+
 		// Apply window size and position if supported
 		if options.Customization != nil && terminal.SupportedFeatures.WindowSize {
 			if options.Customization.Width > 0 && options.Customization.Height > 0 {
 				startArgs = append(startArgs, "/SIZE", fmt.Sprintf("%d,%d", options.Customization.Width, options.Customization.Height))
 			}
 		}
-		
+
 		if options.Customization != nil && terminal.SupportedFeatures.WindowPosition {
 			if options.Customization.X >= 0 && options.Customization.Y >= 0 {
 				startArgs = append(startArgs, "/POS", fmt.Sprintf("%d,%d", options.Customization.X, options.Customization.Y))
 			}
 		}
-		
+
 		startArgs = append(startArgs, "cmd")
 		if options.KeepOpen {
 			startArgs = append(startArgs, "/k", cmdStr)
@@ -170,30 +168,30 @@ func (b *MacOSCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, opt
 
 		// Escape quotes in the command
 		script = strings.ReplaceAll(script, `"`, `\"`)
-		
+
 		// Build AppleScript with customization
 		appleScript := `tell application "Terminal"`
 		appleScript += fmt.Sprintf(`
 			set newTab to do script "%s"`, script)
-		
+
 		// Apply customizations if supported
 		if options.Customization != nil {
 			if terminal.SupportedFeatures.WindowSize && options.Customization.Width > 0 && options.Customization.Height > 0 {
 				appleScript += fmt.Sprintf(`
 			set bounds of window 1 to {0, 0, %d, %d}`, options.Customization.Width*8, options.Customization.Height*16)
 			}
-			
+
 			if terminal.SupportedFeatures.WindowPosition && options.Customization.X >= 0 && options.Customization.Y >= 0 {
 				appleScript += fmt.Sprintf(`
 			set position of window 1 to {%d, %d}`, options.Customization.X, options.Customization.Y)
 			}
-			
+
 			if terminal.SupportedFeatures.FontSize && options.Customization.FontSize > 0 {
 				appleScript += fmt.Sprintf(`
 			set font size of window 1 to %d`, options.Customization.FontSize)
 			}
 		}
-		
+
 		appleScript += `
 		end tell`
 
@@ -224,17 +222,17 @@ func (b *MacOSCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, opt
 		if options.Title != "" {
 			args = append(args, "--title", options.Title)
 		}
-		
+
 		// Apply customizations if supported
 		if options.Customization != nil {
 			if terminal.SupportedFeatures.WindowSize && options.Customization.Width > 0 && options.Customization.Height > 0 {
 				args = append(args, "--dimensions", fmt.Sprintf("%dx%d", options.Customization.Width, options.Customization.Height))
 			}
-			
+
 			if terminal.SupportedFeatures.WindowPosition && options.Customization.X >= 0 && options.Customization.Y >= 0 {
 				args = append(args, "--position", fmt.Sprintf("%d,%d", options.Customization.X, options.Customization.Y))
 			}
-			
+
 			if terminal.SupportedFeatures.ColorScheme && options.Customization.Theme != "" {
 				args = append(args, "--config-file", fmt.Sprintf("/path/to/themes/%s.yml", options.Customization.Theme))
 			}
@@ -297,13 +295,13 @@ func (b *LinuxCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, opt
 		if options.Title != "" {
 			args = append(args, "--title", options.Title)
 		}
-		
+
 		// Apply customizations if supported
 		if options.Customization != nil {
 			if terminal.SupportedFeatures.WindowSize && options.Customization.Width > 0 && options.Customization.Height > 0 {
 				args = append(args, "--geometry", fmt.Sprintf("%dx%d", options.Customization.Width, options.Customization.Height))
 			}
-			
+
 			if terminal.SupportedFeatures.WindowState {
 				if options.Customization.Maximized {
 					args = append(args, "--maximize")
@@ -326,13 +324,13 @@ func (b *LinuxCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, opt
 		if options.Title != "" {
 			args = append(args, "--title", options.Title)
 		}
-		
+
 		// Apply customizations if supported
 		if options.Customization != nil {
 			if terminal.SupportedFeatures.WindowSize && options.Customization.Width > 0 && options.Customization.Height > 0 {
 				args = append(args, "--geometry", fmt.Sprintf("%dx%d", options.Customization.Width, options.Customization.Height))
 			}
-			
+
 			if terminal.SupportedFeatures.ColorScheme && options.Customization.Theme != "" {
 				args = append(args, "--profile", options.Customization.Theme)
 			}
@@ -374,17 +372,17 @@ func (b *LinuxCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, opt
 		if options.Title != "" {
 			args = append(args, "--title", options.Title)
 		}
-		
+
 		// Apply customizations if supported (same as macOS version)
 		if options.Customization != nil {
 			if terminal.SupportedFeatures.WindowSize && options.Customization.Width > 0 && options.Customization.Height > 0 {
 				args = append(args, "--dimensions", fmt.Sprintf("%dx%d", options.Customization.Width, options.Customization.Height))
 			}
-			
+
 			if terminal.SupportedFeatures.WindowPosition && options.Customization.X >= 0 && options.Customization.Y >= 0 {
 				args = append(args, "--position", fmt.Sprintf("%d,%d", options.Customization.X, options.Customization.Y))
 			}
-			
+
 			if terminal.SupportedFeatures.ColorScheme && options.Customization.Theme != "" {
 				args = append(args, "--config-file", fmt.Sprintf("/path/to/themes/%s.yml", options.Customization.Theme))
 			}
@@ -427,13 +425,13 @@ func (b *LinuxCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, opt
 		if options.Title != "" {
 			args = append(args, "-title", options.Title)
 		}
-		
+
 		// Apply customizations if supported
 		if options.Customization != nil {
 			if terminal.SupportedFeatures.WindowSize && options.Customization.Width > 0 && options.Customization.Height > 0 {
 				args = append(args, "-geometry", fmt.Sprintf("%dx%d", options.Customization.Width, options.Customization.Height))
 			}
-			
+
 			if terminal.SupportedFeatures.FontSize && options.Customization.FontSize > 0 {
 				args = append(args, "-fs", fmt.Sprintf("%d", options.Customization.FontSize))
 			}

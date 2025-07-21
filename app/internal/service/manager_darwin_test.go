@@ -170,13 +170,13 @@ func TestDarwinManager_InstallUninstallMethods(t *testing.T) {
 func TestPlistTemplate(t *testing.T) {
 	// Test that the plist template is valid
 	data := struct {
-		Label             string
-		Executable        string
-		RunAtLoad         string
-		LogPath           string
-		WorkingDirectory  string
-		IsSystemLevel     bool
-		UserName          string
+		Label            string
+		Executable       string
+		RunAtLoad        string
+		LogPath          string
+		WorkingDirectory string
+		IsSystemLevel    bool
+		UserName         string
 	}{
 		Label:            "com.test.service",
 		Executable:       "/usr/local/bin/test",
@@ -199,7 +199,7 @@ func TestPlistTemplate(t *testing.T) {
 	}
 
 	output := buf.String()
-	
+
 	// Check for required elements
 	requiredElements := []string{
 		"<?xml version",

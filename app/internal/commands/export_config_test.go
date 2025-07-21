@@ -12,24 +12,24 @@ import (
 
 func TestExportConfigCommand(t *testing.T) {
 	tests := []struct {
-		name        string
-		exportFile  string
+		name         string
+		exportFile   string
 		exportFormat string
-		wantErr     bool
-		checkOutput func(t *testing.T, output []byte)
+		wantErr      bool
+		checkOutput  func(t *testing.T, output []byte)
 	}{
 		{
-			name:        "export to stdout yaml",
-			exportFile:  "-",
+			name:         "export to stdout yaml",
+			exportFile:   "-",
 			exportFormat: "yaml",
-			wantErr:     false,
+			wantErr:      false,
 			checkOutput: func(t *testing.T, output []byte) {
 				// Check that it's valid YAML
 				var data map[string]interface{}
 				if err := yaml.Unmarshal(output, &data); err != nil {
 					t.Errorf("Output is not valid YAML: %v", err)
 				}
-				
+
 				// Check for expected sections
 				if _, ok := data["spells"]; !ok {
 					t.Error("Output missing 'spells' section")
@@ -40,25 +40,25 @@ func TestExportConfigCommand(t *testing.T) {
 			},
 		},
 		{
-			name:        "export to file yaml",
-			exportFile:  "test_export.yml",
+			name:         "export to file yaml",
+			exportFile:   "test_export.yml",
 			exportFormat: "yaml",
-			wantErr:     false,
+			wantErr:      false,
 			checkOutput: func(t *testing.T, output []byte) {
 				// Check that file was created
 				if _, err := os.Stat("test_export.yml"); err != nil {
 					t.Errorf("Export file not created: %v", err)
 				}
-				
+
 				// Clean up
 				os.Remove("test_export.yml")
 			},
 		},
 		{
-			name:        "unsupported format",
-			exportFile:  "-",
+			name:         "unsupported format",
+			exportFile:   "-",
 			exportFormat: "xml",
-			wantErr:     true,
+			wantErr:      true,
 		},
 	}
 
@@ -73,7 +73,7 @@ grimoire:
   editor:
     type: app
     command: vi`
-			
+
 			if err := os.WriteFile(configFile, []byte(configContent), 0644); err != nil {
 				t.Fatalf("Failed to create test config: %v", err)
 			}
@@ -101,20 +101,20 @@ grimoire:
 				oldStdout := os.Stdout
 				r, w, _ := os.Pipe()
 				os.Stdout = w
-				
+
 				err := cmd.Execute(flags)
-				
+
 				w.Close()
 				os.Stdout = oldStdout
-				
+
 				buf := make([]byte, 1024)
 				n, _ := r.Read(buf)
 				output.Write(buf[:n])
-				
+
 				if (err != nil) != tt.wantErr {
 					t.Errorf("Execute() error = %v, wantErr %v", err, tt.wantErr)
 				}
-				
+
 				if !tt.wantErr && tt.checkOutput != nil {
 					tt.checkOutput(t, output.Bytes())
 				}
@@ -123,13 +123,13 @@ grimoire:
 				oldDir, _ := os.Getwd()
 				os.Chdir(tmpDir)
 				defer os.Chdir(oldDir)
-				
+
 				err := cmd.Execute(flags)
-				
+
 				if (err != nil) != tt.wantErr {
 					t.Errorf("Execute() error = %v, wantErr %v", err, tt.wantErr)
 				}
-				
+
 				if !tt.wantErr && tt.checkOutput != nil {
 					tt.checkOutput(t, nil)
 				}

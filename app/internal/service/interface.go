@@ -4,19 +4,19 @@ package service
 type Manager interface {
 	// Install installs the service
 	Install() error
-	
+
 	// Uninstall removes the service
 	Uninstall() error
-	
+
 	// Start starts the service
 	Start() error
-	
+
 	// Stop stops the service
 	Stop() error
-	
+
 	// Status returns the current service status
 	Status() (ServiceStatus, error)
-	
+
 	// Run executes the service (called by service manager)
 	Run() error
 }

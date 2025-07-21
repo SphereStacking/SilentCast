@@ -9,37 +9,37 @@ import (
 var (
 	// ErrConfigNotFound indicates no configuration file was found
 	ErrConfigNotFound = New(ErrorTypeConfig, "configuration file not found")
-	
+
 	// ErrInvalidConfig indicates the configuration is invalid
 	ErrInvalidConfig = New(ErrorTypeConfig, "invalid configuration")
-	
+
 	// ErrSpellNotFound indicates a spell was not found
 	ErrSpellNotFound = New(ErrorTypeConfig, "spell not found")
-	
+
 	// ErrActionNotFound indicates an action was not found
 	ErrActionNotFound = New(ErrorTypeConfig, "action not found")
-	
+
 	// ErrPermissionDenied indicates insufficient permissions
 	ErrPermissionDenied = New(ErrorTypePermission, "permission denied")
-	
+
 	// ErrHotkeyAlreadyRegistered indicates hotkey is already in use
 	ErrHotkeyAlreadyRegistered = New(ErrorTypeHotkey, "hotkey already registered")
-	
+
 	// ErrHotkeyManagerNotInitialized indicates hotkey manager is not initialized
 	ErrHotkeyManagerNotInitialized = New(ErrorTypeHotkey, "hotkey manager not initialized")
-	
+
 	// ErrExecutionTimeout indicates execution timed out
 	ErrExecutionTimeout = New(ErrorTypeTimeout, "execution timeout")
-	
+
 	// ErrApplicationNotFound indicates application was not found
 	ErrApplicationNotFound = New(ErrorTypeNotFound, "application not found")
-	
+
 	// ErrBrowserNotFound indicates no browser was found
 	ErrBrowserNotFound = New(ErrorTypeNotFound, "no browser found")
-	
+
 	// ErrFileNotFound indicates file was not found
 	ErrFileNotFound = New(ErrorTypeIO, "file not found")
-	
+
 	// ErrNetworkUnavailable indicates network is unavailable
 	ErrNetworkUnavailable = New(ErrorTypeNetwork, "network unavailable")
 )
@@ -140,19 +140,19 @@ func (e *SpellbookError) ErrorWithContext() string {
 	if len(e.Context) == 0 {
 		return e.Message
 	}
-	
+
 	contextParts := make([]string, 0, len(e.Context))
 	for key, value := range e.Context {
 		contextParts = append(contextParts, fmt.Sprintf("%s: %v", key, value))
 	}
-	
+
 	return fmt.Sprintf("%s (%s)", e.Message, joinContextParts(contextParts))
 }
 
 // FullContextString returns all context information from the error chain
 func (e *SpellbookError) FullContextString() string {
 	contextMap := make(map[string]interface{})
-	
+
 	// Collect context from entire error chain
 	current := e
 	for current != nil {
@@ -161,7 +161,7 @@ func (e *SpellbookError) FullContextString() string {
 				contextMap[key] = value
 			}
 		}
-		
+
 		// Continue with wrapped error if it's also a SpellbookError
 		var nextErr *SpellbookError
 		if errors.As(current.Cause, &nextErr) {
@@ -170,23 +170,23 @@ func (e *SpellbookError) FullContextString() string {
 			break
 		}
 	}
-	
+
 	if len(contextMap) == 0 {
 		return ""
 	}
-	
+
 	contextParts := make([]string, 0, len(contextMap))
 	for key, value := range contextMap {
 		contextParts = append(contextParts, fmt.Sprintf("%s: %v", key, value))
 	}
-	
+
 	return joinContextParts(contextParts)
 }
 
 // LogFields returns structured fields for logging
 func (e *SpellbookError) LogFields() map[string]interface{} {
 	fields := make(map[string]interface{})
-	
+
 	// Add error type
 	switch e.Type {
 	case ErrorTypeConfig:
@@ -214,15 +214,15 @@ func (e *SpellbookError) LogFields() map[string]interface{} {
 	default:
 		fields["error_type"] = "unknown"
 	}
-	
+
 	// Add message
 	fields["message"] = e.Message
-	
+
 	// Add context fields
 	for key, value := range e.Context {
 		fields[key] = value
 	}
-	
+
 	return fields
 }
 
@@ -234,7 +234,7 @@ func joinContextParts(parts []string) string {
 	if len(parts) == 1 {
 		return parts[0]
 	}
-	
+
 	result := parts[0]
 	for i := 1; i < len(parts); i++ {
 		result += ", " + parts[i]
@@ -346,11 +346,11 @@ func FromStandardError(err error, errType ErrorType, message string) *SpellbookE
 	if err == nil {
 		return nil
 	}
-	
+
 	var spellErr *SpellbookError
 	if errors.As(err, &spellErr) {
 		return spellErr
 	}
-	
+
 	return Wrap(errType, message, err)
 }

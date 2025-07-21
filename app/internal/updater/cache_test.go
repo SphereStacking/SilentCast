@@ -164,11 +164,13 @@ func TestCacheManager_InvalidJSON(t *testing.T) {
 
 	// Create cache directory
 	cacheDir := filepath.Join(tempDir, "cache")
-	os.MkdirAll(cacheDir, 0755)
+	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
+		t.Fatalf("Failed to create cache dir: %v", err)
+	}
 
 	// Write invalid JSON
 	cacheFile := filepath.Join(cacheDir, "update_check.json")
-	err := os.WriteFile(cacheFile, []byte("invalid json"), 0644)
+	err := os.WriteFile(cacheFile, []byte("invalid json"), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write invalid cache: %v", err)
 	}

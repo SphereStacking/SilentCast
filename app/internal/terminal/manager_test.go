@@ -2,6 +2,7 @@ package terminal
 
 import (
 	"context"
+	"errors"
 	"os/exec"
 	"testing"
 )
@@ -351,7 +352,8 @@ func TestBaseManager_ExecuteInTerminal_BuildError(t *testing.T) {
 	}
 
 	// Check error type and message
-	if termErr, ok := err.(*Error); ok {
+	var termErr *Error
+	if errors.As(err, &termErr) {
 		if termErr.Op != "ExecuteInTerminal" {
 			t.Errorf("Expected Op 'ExecuteInTerminal', got '%s'", termErr.Op)
 		}
@@ -380,7 +382,7 @@ func TestBaseManager_ExecuteInTerminal_CompleteFlow(t *testing.T) {
 			{Name: "Test Terminal", Command: "echo", Priority: 10, IsDefault: true},
 		},
 	}
-	
+
 	buildCalled := false
 	builder := &mockBuilder{
 		buildFunc: func(terminal Terminal, cmd *exec.Cmd, options Options) ([]string, error) {
@@ -388,7 +390,7 @@ func TestBaseManager_ExecuteInTerminal_CompleteFlow(t *testing.T) {
 			return []string{"test output"}, nil
 		},
 	}
-	
+
 	manager := newBaseManager(detector, builder)
 
 	cmd := exec.Command("echo", "test")
@@ -399,12 +401,12 @@ func TestBaseManager_ExecuteInTerminal_CompleteFlow(t *testing.T) {
 
 	// Since we're using 'echo' as the terminal command, it will execute quickly
 	err := manager.ExecuteInTerminal(context.Background(), cmd, options)
-	
+
 	// The command should execute without error (echo exists)
 	if err != nil {
 		t.Logf("ExecuteInTerminal() returned error (may be expected): %v", err)
 	}
-	
+
 	if !buildCalled {
 		t.Error("BuildCommand was not called")
 	}
@@ -440,18 +442,18 @@ func TestBaseManager_ExecuteInTerminal_WorkingDirPriority(t *testing.T) {
 					{Name: "Test Terminal", Command: "echo", Priority: 10, IsDefault: true},
 				},
 			}
-			
+
 			builder := &mockBuilder{
 				buildFunc: func(terminal Terminal, cmd *exec.Cmd, options Options) ([]string, error) {
 					return []string{"test"}, nil
 				},
 			}
-			
+
 			manager := newBaseManager(detector, builder)
 
 			cmd := exec.Command("echo", "test")
 			cmd.Dir = tt.cmdDir
-			
+
 			options := Options{
 				WorkingDir: tt.optionsDir,
 			}
@@ -515,7 +517,7 @@ func TestBaseManager_GetDefaultTerminal_EdgeCases(t *testing.T) {
 func TestBaseManager_IsTerminalAvailable_EdgeCases(t *testing.T) {
 	terminals := []Terminal{
 		{Name: "Terminal 1", Command: "term1"},
-		{Name: "", Command: "term2"}, // Empty name
+		{Name: "", Command: "term2"},      // Empty name
 		{Name: "Terminal 3", Command: ""}, // Empty command
 	}
 

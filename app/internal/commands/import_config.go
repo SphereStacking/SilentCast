@@ -3,6 +3,7 @@ package commands
 import (
 	"archive/tar"
 	"compress/gzip"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -63,7 +64,7 @@ func (c *ImportConfigCommand) Execute(flags interface{}) error {
 	// Determine input reader
 	var reader io.Reader
 	var closeFunc func() error
-	
+
 	if f.ImportConfig == "-" {
 		// Import from stdin
 		reader = os.Stdin
@@ -81,8 +82,8 @@ func (c *ImportConfigCommand) Execute(flags interface{}) error {
 
 	// Detect format and import
 	var err error
-	if strings.HasSuffix(strings.ToLower(f.ImportConfig), ".tar.gz") || 
-	   strings.HasSuffix(strings.ToLower(f.ImportConfig), ".tgz") {
+	if strings.HasSuffix(strings.ToLower(f.ImportConfig), ".tar.gz") ||
+		strings.HasSuffix(strings.ToLower(f.ImportConfig), ".tgz") {
 		err = c.importTarGz(reader)
 	} else {
 		// Default to YAML
@@ -166,12 +167,12 @@ func (c *ImportConfigCommand) importTarGz(reader io.Reader) error {
 
 	// Get target directory
 	configDir := c.configPathFunc()
-	
+
 	// Process each file in the archive
 	filesImported := 0
 	for {
 		header, err := tarReader.Next()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			break
 		}
 		if err != nil {
@@ -190,7 +191,7 @@ func (c *ImportConfigCommand) importTarGz(reader io.Reader) error {
 
 		// Determine target path
 		targetPath := filepath.Join(configDir, header.Name)
-		
+
 		// Ensure the file goes into the config directory
 		if !strings.HasPrefix(filepath.Clean(targetPath), filepath.Clean(configDir)) {
 			return fmt.Errorf("invalid file path in archive: %s", header.Name)
@@ -247,7 +248,7 @@ func (c *ImportConfigCommand) backupExistingConfig(configPath string) error {
 
 	// Create backup with timestamp
 	backupPath := fmt.Sprintf("%s.backup.%s", configPath, time.Now().Format("20060102-150405"))
-	
+
 	// Read existing file
 	data, err := os.ReadFile(configPath)
 	if err != nil {

@@ -48,12 +48,12 @@ func (c *VersionCommand) Execute(flags interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid flags type")
 	}
-	
+
 	buildInfo := version.GetBuildInfo()
-	
+
 	var output string
 	var err error
-	
+
 	switch f.VersionFormat {
 	case "json":
 		output, err = buildInfo.FormatJSON()
@@ -67,12 +67,12 @@ func (c *VersionCommand) Execute(flags interface{}) error {
 	default:
 		output = buildInfo.FormatHuman()
 	}
-	
+
 	fmt.Print(output)
 	if f.VersionFormat != "human" {
 		fmt.Println() // Add newline for non-human formats
 	}
-	
+
 	return nil
 }
 

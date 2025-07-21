@@ -35,7 +35,7 @@ func (n *DarwinNotifier) Notify(ctx context.Context, notification Notification) 
 		// Try terminal-notifier if available
 		if err := n.sendTerminalNotification(ctx, notification); err != nil {
 			logger.Debug("terminal-notifier failed: %v", err)
-			
+
 			// Return unified error with context
 			return errors.New(errors.ErrorTypeSystem, "all notification methods failed").
 				WithContext("notification_title", notification.Title).

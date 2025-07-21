@@ -2,13 +2,14 @@ package action
 
 import (
 	"context"
+	stderrors "errors"
 	"sort"
 
 	"github.com/SphereStacking/silentcast/internal/action/app"
 	"github.com/SphereStacking/silentcast/internal/action/script"
 	"github.com/SphereStacking/silentcast/internal/action/url"
-	"github.com/SphereStacking/silentcast/internal/elevated"
 	"github.com/SphereStacking/silentcast/internal/config"
+	"github.com/SphereStacking/silentcast/internal/elevated"
 	"github.com/SphereStacking/silentcast/internal/errors"
 )
 
@@ -39,7 +40,7 @@ func (m *Manager) Execute(ctx context.Context, spellName string) error {
 			availableSpells = append(availableSpells, spell)
 		}
 		sort.Strings(availableSpells)
-		
+
 		return errors.New(errors.ErrorTypeConfig, "spell not found").
 			WithContext("spell_name", spellName).
 			WithContext("available_spells", availableSpells).
@@ -50,7 +51,8 @@ func (m *Manager) Execute(ctx context.Context, spellName string) error {
 	executor, err := m.createExecutor(&action)
 	if err != nil {
 		// Add spell context to the original error
-		if spellErr, ok := err.(*errors.SpellbookError); ok {
+		var spellErr *errors.SpellbookError
+		if stderrors.As(err, &spellErr) {
 			spellErr.Context["spell_name"] = spellName
 			return spellErr
 		}
@@ -71,7 +73,7 @@ func (m *Manager) Execute(ctx context.Context, spellName string) error {
 // createExecutor creates an executor based on action type
 func (m *Manager) createExecutor(action *config.ActionConfig) (Executor, error) {
 	var executor Executor
-	
+
 	switch action.Type {
 	case "app":
 		executor = app.NewAppExecutor(action)
@@ -85,11 +87,11 @@ func (m *Manager) createExecutor(action *config.ActionConfig) (Executor, error) 
 			WithContext("valid_types", []string{"app", "script", "url"}).
 			WithContext("suggested_action", "check action type in spellbook.yml")
 	}
-	
+
 	// Wrap with elevated executor if admin is required
 	if action.Admin {
 		executor = elevated.NewElevatedExecutor(executor, true)
 	}
-	
+
 	return executor, nil
 }

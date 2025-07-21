@@ -213,7 +213,7 @@ func (d *detector) ValidateShell(path string) (*Shell, error) {
 
 	// Check if executable (on Unix)
 	if runtime.GOOS != "windows" {
-		if info.Mode()&0111 == 0 {
+		if info.Mode()&0o111 == 0 {
 			return nil, fmt.Errorf("shell is not executable: %s", path)
 		}
 	}
@@ -235,7 +235,7 @@ func (d *detector) ValidateShell(path string) (*Shell, error) {
 }
 
 // detectShellCommand detects a shell by command name
-func (d *detector) detectShellCommand(ctx context.Context, cmd, name string, shellType ShellType) *Shell {
+func (d *detector) detectShellCommand(_ context.Context, cmd, name string, shellType ShellType) *Shell {
 	// Use 'which' or 'where' to find the shell
 	path, err := exec.LookPath(cmd)
 	if err != nil {

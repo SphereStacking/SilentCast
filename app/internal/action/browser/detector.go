@@ -112,11 +112,7 @@ func MatchBrowser(browser *Browser, name string) bool {
 
 	// Check executable name
 	execName := strings.ToLower(browser.Executable)
-	if strings.Contains(execName, normalizedName) {
-		return true
-	}
-
-	return false
+	return strings.Contains(execName, normalizedName)
 }
 
 // GetBrowserByPreference returns a browser based on preference list

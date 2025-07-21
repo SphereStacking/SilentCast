@@ -35,20 +35,20 @@ func (pr *ProgressReporter) Write(p []byte) (int, error) {
 // Report prints the current progress
 func (pr *ProgressReporter) Report() {
 	downloaded := atomic.LoadInt64(&pr.Downloaded)
-	
+
 	if pr.Total <= 0 {
 		// Unknown total size
 		fmt.Fprintf(pr.writer, "\rDownloading... %s", formatBytes(downloaded))
 		return
 	}
-	
+
 	// Calculate progress
 	percent := float64(downloaded) / float64(pr.Total) * 100
-	
+
 	// Calculate speed
 	elapsed := time.Since(pr.StartTime).Seconds()
 	speed := float64(downloaded) / elapsed
-	
+
 	// Calculate ETA
 	var eta string
 	if speed > 0 {
@@ -58,7 +58,7 @@ func (pr *ProgressReporter) Report() {
 			eta = formatDuration(time.Duration(etaSeconds * float64(time.Second)))
 		}
 	}
-	
+
 	// Create progress bar
 	barWidth := 30
 	filledWidth := int(percent / 100 * float64(barWidth))
@@ -70,7 +70,7 @@ func (pr *ProgressReporter) Report() {
 			bar += "░"
 		}
 	}
-	
+
 	// Print progress
 	fmt.Fprintf(pr.writer, "\r[%s] %.1f%% %s/%s @ %s/s",
 		bar,
@@ -79,7 +79,7 @@ func (pr *ProgressReporter) Report() {
 		formatBytes(pr.Total),
 		formatBytes(int64(speed)),
 	)
-	
+
 	if eta != "" {
 		fmt.Fprintf(pr.writer, " ETA: %s", eta)
 	}
@@ -90,7 +90,7 @@ func (pr *ProgressReporter) Done() {
 	downloaded := atomic.LoadInt64(&pr.Downloaded)
 	elapsed := time.Since(pr.StartTime)
 	speed := float64(downloaded) / elapsed.Seconds()
-	
+
 	fmt.Fprintf(pr.writer, "\r✅ Downloaded %s in %s @ %s/s\n",
 		formatBytes(downloaded),
 		formatDuration(elapsed),
@@ -104,13 +104,13 @@ func formatBytes(bytes int64) string {
 	if bytes < unit {
 		return fmt.Sprintf("%d B", bytes)
 	}
-	
+
 	div, exp := int64(unit), 0
 	for n := bytes / unit; n >= unit; n /= unit {
 		div *= unit
 		exp++
 	}
-	
+
 	units := []string{"KB", "MB", "GB", "TB"}
 	return fmt.Sprintf("%.1f %s", float64(bytes)/float64(div), units[exp])
 }
@@ -120,20 +120,20 @@ func formatDuration(d time.Duration) string {
 	if d < time.Second {
 		return "< 1s"
 	}
-	
+
 	if d < time.Minute {
 		return fmt.Sprintf("%ds", int(d.Seconds()))
 	}
-	
+
 	minutes := int(d.Minutes())
 	seconds := int(d.Seconds()) % 60
-	
+
 	if minutes < 60 {
 		return fmt.Sprintf("%dm %ds", minutes, seconds)
 	}
-	
+
 	hours := minutes / 60
-	minutes = minutes % 60
+	minutes %= 60
 	return fmt.Sprintf("%dh %dm", hours, minutes)
 }
 
@@ -157,7 +157,7 @@ func (pw *ProgressWriter) Write(p []byte) (n int, err error) {
 	if err != nil {
 		return n, err
 	}
-	
+
 	// Report progress
 	_, _ = pw.reporter.Write(p[:n]) // Error ignored as this is for progress reporting only
 	return n, nil

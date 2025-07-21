@@ -53,12 +53,12 @@ func (c *UpdateStatusCommand) IsActive(flags interface{}) bool {
 	if f, ok := flags.(*Flags); ok {
 		return f.UpdateStatus
 	}
-	
+
 	// Handle test flags (map) for unit tests
 	if flagsMap, ok := flags.(map[string]interface{}); ok {
 		return flagsMap["update-status"] == true
 	}
-	
+
 	return false
 }
 
@@ -67,7 +67,7 @@ func (c *UpdateStatusCommand) Execute(flags interface{}) error {
 	// Handle test flags (map) for unit tests
 	var verbose bool
 	var forceCheck bool
-	
+
 	if flagsMap, ok := flags.(map[string]interface{}); ok {
 		verbose = flagsMap["verbose"] == true
 		forceCheck = flagsMap["force-check"] == true
@@ -84,7 +84,7 @@ func (c *UpdateStatusCommand) Execute(flags interface{}) error {
 	// Show current version
 	currentVersion := version.GetVersionString()
 	fmt.Printf("\n📍 Current Version: %s\n", currentVersion)
-	
+
 	// Show build information if verbose
 	if verbose {
 		fmt.Printf("   Go Version: %s\n", runtime.Version())
@@ -101,11 +101,11 @@ func (c *UpdateStatusCommand) Execute(flags interface{}) error {
 		CacheDuration:  1 * time.Hour,
 	}
 
-	upd := updater.NewUpdater(cfg)
+	upd := updater.NewUpdater(&cfg)
 
 	// Check for updates
 	fmt.Println("\n🔍 Checking for updates...")
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -126,12 +126,12 @@ func (c *UpdateStatusCommand) Execute(flags interface{}) error {
 
 	if updateInfo == nil {
 		fmt.Printf("✅ You're running the latest version (%s)\n", currentVersion)
-		
+
 		// Show cache information if verbose
 		if verbose {
 			c.showCacheInfo(upd)
 		}
-		
+
 		return nil
 	}
 
@@ -140,7 +140,7 @@ func (c *UpdateStatusCommand) Execute(flags interface{}) error {
 	fmt.Printf("   Current: %s\n", currentVersion)
 	fmt.Printf("   Latest:  %s\n", updateInfo.Version)
 	fmt.Printf("   Published: %s\n", updateInfo.PublishedAt.Format("2006-01-02 15:04"))
-	
+
 	if updateInfo.Size > 0 {
 		fmt.Printf("   Size: %s\n", formatUpdateSize(updateInfo.Size))
 	}
@@ -170,7 +170,7 @@ func (c *UpdateStatusCommand) Execute(flags interface{}) error {
 }
 
 // showCacheInfo displays cache information
-func (c *UpdateStatusCommand) showCacheInfo(upd *updater.Updater) {
+func (c *UpdateStatusCommand) showCacheInfo(_ *updater.Updater) {
 	fmt.Println("\n🗂️  Cache Information:")
 	fmt.Println("   Cache directory: " + c.configPath)
 	fmt.Println("   Cache duration: 1 hour")
@@ -194,13 +194,13 @@ func formatUpdateSize(size int64) string {
 	if size < unit {
 		return fmt.Sprintf("%d B", size)
 	}
-	
+
 	div, exp := int64(unit), 0
 	for n := size / unit; n >= unit; n /= unit {
 		div *= unit
 		exp++
 	}
-	
+
 	units := []string{"KB", "MB", "GB", "TB"}
 	return fmt.Sprintf("%.1f %s", float64(size)/float64(div), units[exp])
 }

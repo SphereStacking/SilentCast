@@ -85,7 +85,7 @@ func (c *ServiceCommand) IsActive(flags interface{}) bool {
 	if !ok {
 		return false
 	}
-	
+
 	switch c.action {
 	case "install":
 		return f.ServiceInstall
@@ -121,34 +121,34 @@ func (c *ServiceCommand) Execute(flags interface{}) error {
 		fmt.Println("   • Service name: SilentCast")
 		fmt.Println("   • Start type: Automatic")
 		fmt.Println("   • To start the service: silentcast --service-start")
-		
+
 	case "uninstall":
 		fmt.Println("🔧 Uninstalling SilentCast service...")
 		if err := mgr.Uninstall(); err != nil {
 			return fmt.Errorf("failed to uninstall service: %w", err)
 		}
 		fmt.Println("✅ Service uninstalled successfully")
-		
+
 	case "start":
 		fmt.Println("🚀 Starting SilentCast service...")
 		if err := mgr.Start(); err != nil {
 			return fmt.Errorf("failed to start service: %w", err)
 		}
 		fmt.Println("✅ Service started successfully")
-		
+
 	case "stop":
 		fmt.Println("🛑 Stopping SilentCast service...")
 		if err := mgr.Stop(); err != nil {
 			return fmt.Errorf("failed to stop service: %w", err)
 		}
 		fmt.Println("✅ Service stopped successfully")
-		
+
 	case "status":
 		status, err := mgr.Status()
 		if err != nil {
 			return fmt.Errorf("failed to get service status: %w", err)
 		}
-		
+
 		fmt.Println("📊 SilentCast Service Status")
 		fmt.Println("============================")
 		fmt.Printf("Installed: %v\n", status.Installed)

@@ -63,7 +63,7 @@ func (c *CheckUpdateCommand) Execute(flags interface{}) error {
 	}
 
 	// Create updater
-	upd := updater.NewUpdater(cfg)
+	upd := updater.NewUpdater(&cfg)
 
 	// Check for updates
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -94,7 +94,7 @@ func (c *CheckUpdateCommand) Execute(flags interface{}) error {
 	fmt.Printf("  Current version: %s\n", cfg.CurrentVersion)
 	fmt.Printf("  Latest version:  %s\n", updateInfo.Version)
 	fmt.Printf("  Published:       %s\n", updateInfo.PublishedAt.Format("2006-01-02"))
-	
+
 	if updateInfo.Size > 0 {
 		fmt.Printf("  Download size:   %s\n", formatBytes(updateInfo.Size))
 	}

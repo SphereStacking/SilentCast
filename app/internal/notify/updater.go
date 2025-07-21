@@ -34,7 +34,7 @@ type UpdateNotificationConfig struct {
 func DefaultUpdateNotificationConfig() UpdateNotificationConfig {
 	return UpdateNotificationConfig{
 		Enabled:            true,
-		CheckInterval:      24 * time.Hour,  // Check daily
+		CheckInterval:      24 * time.Hour, // Check daily
 		ShowOnStartup:      true,
 		RemindInterval:     7 * 24 * time.Hour, // Remind weekly
 		AutoCheck:          true,
@@ -348,13 +348,13 @@ func formatUpdateSize(size int64) string {
 	if size < unit {
 		return fmt.Sprintf("%d B", size)
 	}
-	
+
 	div, exp := int64(unit), 0
 	for n := size / unit; n >= unit; n /= unit {
 		div *= unit
 		exp++
 	}
-	
+
 	units := []string{"KB", "MB", "GB", "TB"}
 	return fmt.Sprintf("%.1f %s", float64(size)/float64(div), units[exp])
 }

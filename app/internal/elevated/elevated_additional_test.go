@@ -99,7 +99,7 @@ func TestExecuteElevatedLinux(t *testing.T) {
 
 	// Test Linux elevation
 	err := elevatedExecutor.executeElevatedLinux(context.Background())
-	
+
 	// Expected to fail in test environment
 	if err != nil {
 		t.Logf("Linux elevation failed as expected: %v", err)
@@ -127,7 +127,7 @@ func testExecuteElevatedWindows(t *testing.T) {
 
 	// Test Windows elevation
 	err := elevatedExecutor.executeElevatedWindows(context.Background())
-	
+
 	// Expected to fail in test environment without UI
 	if err != nil {
 		t.Logf("Windows elevation failed as expected: %v", err)
@@ -147,7 +147,7 @@ func testExecuteElevatedDarwin(t *testing.T) {
 
 	// Test macOS elevation
 	err := elevatedExecutor.executeElevatedDarwin(context.Background())
-	
+
 	// Expected to fail in test environment without UI
 	if err != nil {
 		t.Logf("macOS elevation failed as expected: %v", err)
@@ -162,32 +162,32 @@ func TestUpdateActions(t *testing.T) {
 	return
 
 	/*
-	manager := action.NewManager(map[string]config.ActionConfig{
-		"test1": {
-			Type:    "script",
-			Command: "echo test1",
-		},
-	})
+		manager := action.NewManager(map[string]config.ActionConfig{
+			"test1": {
+				Type:    "script",
+				Command: "echo test1",
+			},
+		})
 
-	// Update with new actions
-	newActions := map[string]config.ActionConfig{
-		"test2": {
-			Type:    "script",  
-			Command: "echo test2",
-		},
-		"test3": {
-			Type:    "url",
-			Command: "https://example.com",
-		},
-	}
+		// Update with new actions
+		newActions := map[string]config.ActionConfig{
+			"test2": {
+				Type:    "script",
+				Command: "echo test2",
+			},
+			"test3": {
+				Type:    "url",
+				Command: "https://example.com",
+			},
+		}
 
-	manager.UpdateActions(newActions)
+		manager.UpdateActions(newActions)
 
-	// Verify update by trying to execute
-	action := newActions["test2"]
-	_, err := manager.createExecutor(&action)
-	if err != nil {
-		t.Errorf("Failed to create executor after update: %v", err)
-	}
+		// Verify update by trying to execute
+		action := newActions["test2"]
+		_, err := manager.createExecutor(&action)
+		if err != nil {
+			t.Errorf("Failed to create executor after update: %v", err)
+		}
 	*/
 }

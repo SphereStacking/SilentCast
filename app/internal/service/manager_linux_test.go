@@ -28,7 +28,7 @@ func TestLinuxManager_Install(t *testing.T) {
 	t.Run("XDG Autostart", func(t *testing.T) {
 		// Create temporary home directory for testing
 		tmpHome := t.TempDir()
-		
+
 		// Save and restore HOME
 		originalHome := os.Getenv("HOME")
 		defer func() {
@@ -43,7 +43,7 @@ func TestLinuxManager_Install(t *testing.T) {
 		}
 
 		// Check if desktop file was created
-		desktopPath := filepath.Join(tmpHome, ".config/autostart/silentcast.desktop")
+		desktopPath := filepath.Join(tmpHome, ".config", "autostart", "silentcast.desktop")
 		if _, statErr := os.Stat(desktopPath); os.IsNotExist(statErr) {
 			t.Error("Desktop file was not created")
 		}
@@ -95,7 +95,7 @@ func TestLinuxManager_Uninstall(t *testing.T) {
 	t.Run("XDG Autostart Removal", func(t *testing.T) {
 		// Create temporary home directory
 		tmpHome := t.TempDir()
-		
+
 		// Save and restore HOME
 		originalHome := os.Getenv("HOME")
 		defer func() {
@@ -116,7 +116,7 @@ func TestLinuxManager_Uninstall(t *testing.T) {
 		}
 
 		// Check if desktop file was removed
-		desktopPath := filepath.Join(tmpHome, ".config/autostart/silentcast.desktop")
+		desktopPath := filepath.Join(tmpHome, ".config", "autostart", "silentcast.desktop")
 		if _, statErr := os.Stat(desktopPath); statErr == nil {
 			t.Error("Desktop file was not removed")
 		}
@@ -174,14 +174,14 @@ func TestDesktopTemplate(t *testing.T) {
 func TestLinuxManager_Status(t *testing.T) {
 	// Create temporary home directory
 	tmpHome := t.TempDir()
-	
+
 	// Save and restore HOME
 	originalHome := os.Getenv("HOME")
 	defer func() {
 		os.Setenv("HOME", originalHome)
 	}()
 	os.Setenv("HOME", tmpHome)
-	
+
 	// Create test manager
 	mgr := &LinuxManager{
 		executable:   "/usr/local/bin/silentcast",
@@ -210,7 +210,7 @@ func TestLinuxManager_Status(t *testing.T) {
 }
 
 // TestHasSystemd tests systemd detection
-func TestHasSystemd(t *testing.T) {
+func TestHasSystemd(_ *testing.T) {
 	// This test just ensures the function doesn't panic
 	_ = hasSystemd()
 }
@@ -268,7 +268,7 @@ func TestLinuxManager_StartStopWithoutSystemd(t *testing.T) {
 func TestLinuxManager_StatusWithXDGOnly(t *testing.T) {
 	// Create temporary home directory
 	tmpHome := t.TempDir()
-	
+
 	// Save and restore HOME
 	originalHome := os.Getenv("HOME")
 	defer func() {
@@ -332,7 +332,7 @@ func TestLinuxManager_HomeDirectoryFallback(t *testing.T) {
 	defer func() {
 		os.Setenv("HOME", originalHome)
 	}()
-	
+
 	// Unset HOME environment variable
 	os.Unsetenv("HOME")
 
@@ -359,7 +359,7 @@ func TestLinuxManager_HomeDirectoryFallback(t *testing.T) {
 func TestLinuxManager_InstallUninstallErrors(t *testing.T) {
 	// Create temporary home directory
 	tmpHome := t.TempDir()
-	
+
 	// Save and restore HOME
 	originalHome := os.Getenv("HOME")
 	defer func() {

@@ -22,7 +22,11 @@ func TestNewWatcher(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create watcher: %v", err)
 	}
-	defer watcher.Stop()
+	defer func() {
+		if err := watcher.Stop(); err != nil {
+			t.Errorf("Failed to stop watcher: %v", err)
+		}
+	}()
 
 	if watcher.loader == nil {
 		t.Error("Expected loader to be created")
@@ -50,7 +54,11 @@ func TestWatcherDefaultDebounce(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create watcher: %v", err)
 	}
-	defer watcher.Stop()
+	defer func() {
+		if err := watcher.Stop(); err != nil {
+			t.Errorf("Failed to stop watcher: %v", err)
+		}
+	}()
 
 	expectedDebounce := 500 * time.Millisecond
 	if watcher.debounce != expectedDebounce {
@@ -95,7 +103,11 @@ grimoire:
 	if err != nil {
 		t.Fatalf("Failed to create watcher: %v", err)
 	}
-	defer watcher.Stop()
+	defer func() {
+		if err := watcher.Stop(); err != nil {
+			t.Errorf("Failed to stop watcher: %v", err)
+		}
+	}()
 
 	// Start watcher
 	ctx, cancel := context.WithCancel(context.Background())
@@ -182,7 +194,11 @@ grimoire: {}
 	if err != nil {
 		t.Fatalf("Failed to create watcher: %v", err)
 	}
-	defer watcher.Stop()
+	defer func() {
+		if err := watcher.Stop(); err != nil {
+			t.Errorf("Failed to stop watcher: %v", err)
+		}
+	}()
 
 	// Start watcher
 	ctx, cancel := context.WithCancel(context.Background())

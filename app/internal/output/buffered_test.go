@@ -87,7 +87,10 @@ func TestBufferedManager_Clear(t *testing.T) {
 	writer := manager.StartCapture()
 
 	// Write data
-	writer.Write([]byte("Test data"))
+	_, err := writer.Write([]byte("Test data"))
+	if err != nil {
+		t.Fatalf("Write failed: %v", err)
+	}
 
 	// Clear
 	manager.Clear()
@@ -104,12 +107,14 @@ func TestBufferedManager_Stop(t *testing.T) {
 	writer := manager.StartCapture()
 
 	// Write data
-	writer.Write([]byte("Before stop"))
+	_, err := writer.Write([]byte("Before stop"))
+	if err != nil {
+		t.Fatalf("Write failed: %v", err)
+	}
 
 	// Stop
-	err := manager.Stop()
-	if err != nil {
-		t.Fatalf("Stop failed: %v", err)
+	if stopErr := manager.Stop(); stopErr != nil {
+		t.Fatalf("Stop failed: %v", stopErr)
 	}
 
 	// Writing after stop should fail
@@ -131,13 +136,15 @@ func TestBufferedManager_Stream(t *testing.T) {
 
 	// Write data
 	testData := "Stream test data"
-	writer.Write([]byte(testData))
+	_, err := writer.Write([]byte(testData))
+	if err != nil {
+		t.Fatalf("Write failed: %v", err)
+	}
 
 	// Stream to buffer
 	var buf bytes.Buffer
-	err := manager.Stream(&buf)
-	if err != nil {
-		t.Fatalf("Stream failed: %v", err)
+	if streamErr := manager.Stream(&buf); streamErr != nil {
+		t.Fatalf("Stream failed: %v", streamErr)
 	}
 
 	// Check streamed data
