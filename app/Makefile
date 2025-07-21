@@ -186,7 +186,7 @@ lint:
 		echo "golangci-lint not found. Installing..."; \
 		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
 	fi
-	@golangci-lint run ./...
+	@PATH="$(PATH):$$(go env GOPATH)/bin" golangci-lint run ./...
 
 # Clean build artifacts
 clean:
