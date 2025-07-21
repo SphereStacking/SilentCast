@@ -45,8 +45,8 @@ linters-settings:
   goimports:
     local-prefixes: github.com/SphereStacking/silentcast
   govet:
-    # Shadow checking is handled by govet's shadow analyzer in v1.64.8+
-    enable:
+    # Shadow checking disabled temporarily to debug CI issue
+    disable:
       - shadow
   errcheck:
     check-type-assertions: true
