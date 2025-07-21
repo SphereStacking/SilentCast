@@ -72,19 +72,14 @@ jobs:
         cd app
         set -e
         echo "Running tests with detailed output..."
-        go test -v -race -tags "nogohook notray" -coverprofile=coverage.txt -covermode=atomic ./... || {
-          echo "Tests failed with exit code $?"
-          echo "Showing recent test output:"
-          tail -100 coverage.txt || true
-          exit 1
-        }
+        go test -v -race -tags "nogohook notray" -coverprofile=coverage.txt -covermode=atomic ./...
         echo "All tests completed successfully"
 
     - name: Upload coverage
       if: matrix.os == 'ubuntu-latest' && matrix.go == '1.23'
       uses: codecov/codecov-action@v3
       with:
-        file: ./coverage.txt
+        file: ./app/coverage.txt
         flags: unittests
         name: codecov-umbrella
 
