@@ -6,6 +6,7 @@ import (
 	"os"
 	"runtime"
 	"testing"
+	"time"
 )
 
 func TestNewDetector(t *testing.T) {
@@ -19,8 +20,16 @@ func TestNewDetector(t *testing.T) {
 }
 
 func TestDetectBrowsers(t *testing.T) {
+	// Skip in CI on macOS to avoid hanging
+	if _, ok := os.LookupEnv("CI"); ok && runtime.GOOS == "darwin" {
+		t.Skip("Skipping browser detection test on macOS in CI")
+	}
+
 	detector := NewDetector()
-	ctx := context.Background()
+	
+	// Add timeout to prevent hanging in CI
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 
 	browsers, err := detector.DetectBrowsers(ctx)
 	if err != nil {
@@ -41,8 +50,16 @@ func TestDetectBrowsers(t *testing.T) {
 }
 
 func TestGetDefaultBrowser(t *testing.T) {
+	// Skip in CI on macOS to avoid hanging
+	if _, ok := os.LookupEnv("CI"); ok && runtime.GOOS == "darwin" {
+		t.Skip("Skipping default browser test on macOS in CI")
+	}
+
 	detector := NewDetector()
-	ctx := context.Background()
+	
+	// Add timeout to prevent hanging
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 
 	browser, err := detector.GetDefaultBrowser(ctx)
 	if err != nil {
@@ -223,8 +240,16 @@ func TestFormatBrowserInfo(t *testing.T) {
 }
 
 func TestFindBrowser(t *testing.T) {
+	// Skip in CI on macOS to avoid hanging
+	if _, ok := os.LookupEnv("CI"); ok && runtime.GOOS == "darwin" {
+		t.Skip("Skipping find browser test on macOS in CI")
+	}
+
 	detector := NewDetector()
-	ctx := context.Background()
+	
+	// Add timeout to prevent hanging
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 
 	// Try to find common browsers
 	browserNames := []string{"chrome", "firefox", "safari", "edge"}

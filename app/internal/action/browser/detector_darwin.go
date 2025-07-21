@@ -4,7 +4,6 @@ package browser
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -23,11 +22,11 @@ func (d *darwinDetector) DetectBrowsers(ctx context.Context) ([]Browser, error) 
 	// Check Applications folder
 	browsers = append(browsers, d.detectFromApplications()...)
 
-	// Get default browser
-	defaultBrowser, _ := d.GetDefaultBrowser(ctx)
-	if defaultBrowser != nil {
+	// Get default browser without recursion
+	defaultBundleID := d.getDefaultBundleID(ctx)
+	if defaultBundleID != "" {
 		for i := range browsers {
-			if browsers[i].Executable == defaultBrowser.Executable {
+			if d.getBundleID(browsers[i].Executable) == defaultBundleID {
 				browsers[i].IsDefault = true
 			}
 		}
@@ -37,46 +36,63 @@ func (d *darwinDetector) DetectBrowsers(ctx context.Context) ([]Browser, error) 
 }
 
 func (d *darwinDetector) GetDefaultBrowser(ctx context.Context) (*Browser, error) {
-	// Use LSCopyDefaultHandlerForURLScheme to get default browser
-	cmd := exec.CommandContext(ctx, "defaults", "read",
-		"com.apple.LaunchServices/com.apple.launchservices.secure",
-		"LSHandlers")
-	_, err := cmd.Output()
+	// Get all browsers first
+	browsers, err := d.DetectBrowsers(ctx)
 	if err != nil {
-		// Try alternative method using open command
-		return d.getDefaultBrowserUsingOpen(ctx)
+		return nil, err
 	}
 
-	// Parse output to find HTTP handler
-	// This is complex, so we'll use the simpler open method
-	return d.getDefaultBrowserUsingOpen(ctx)
-}
-
-func (d *darwinDetector) getDefaultBrowserUsingOpen(ctx context.Context) (*Browser, error) {
-	// First, open a URL to ensure browser is running
-	openCmd := exec.CommandContext(ctx, "open", "-g", "https://")
-	_ = openCmd.Run()
-
-	// Get default browser bundle ID
-	cmd := exec.CommandContext(ctx, "osascript", "-e",
-		`tell application "System Events" to get bundle identifier of (first process whose frontmost is true)`)
-	output, err := cmd.Output()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get default browser: %w", err)
-	}
-
-	bundleID := strings.TrimSpace(string(output))
-
-	// Find browser by bundle ID
-	browsers, _ := d.DetectBrowsers(ctx)
+	// Find the default one
 	for i := range browsers {
-		if d.getBundleID(browsers[i].Executable) == bundleID {
-			browsers[i].IsDefault = true
+		if browsers[i].IsDefault {
 			return &browsers[i], nil
 		}
 	}
 
 	return nil, ErrNoBrowserFound
+}
+
+func (d *darwinDetector) getDefaultBundleID(ctx context.Context) string {
+	// Try to get default browser bundle ID using Launch Services
+	cmd := exec.CommandContext(ctx, "defaults", "read",
+		"com.apple.LaunchServices/com.apple.launchservices.secure",
+		"LSHandlers")
+	output, err := cmd.Output()
+	if err == nil {
+		// Parse for HTTP handler - simplified approach
+		lines := strings.Split(string(output), "\n")
+		for i, line := range lines {
+			if strings.Contains(line, "LSHandlerURLScheme = http;") ||
+				strings.Contains(line, "LSHandlerURLScheme = https;") {
+				// Look for bundle ID in next few lines
+				for j := i; j < len(lines) && j < i+5; j++ {
+					if strings.Contains(lines[j], "LSHandlerRoleAll = ") {
+						parts := strings.Split(lines[j], "\"")
+						if len(parts) >= 2 {
+							return parts[1]
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Fallback: use duti if available
+	dutiCmd := exec.CommandContext(ctx, "duti", "-x", "html")
+	if output, err := dutiCmd.Output(); err == nil {
+		// Output format: com.apple.Safari
+		return strings.TrimSpace(string(output))
+	}
+
+	// Final fallback: check common defaults
+	defaultsCmd := exec.CommandContext(ctx, "defaults", "read",
+		"com.apple.safari", "DefaultBrowserPromptingState")
+	if _, err := defaultsCmd.Output(); err == nil {
+		// If Safari settings exist and no error, Safari might be default
+		return "com.apple.Safari"
+	}
+
+	return ""
 }
 
 func (d *darwinDetector) FindBrowser(ctx context.Context, name string) (*Browser, error) {
