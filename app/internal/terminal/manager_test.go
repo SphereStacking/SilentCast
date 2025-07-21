@@ -33,10 +33,10 @@ func (m *mockDetector) FindTerminal(nameOrCommand string) (Terminal, error) {
 type mockBuilder struct {
 	buildErr      error
 	supportedCmds map[string]bool
-	buildFunc     func(terminal Terminal, cmd *exec.Cmd, options Options) ([]string, error)
+	buildFunc     func(terminal Terminal, cmd *exec.Cmd, options *Options) ([]string, error)
 }
 
-func (m *mockBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, options Options) ([]string, error) {
+func (m *mockBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, options *Options) ([]string, error) {
 	if m.buildFunc != nil {
 		return m.buildFunc(terminal, cmd, options)
 	}
@@ -257,7 +257,7 @@ func TestBaseManager_SelectTerminal(t *testing.T) {
 			builder := &mockBuilder{}
 			manager := newBaseManager(detector, builder)
 
-			got, err := manager.selectTerminal(tt.options)
+			got, err := manager.selectTerminal(&tt.options)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("selectTerminal() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -345,7 +345,7 @@ func TestBaseManager_ExecuteInTerminal_BuildError(t *testing.T) {
 	manager := newBaseManager(detector, builder)
 
 	cmd := exec.Command("echo", "test")
-	err := manager.ExecuteInTerminal(context.Background(), cmd, Options{})
+	err := manager.ExecuteInTerminal(context.Background(), cmd, &Options{})
 
 	if err == nil {
 		t.Error("Expected error from builder, got nil")
@@ -369,7 +369,7 @@ func TestBaseManager_ExecuteInTerminal_SelectTerminalError(t *testing.T) {
 	manager := newBaseManager(detector, builder)
 
 	cmd := exec.Command("echo", "test")
-	err := manager.ExecuteInTerminal(context.Background(), cmd, Options{})
+	err := manager.ExecuteInTerminal(context.Background(), cmd, &Options{})
 
 	if err == nil {
 		t.Error("Expected error when no terminals available, got nil")
@@ -385,7 +385,7 @@ func TestBaseManager_ExecuteInTerminal_CompleteFlow(t *testing.T) {
 
 	buildCalled := false
 	builder := &mockBuilder{
-		buildFunc: func(terminal Terminal, cmd *exec.Cmd, options Options) ([]string, error) {
+		buildFunc: func(terminal Terminal, cmd *exec.Cmd, options *Options) ([]string, error) {
 			buildCalled = true
 			return []string{"test output"}, nil
 		},
@@ -400,7 +400,7 @@ func TestBaseManager_ExecuteInTerminal_CompleteFlow(t *testing.T) {
 	}
 
 	// Since we're using 'echo' as the terminal command, it will execute quickly
-	err := manager.ExecuteInTerminal(context.Background(), cmd, options)
+	err := manager.ExecuteInTerminal(context.Background(), cmd, &options)
 
 	// The command should execute without error (echo exists)
 	if err != nil {
@@ -444,7 +444,7 @@ func TestBaseManager_ExecuteInTerminal_WorkingDirPriority(t *testing.T) {
 			}
 
 			builder := &mockBuilder{
-				buildFunc: func(terminal Terminal, cmd *exec.Cmd, options Options) ([]string, error) {
+				buildFunc: func(terminal Terminal, cmd *exec.Cmd, options *Options) ([]string, error) {
 					return []string{"test"}, nil
 				},
 			}
@@ -459,7 +459,7 @@ func TestBaseManager_ExecuteInTerminal_WorkingDirPriority(t *testing.T) {
 			}
 
 			// Execute - we're testing the code path, not the actual execution
-			_ = manager.ExecuteInTerminal(context.Background(), cmd, options)
+			_ = manager.ExecuteInTerminal(context.Background(), cmd, &options)
 		})
 	}
 }

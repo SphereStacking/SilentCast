@@ -3,8 +3,9 @@ package config
 import (
 	"time"
 
-	"github.com/SphereStacking/silentcast/internal/terminal"
 	"gopkg.in/yaml.v3"
+
+	"github.com/SphereStacking/silentcast/internal/terminal"
 )
 
 // Config represents the main configuration structure

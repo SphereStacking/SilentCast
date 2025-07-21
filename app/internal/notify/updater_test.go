@@ -224,19 +224,19 @@ func TestUpdateNotificationManager_HandleUpdateAction(t *testing.T) {
 	ctx := context.Background()
 
 	// Test view action (allow system notification failures)
-	err := manager.HandleUpdateAction(ctx, UpdateActionView, updateInfo, nil)
+	err := manager.HandleUpdateAction(ctx, UpdateActionView, &updateInfo, nil)
 	_ = err // Allow failures in test environment
 
 	// Test remind action (allow system notification failures)
-	err = manager.HandleUpdateAction(ctx, UpdateActionRemind, updateInfo, nil)
+	err = manager.HandleUpdateAction(ctx, UpdateActionRemind, &updateInfo, nil)
 	_ = err // Allow failures in test environment
 
 	// Test dismiss action (allow system notification failures)
-	err = manager.HandleUpdateAction(ctx, UpdateActionDismiss, updateInfo, nil)
+	err = manager.HandleUpdateAction(ctx, UpdateActionDismiss, &updateInfo, nil)
 	_ = err // Allow failures in test environment
 
 	// Test unknown action
-	err = manager.HandleUpdateAction(ctx, UpdateAction("unknown"), updateInfo, nil)
+	err = manager.HandleUpdateAction(ctx, UpdateAction("unknown"), &updateInfo, nil)
 	if err == nil {
 		t.Error("HandleUpdateAction should fail for unknown action")
 	}

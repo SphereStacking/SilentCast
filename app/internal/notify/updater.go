@@ -96,7 +96,7 @@ func (m *UpdateNotificationManager) NotifyUpdateAvailable(ctx context.Context, c
 		notification.Message += fmt.Sprintf(" (%s)", sizeStr)
 	}
 
-	return m.notifier.NotifyUpdate(ctx, notification)
+	return m.notifier.NotifyUpdate(ctx, &notification)
 }
 
 // NotifyUpdateCheckFailed sends a notification about update check failure
@@ -221,7 +221,7 @@ func (m *UpdateNotificationManager) checkAndNotify(ctx context.Context, upd *upd
 }
 
 // HandleUpdateAction processes user actions on update notifications
-func (m *UpdateNotificationManager) HandleUpdateAction(ctx context.Context, action UpdateAction, updateInfo UpdateNotification, upd *updater.Updater) error {
+func (m *UpdateNotificationManager) HandleUpdateAction(ctx context.Context, action UpdateAction, updateInfo *UpdateNotification, upd *updater.Updater) error {
 	switch action {
 	case UpdateActionUpdate:
 		return m.handleUpdateAction(ctx, updateInfo, upd)
@@ -237,7 +237,7 @@ func (m *UpdateNotificationManager) HandleUpdateAction(ctx context.Context, acti
 }
 
 // handleUpdateAction starts the update process
-func (m *UpdateNotificationManager) handleUpdateAction(ctx context.Context, updateInfo UpdateNotification, upd *updater.Updater) error {
+func (m *UpdateNotificationManager) handleUpdateAction(ctx context.Context, updateInfo *UpdateNotification, upd *updater.Updater) error {
 	// Notify that update is starting
 	if err := m.NotifyUpdateStarted(ctx, updateInfo.NewVersion); err != nil {
 		return err
@@ -276,7 +276,7 @@ func (m *UpdateNotificationManager) handleUpdateAction(ctx context.Context, upda
 }
 
 // handleViewAction shows release notes
-func (m *UpdateNotificationManager) handleViewAction(ctx context.Context, updateInfo UpdateNotification) error {
+func (m *UpdateNotificationManager) handleViewAction(ctx context.Context, updateInfo *UpdateNotification) error {
 	// For now, just send a notification with full release notes
 	// In the future, this could open a web browser or dedicated viewer
 	notification := Notification{
@@ -289,7 +289,7 @@ func (m *UpdateNotificationManager) handleViewAction(ctx context.Context, update
 }
 
 // handleRemindAction schedules a reminder
-func (m *UpdateNotificationManager) handleRemindAction(ctx context.Context, updateInfo UpdateNotification) error {
+func (m *UpdateNotificationManager) handleRemindAction(ctx context.Context, updateInfo *UpdateNotification) error {
 	// Schedule a reminder after the configured interval
 	go func() {
 		timer := time.NewTimer(m.config.RemindInterval)
@@ -315,7 +315,7 @@ func (m *UpdateNotificationManager) handleRemindAction(ctx context.Context, upda
 				Actions:        []string{"update", "view", "dismiss"},
 			}
 			// Best effort reminder notification
-			_ = m.notifier.NotifyUpdate(ctx, reminderNotif)
+			_ = m.notifier.NotifyUpdate(ctx, &reminderNotif)
 		}
 	}()
 
@@ -330,7 +330,7 @@ func (m *UpdateNotificationManager) handleRemindAction(ctx context.Context, upda
 }
 
 // handleDismissAction dismisses the update notification
-func (m *UpdateNotificationManager) handleDismissAction(ctx context.Context, updateInfo UpdateNotification) error {
+func (m *UpdateNotificationManager) handleDismissAction(ctx context.Context, updateInfo *UpdateNotification) error {
 	// For now, just send a confirmation
 	// In the future, this could store dismissed versions to avoid showing them again
 	notification := Notification{

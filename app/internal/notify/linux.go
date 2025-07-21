@@ -191,7 +191,7 @@ func (n *LinuxNotifier) sendGDBusNotification(ctx context.Context, notification 
 		title = n.appName
 	}
 
-	cmd := exec.CommandContext(ctx, "gdbus", "call",
+	cmd := exec.CommandContext(ctx, "gdbus", "call", // nosec G204: gdbus is a trusted system command
 		"--session",
 		"--dest=org.freedesktop.Notifications",
 		"--object-path=/org/freedesktop/Notifications",

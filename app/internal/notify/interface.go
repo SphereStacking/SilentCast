@@ -123,13 +123,13 @@ type UpdateNotifier interface {
 	Notifier
 
 	// ShowUpdateNotification displays an update notification with actions
-	ShowUpdateNotification(ctx context.Context, notification UpdateNotification) error
+	ShowUpdateNotification(ctx context.Context, notification *UpdateNotification) error
 
 	// SupportsUpdateActions returns true if the notifier supports interactive actions
 	SupportsUpdateActions() bool
 
 	// OnUpdateAction handles user actions on update notifications
-	OnUpdateAction(action UpdateAction, updateInfo UpdateNotification) error
+	OnUpdateAction(action UpdateAction, updateInfo *UpdateNotification) error
 }
 
 // Manager manages multiple notifiers
@@ -325,10 +325,10 @@ func (m *Manager) GetOutputNotifiers() []OutputNotifier {
 }
 
 // NotifyTimeout sends a timeout-specific notification
-func (m *Manager) NotifyTimeout(ctx context.Context, notification TimeoutNotification) error {
+func (m *Manager) NotifyTimeout(ctx context.Context, notification *TimeoutNotification) error {
 	// Set the title to include the action name
 	notification.Notification.Title = fmt.Sprintf("⏱️ Timeout: %s", notification.ActionName)
-	
+
 	// Format a detailed timeout message
 	message := fmt.Sprintf("Script execution timed out after %d seconds", notification.TimeoutDuration)
 
@@ -367,7 +367,7 @@ func (m *Manager) NotifyTimeout(ctx context.Context, notification TimeoutNotific
 }
 
 // NotifyUpdate sends an update notification through all capable notifiers
-func (m *Manager) NotifyUpdate(ctx context.Context, notification UpdateNotification) error {
+func (m *Manager) NotifyUpdate(ctx context.Context, notification *UpdateNotification) error {
 	var lastError error
 	notified := false
 

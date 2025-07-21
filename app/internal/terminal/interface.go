@@ -8,7 +8,7 @@ import (
 // Manager defines the interface for managing terminal operations
 type Manager interface {
 	// ExecuteInTerminal executes a command in a new terminal window
-	ExecuteInTerminal(ctx context.Context, cmd *exec.Cmd, options Options) error
+	ExecuteInTerminal(ctx context.Context, cmd *exec.Cmd, options *Options) error
 
 	// GetAvailableTerminals returns a list of available terminal emulators
 	GetAvailableTerminals() []Terminal
@@ -94,7 +94,7 @@ type TerminalFeatures struct {
 // CommandBuilder creates terminal-specific command arguments
 type CommandBuilder interface {
 	// BuildCommand creates the command arguments for executing in a terminal
-	BuildCommand(terminal Terminal, cmd *exec.Cmd, options Options) ([]string, error)
+	BuildCommand(terminal Terminal, cmd *exec.Cmd, options *Options) ([]string, error)
 
 	// SupportsTerminal checks if this builder supports the given terminal
 	SupportsTerminal(terminal Terminal) bool

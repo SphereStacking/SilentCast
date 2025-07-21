@@ -297,8 +297,8 @@ func (l *Loader) mergeForValidation(dst, src *Config) {
 	}
 
 	// Merge grimoire (overwrite)
-	for k, v := range src.Actions {
-		dst.Actions[k] = v
+	for k := range src.Actions {
+		dst.Actions[k] = src.Actions[k]
 	}
 
 	// Merge updater config
@@ -369,8 +369,8 @@ func (l *Loader) merge(dst, src *Config) {
 	}
 
 	// Merge grimoire (overwrite)
-	for k, v := range src.Actions {
-		dst.Actions[k] = v
+	for k := range src.Actions {
+		dst.Actions[k] = src.Actions[k]
 	}
 }
 

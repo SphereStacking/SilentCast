@@ -20,8 +20,8 @@ func (d *mockFullDetector) DetectTerminals() []Terminal {
 func (d *mockFullDetector) FindTerminal(nameOrCommand string) (Terminal, error) {
 	nameOrCommand = strings.ToLower(nameOrCommand)
 	for _, term := range d.terminals {
-		if strings.ToLower(term.Name) == nameOrCommand ||
-			strings.ToLower(term.Command) == nameOrCommand {
+		if strings.EqualFold(term.Name, nameOrCommand) ||
+			strings.EqualFold(term.Command, nameOrCommand) {
 			return term, nil
 		}
 	}

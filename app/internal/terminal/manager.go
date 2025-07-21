@@ -28,7 +28,7 @@ func newBaseManager(detector Detector, builder CommandBuilder) *baseManager {
 }
 
 // ExecuteInTerminal implements the Manager interface
-func (m *baseManager) ExecuteInTerminal(ctx context.Context, cmd *exec.Cmd, options Options) error {
+func (m *baseManager) ExecuteInTerminal(ctx context.Context, cmd *exec.Cmd, options *Options) error {
 	// Get the terminal to use
 	terminal, err := m.selectTerminal(options)
 	if err != nil {
@@ -46,7 +46,7 @@ func (m *baseManager) ExecuteInTerminal(ctx context.Context, cmd *exec.Cmd, opti
 	}
 
 	// Create the terminal command
-	termCmd := exec.CommandContext(ctx, terminal.Command, args...)
+	termCmd := exec.CommandContext(ctx, terminal.Command, args...) // nosec G204: terminal.Command is from predefined list of trusted terminals
 
 	// Set working directory if specified
 	if options.WorkingDir != "" {
@@ -144,7 +144,7 @@ func (m *baseManager) IsTerminalAvailable(terminal Terminal) bool {
 }
 
 // selectTerminal chooses the appropriate terminal based on options
-func (m *baseManager) selectTerminal(options Options) (Terminal, error) {
+func (m *baseManager) selectTerminal(options *Options) (Terminal, error) {
 	// If a preferred terminal is specified, try to use it
 	if options.PreferredTerminal.Command != "" {
 		if m.IsTerminalAvailable(options.PreferredTerminal) {

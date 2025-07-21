@@ -22,7 +22,7 @@ func NewWindowsManager() Manager {
 }
 
 // ExecuteInTerminal overrides to handle Windows-specific behavior
-func (m *WindowsManager) ExecuteInTerminal(ctx context.Context, cmd *exec.Cmd, options Options) error {
+func (m *WindowsManager) ExecuteInTerminal(ctx context.Context, cmd *exec.Cmd, options *Options) error {
 	// For Windows Terminal (wt.exe), we need to use it directly
 	terminal, err := m.selectTerminal(options)
 	if err != nil {

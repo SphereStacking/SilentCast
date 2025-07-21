@@ -289,7 +289,7 @@ func TestManager_NotifyTimeout(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockNotif.notified = false
-			err := m.NotifyTimeout(ctx, tt.notification)
+			err := m.NotifyTimeout(ctx, &tt.notification)
 			if err != nil {
 				t.Errorf("NotifyTimeout failed: %v", err)
 			}

@@ -8,7 +8,7 @@ import (
 )
 
 // baseCommandBuilder provides common command building functionality
-type baseCommandBuilder struct {}
+type baseCommandBuilder struct{}
 
 // NewCommandBuilder creates a platform-specific command builder
 func NewCommandBuilder() CommandBuilder {
@@ -25,7 +25,7 @@ func NewCommandBuilder() CommandBuilder {
 }
 
 // BuildCommand returns an error for unsupported platforms
-func (b *baseCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, options Options) ([]string, error) {
+func (b *baseCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, options *Options) ([]string, error) {
 	return nil, fmt.Errorf("command building not supported on this platform")
 }
 
@@ -43,7 +43,7 @@ func NewWindowsCommandBuilder() CommandBuilder {
 }
 
 // BuildCommand creates Windows terminal commands
-func (b *WindowsCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, options Options) ([]string, error) {
+func (b *WindowsCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, options *Options) ([]string, error) {
 	// Build the command string
 	cmdStr := buildCommandString(cmd)
 
@@ -95,7 +95,7 @@ func (b *WindowsCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, o
 		startArgs := []string{"/c", "start"}
 
 		// Add title
-		startArgs = append(startArgs, fmt.Sprintf("\"%s\"", options.Title))
+		startArgs = append(startArgs, fmt.Sprintf("%q", options.Title))
 
 		// Apply window size and position if supported
 		if options.Customization != nil && terminal.SupportedFeatures.WindowSize {
@@ -155,7 +155,7 @@ func NewMacOSCommandBuilder() CommandBuilder {
 }
 
 // BuildCommand creates macOS terminal commands
-func (b *MacOSCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, options Options) ([]string, error) {
+func (b *MacOSCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, options *Options) ([]string, error) {
 	cmdStr := buildCommandString(cmd)
 
 	switch {
@@ -286,7 +286,7 @@ func NewLinuxCommandBuilder() CommandBuilder {
 }
 
 // BuildCommand creates Linux terminal commands
-func (b *LinuxCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, options Options) ([]string, error) {
+func (b *LinuxCommandBuilder) BuildCommand(terminal Terminal, cmd *exec.Cmd, options *Options) ([]string, error) {
 	cmdStr := buildCommandString(cmd)
 
 	switch terminal.Command {
@@ -469,7 +469,7 @@ func buildCommandString(cmd *exec.Cmd) string {
 	// Quote parts that contain spaces
 	for i, part := range parts {
 		if strings.Contains(part, " ") {
-			parts[i] = fmt.Sprintf(`"%s"`, part)
+			parts[i] = fmt.Sprintf("%q", part)
 		}
 	}
 

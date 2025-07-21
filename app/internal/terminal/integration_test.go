@@ -45,7 +45,7 @@ func TestTerminalManager_Integration(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err = manager.ExecuteInTerminal(ctx, cmd, options)
+	err = manager.ExecuteInTerminal(ctx, cmd, &options)
 	if err != nil {
 		t.Logf("ExecuteInTerminal failed (may be expected in CI): %v", err)
 	}
@@ -70,7 +70,7 @@ func TestTerminalManager_KeepOpen(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	err := manager.ExecuteInTerminal(ctx, cmd, options)
+	err := manager.ExecuteInTerminal(ctx, cmd, &options)
 	if err != nil {
 		t.Logf("ExecuteInTerminal with keep_open failed (may be expected in CI): %v", err)
 	}

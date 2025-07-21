@@ -23,7 +23,7 @@ func NewDarwinManager() Manager {
 }
 
 // ExecuteInTerminal overrides to handle macOS-specific behavior
-func (m *DarwinManager) ExecuteInTerminal(ctx context.Context, cmd *exec.Cmd, options Options) error {
+func (m *DarwinManager) ExecuteInTerminal(ctx context.Context, cmd *exec.Cmd, options *Options) error {
 	// Get the terminal to use
 	terminal, err := m.selectTerminal(options)
 	if err != nil {

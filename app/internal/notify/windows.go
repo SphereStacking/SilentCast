@@ -116,7 +116,7 @@ objShell.Popup "%s" & vbCrLf & "%s", 10, "%s", %d
 	tempDir := os.TempDir()
 	scriptPath := filepath.Join(tempDir, "silentcast_notify.vbs")
 
-	if err := os.WriteFile(scriptPath, []byte(vbscript), 0600); err != nil {
+	if err := os.WriteFile(scriptPath, []byte(vbscript), 0o600); err != nil {
 		return errors.Wrap(errors.ErrorTypeSystem, "failed to write VBScript", err).
 			WithContext("notification_title", notification.Title).
 			WithContext("method", "balloon").

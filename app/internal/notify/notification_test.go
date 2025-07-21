@@ -285,10 +285,10 @@ func TestNotificationWithLongContent(t *testing.T) {
 		Level:   LevelInfo,
 	}
 
-	if len(notif.Title) == 0 {
+	if notif.Title == "" {
 		t.Error("Long title should be preserved")
 	}
-	if len(notif.Message) == 0 {
+	if notif.Message == "" {
 		t.Error("Long message should be preserved")
 	}
 }

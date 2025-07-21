@@ -108,7 +108,7 @@ func TestWindowsCommandBuilder_BuildCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := builder.BuildCommand(tt.terminal, cmd, tt.options)
+			got, err := builder.BuildCommand(tt.terminal, cmd, &tt.options)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BuildCommand() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -204,7 +204,7 @@ func TestMacOSCommandBuilder_BuildCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := builder.BuildCommand(tt.terminal, cmd, tt.options)
+			got, err := builder.BuildCommand(tt.terminal, cmd, &tt.options)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BuildCommand() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -269,7 +269,7 @@ func TestLinuxCommandBuilder_BuildCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := builder.BuildCommand(tt.terminal, cmd, tt.options)
+			got, err := builder.BuildCommand(tt.terminal, cmd, &tt.options)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BuildCommand() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -157,7 +157,7 @@ func (n *ConsoleNotifier) SupportsRichContent() bool {
 }
 
 // ShowUpdateNotification displays an update notification with actions
-func (n *ConsoleNotifier) ShowUpdateNotification(ctx context.Context, notification UpdateNotification) error {
+func (n *ConsoleNotifier) ShowUpdateNotification(ctx context.Context, notification *UpdateNotification) error {
 	// Display the basic notification first
 	if err := n.Notify(ctx, notification.Notification); err != nil {
 		return err
@@ -212,7 +212,7 @@ func (n *ConsoleNotifier) SupportsUpdateActions() bool {
 }
 
 // OnUpdateAction handles user actions on update notifications
-func (n *ConsoleNotifier) OnUpdateAction(action UpdateAction, updateInfo UpdateNotification) error {
+func (n *ConsoleNotifier) OnUpdateAction(action UpdateAction, updateInfo *UpdateNotification) error {
 	// Console notifier doesn't handle actions - they must be handled externally
 	return appErrors.New(appErrors.ErrorTypeSystem, "console notifier does not support interactive actions").
 		WithContext("notifier_type", "console").

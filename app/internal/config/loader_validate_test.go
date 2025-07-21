@@ -131,7 +131,7 @@ invalid: yaml: with: too: many: colons:
 
 			// Write config
 			configPath := filepath.Join(tempDir, "spellbook.yml")
-			err := os.WriteFile(configPath, []byte(tt.config), 0644)
+			err := os.WriteFile(configPath, []byte(tt.config), 0o644)
 			if err != nil {
 				t.Fatalf("Failed to write config: %v", err)
 			}
@@ -184,7 +184,7 @@ func TestLoader_Validate_EmptyConfig(t *testing.T) {
 
 	// Create empty config
 	configPath := filepath.Join(tempDir, "spellbook.yml")
-	err := os.WriteFile(configPath, []byte(""), 0644)
+	err := os.WriteFile(configPath, []byte(""), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}
@@ -254,7 +254,7 @@ grimoire:
 `
 
 	configPath := filepath.Join(tempDir, "spellbook.yml")
-	err := os.WriteFile(configPath, []byte(config), 0644)
+	err := os.WriteFile(configPath, []byte(config), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}
@@ -292,7 +292,7 @@ grimoire:
 `
 
 	configPath := filepath.Join(tempDir, "spellbook.yml")
-	err := os.WriteFile(configPath, []byte(config), 0644)
+	err := os.WriteFile(configPath, []byte(config), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}
@@ -360,7 +360,7 @@ grimoire:
 `
 
 	configPath := filepath.Join(tempDir, "spellbook.yml")
-	err := os.WriteFile(configPath, []byte(config), 0644)
+	err := os.WriteFile(configPath, []byte(config), 0o644)
 	if err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}

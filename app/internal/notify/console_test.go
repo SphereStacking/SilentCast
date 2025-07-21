@@ -228,7 +228,7 @@ func TestConsoleNotifier_ShowUpdateNotification(t *testing.T) {
 		Actions:        []string{"update", "skip"},
 	}
 
-	err := notifier.ShowUpdateNotification(ctx, notification)
+	err := notifier.ShowUpdateNotification(ctx, &notification)
 	if err != nil {
 		t.Errorf("ShowUpdateNotification() error = %v", err)
 	}
@@ -281,7 +281,7 @@ func TestConsoleNotifier_ShowUpdateNotification_LongReleaseNotes(t *testing.T) {
 		ReleaseNotes:   longNotes,
 	}
 
-	err := notifier.ShowUpdateNotification(ctx, notification)
+	err := notifier.ShowUpdateNotification(ctx, &notification)
 	if err != nil {
 		t.Errorf("ShowUpdateNotification() error = %v", err)
 	}
@@ -312,7 +312,7 @@ func TestConsoleNotifier_OnUpdateAction(t *testing.T) {
 	notifier := NewConsoleNotifier()
 
 	updateInfo := UpdateNotification{}
-	err := notifier.OnUpdateAction(UpdateActionUpdate, updateInfo)
+	err := notifier.OnUpdateAction(UpdateActionUpdate, &updateInfo)
 
 	if err == nil {
 		t.Error("OnUpdateAction should return error for console notifier")
@@ -439,7 +439,7 @@ func TestConsoleNotifier_FormatUpdateSize(t *testing.T) {
 				DownloadSize:   tt.downloadSize,
 			}
 
-			_ = notifier.ShowUpdateNotification(ctx, notification)
+			_ = notifier.ShowUpdateNotification(ctx, &notification)
 
 			// Restore stderr and read output
 			w.Close()

@@ -23,7 +23,7 @@ type ValidationError struct {
 	Column     int // Column number in YAML file
 }
 
-func (e ValidationError) Error() string {
+func (e *ValidationError) Error() string {
 	if e.Line > 0 {
 		return fmt.Sprintf("line %d: %s: %s", e.Line, e.Field, e.Message)
 	}
@@ -33,7 +33,7 @@ func (e ValidationError) Error() string {
 // Validator performs comprehensive configuration validation
 type Validator struct {
 	config     *Config
-	errors     []ValidationError
+	errors     []*ValidationError
 	yamlNode   *yaml.Node
 	lineMapper map[string]int // Maps field paths to line numbers
 }
@@ -41,15 +41,15 @@ type Validator struct {
 // NewValidator creates a new configuration validator
 func NewValidator() *Validator {
 	return &Validator{
-		errors:     make([]ValidationError, 0),
+		errors:     make([]*ValidationError, 0),
 		lineMapper: make(map[string]int),
 	}
 }
 
 // Validate performs comprehensive validation on the configuration
-func (v *Validator) Validate(cfg *Config) []ValidationError {
+func (v *Validator) Validate(cfg *Config) []*ValidationError {
 	v.config = cfg
-	v.errors = make([]ValidationError, 0)
+	v.errors = make([]*ValidationError, 0)
 
 	// Validate all sections
 	v.validateHotkeys()
@@ -63,7 +63,7 @@ func (v *Validator) Validate(cfg *Config) []ValidationError {
 }
 
 // ValidateWithYAML performs validation with YAML node information for line numbers
-func (v *Validator) ValidateWithYAML(cfg *Config, yamlContent []byte) []ValidationError {
+func (v *Validator) ValidateWithYAML(cfg *Config, yamlContent []byte) []*ValidationError {
 	// Parse YAML to get node information
 	var node yaml.Node
 	if err := yaml.Unmarshal(yamlContent, &node); err == nil {
@@ -109,7 +109,7 @@ func (v *Validator) buildLineMapper(node *yaml.Node, prefix string) {
 // addError adds a validation error
 func (v *Validator) addError(field string, value interface{}, message string, suggestion string) {
 	line := v.lineMapper[field]
-	v.errors = append(v.errors, ValidationError{
+	v.errors = append(v.errors, &ValidationError{
 		Field:      field,
 		Value:      value,
 		Message:    message,
@@ -236,7 +236,8 @@ func (v *Validator) validateSpells() {
 
 // validateGrimoire validates grimoire action definitions
 func (v *Validator) validateGrimoire() {
-	for name, action := range v.config.Actions {
+	for name := range v.config.Actions {
+		action := v.config.Actions[name]
 		fieldPrefix := fmt.Sprintf("grimoire.%s", name)
 
 		// Validate action type

@@ -145,7 +145,7 @@ func TestTerminalCustomization(t *testing.T) {
 			// Create a dummy command
 			cmd := exec.Command("echo", "test")
 
-			args, err := builder.BuildCommand(tt.terminal, cmd, tt.options)
+			args, err := builder.BuildCommand(tt.terminal, cmd, &tt.options)
 
 			if tt.expectError {
 				if err == nil {
@@ -264,7 +264,7 @@ func TestCustomizationValidation(t *testing.T) {
 			cmd := exec.Command("echo", "test")
 
 			// This should not panic even with invalid input
-			_, err := builder.BuildCommand(terminal, cmd, options)
+			_, err := builder.BuildCommand(terminal, cmd, &options)
 
 			// baseCommandBuilder always returns an error, but shouldn't panic
 			if err == nil {
