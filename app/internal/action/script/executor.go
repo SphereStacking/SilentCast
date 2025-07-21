@@ -158,15 +158,15 @@ func (e *ScriptExecutor) Execute(ctx context.Context) error {
 		
 		// Determine notification level based on error
 		if err != nil {
-			e.notifier.Error(ctx, title, fmt.Sprintf("Failed: %v\n\nOutput:\n%s", err, capturedOutput))
+			_ = e.notifier.Error(ctx, title, fmt.Sprintf("Failed: %v\n\nOutput:\n%s", err, capturedOutput))
 		} else if capturedOutput != "" {
-			e.notifier.Success(ctx, title, capturedOutput)
+			_ = e.notifier.Success(ctx, title, capturedOutput)
 		} else {
-			e.notifier.Info(ctx, title, "Command completed with no output")
+			_ = e.notifier.Info(ctx, title, "Command completed with no output")
 		}
 		
 		// Clean up output manager
-		outputManager.Stop()
+		_ = outputManager.Stop()
 	}
 	
 	if err != nil {

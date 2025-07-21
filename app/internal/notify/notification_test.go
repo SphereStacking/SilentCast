@@ -213,7 +213,7 @@ func TestNotificationCopy(t *testing.T) {
 	if original.Title != "Original Title" {
 		t.Error("Original notification was modified when copying by value")
 	}
-	if copy.Title != "Modified Title" {
+	if notifCopy.Title != "Modified Title" {
 		t.Error("Copy was not modified correctly")
 	}
 }

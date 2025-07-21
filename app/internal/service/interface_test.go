@@ -89,11 +89,11 @@ func TestServiceStatusCopy(t *testing.T) {
 	}
 	
 	// Copy should be modified
-	if !copy.Running {
+	if !statusCopy.Running {
 		t.Error("Copied ServiceStatus was not modified correctly")
 	}
 	
-	if copy.Message != "Service started" {
+	if statusCopy.Message != "Service started" {
 		t.Error("Copied ServiceStatus message was not modified correctly")
 	}
 }

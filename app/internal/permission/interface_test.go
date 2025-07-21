@@ -88,11 +88,11 @@ func TestPermissionCopy(t *testing.T) {
 	}
 	
 	// Copy should be modified
-	if copy.Status != StatusDenied {
+	if permCopy.Status != StatusDenied {
 		t.Error("Copied Permission was not modified correctly")
 	}
 	
-	if copy.Description != "Modified message" {
+	if permCopy.Description != "Modified message" {
 		t.Error("Copied Permission description was not modified correctly")
 	}
 }
