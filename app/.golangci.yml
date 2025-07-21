@@ -91,3 +91,33 @@ issues:
     - text: "exported .* should have comment or be unexported"
       linters:
         - revive
+    
+    # Exclude intentionally ignored errors in notification queue draining
+    - path: internal/notify/queue\.go
+      linters:
+        - errcheck
+      source: "q\\.manager\\.(Notify|NotifyWithOutput)"
+    
+    # Exclude intentionally ignored errors in Linux service manager
+    - path: internal/service/manager_linux\.go
+      linters:
+        - errcheck
+      source: "m\\.execRun"
+    
+    # Exclude progress reporter writes (best effort)
+    - path: internal/updater/progress\.go
+      linters:
+        - errcheck
+      source: "pw\\.reporter\\.Write"
+    
+    # Exclude browser detection errors (handled by nil checks)
+    - path: internal/action/browser/
+      linters:
+        - errcheck
+      source: "GetDefaultBrowser"
+    
+    # Exclude test cleanup errors
+    - path: test/e2e/framework\.go
+      linters:
+        - errcheck
+      source: "StopApplication"
