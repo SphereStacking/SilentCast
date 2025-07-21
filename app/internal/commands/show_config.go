@@ -9,8 +9,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/SphereStacking/silentcast/internal/config"
 	"gopkg.in/yaml.v3"
+
+	"github.com/SphereStacking/silentcast/internal/config"
 )
 
 // ShowConfigCommand shows the merged configuration

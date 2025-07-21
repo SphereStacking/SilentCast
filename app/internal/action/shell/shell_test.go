@@ -13,7 +13,7 @@ type mockShellExecutor struct {
 	keepOpenValue  bool
 }
 
-func (m *mockShellExecutor) GetShell() (string, string) {
+func (m *mockShellExecutor) GetShell() (shell, flag string) {
 	return "sh", "-c"
 }
 

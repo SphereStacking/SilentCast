@@ -103,7 +103,7 @@ func (c *ShowConfigPathCommand) Execute(flags interface{}) error {
 
 		// Show path details based on actual position
 		if os.Getenv("SILENTCAST_CONFIG") != "" { //nolint:gocritic // Multiple conditions make switch less readable here
-			if i == 0 {
+			if i == 0 { //nolint:gocritic // Multiple index-based conditions make switch less readable
 				fmt.Print(" (from SILENTCAST_CONFIG env)")
 			} else if i == 1 {
 				fmt.Print(" (current directory)")
@@ -112,7 +112,7 @@ func (c *ShowConfigPathCommand) Execute(flags interface{}) error {
 			} else if i == 3 && runtime.GOOS != "windows" {
 				fmt.Print(" (system config directory)")
 			}
-		} else {
+		} else { //nolint:gocritic // Multiple conditions make switch less readable here
 			if i == 0 {
 				fmt.Print(" (current directory)")
 			} else if i == 1 {

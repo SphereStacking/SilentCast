@@ -87,15 +87,16 @@ func (v *Validator) buildLineMapper(node *yaml.Node, prefix string) {
 		}
 	case yaml.MappingNode:
 		for i := 0; i < len(node.Content); i += 2 {
-			if i+1 < len(node.Content) {
-				key := node.Content[i].Value
-				fieldPath := key
-				if prefix != "" {
-					fieldPath = prefix + "." + key
-				}
-				v.lineMapper[fieldPath] = node.Content[i].Line
-				v.buildLineMapper(node.Content[i+1], fieldPath)
+			if i+1 >= len(node.Content) {
+				continue
 			}
+			key := node.Content[i].Value
+			fieldPath := key
+			if prefix != "" {
+				fieldPath = prefix + "." + key
+			}
+			v.lineMapper[fieldPath] = node.Content[i].Line
+			v.buildLineMapper(node.Content[i+1], fieldPath)
 		}
 	case yaml.SequenceNode:
 		for i, item := range node.Content {
@@ -107,7 +108,7 @@ func (v *Validator) buildLineMapper(node *yaml.Node, prefix string) {
 }
 
 // addError adds a validation error
-func (v *Validator) addError(field string, value interface{}, message string, suggestion string) {
+func (v *Validator) addError(field string, value interface{}, message, suggestion string) {
 	line := v.lineMapper[field]
 	v.errors = append(v.errors, &ValidationError{
 		Field:      field,

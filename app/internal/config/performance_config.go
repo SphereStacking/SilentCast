@@ -40,6 +40,8 @@ func DefaultPerformanceConfig() PerformanceConfig {
 }
 
 // Validate validates the performance configuration
+//
+//nolint:unparam // This function validates and modifies config, error return is for interface consistency
 func (pc *PerformanceConfig) Validate() error {
 	if pc.BufferSize <= 0 {
 		pc.BufferSize = 1024

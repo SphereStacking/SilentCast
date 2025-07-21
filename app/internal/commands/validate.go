@@ -7,10 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/SphereStacking/silentcast/internal/config"
 	"github.com/SphereStacking/silentcast/internal/notify"
 	"github.com/SphereStacking/silentcast/internal/permission"
-	"gopkg.in/yaml.v3"
 )
 
 // ValidateConfigCommand validates the configuration file

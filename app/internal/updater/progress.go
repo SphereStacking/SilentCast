@@ -25,6 +25,8 @@ func NewProgressReporter(total int64, writer io.Writer) *ProgressReporter {
 }
 
 // Write implements io.Writer for progress tracking
+//
+//nolint:unparam // io.Writer interface requires error return, always nil for this implementation
 func (pr *ProgressReporter) Write(p []byte) (int, error) {
 	n := len(p)
 	atomic.AddInt64(&pr.Downloaded, int64(n))

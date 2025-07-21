@@ -365,4 +365,3 @@ func (d *linuxDetector) getBrowserNameFromExecutable(executable string) string {
 		return base
 	}
 }
-

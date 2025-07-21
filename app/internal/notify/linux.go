@@ -137,13 +137,7 @@ func (n *LinuxNotifier) sendNotifySend(ctx context.Context, notification Notific
 	case LevelSuccess:
 		icon = "emblem-default"
 	}
-	args = append(args, "-i", icon)
-
-	// Set app name
-	args = append(args, "-a", n.appName)
-
-	// Set expire time (10 seconds)
-	args = append(args, "-t", "10000")
+	args = append(args, "-i", icon, "-a", n.appName, "-t", "10000")
 
 	// Add title and message
 	title := notification.Title

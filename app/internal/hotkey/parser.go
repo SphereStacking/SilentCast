@@ -121,7 +121,9 @@ func (p *Parser) initCommonKeys() {
 	// Function keys
 	for i := 1; i <= 12; i++ {
 		key := fmt.Sprintf("f%d", i)
-		p.keyMap[key] = uint16(0x70 + i - 1) // F1 = 0x70 //nolint:gosec // i is limited to 1-12, safe conversion
+		if i >= 1 && i <= 12 {
+			p.keyMap[key] = uint16(0x70 + i - 1) //nolint:gosec // G115: i is range-checked 1-12, safe conversion
+		}
 	}
 
 	// Special keys

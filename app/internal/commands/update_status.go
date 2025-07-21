@@ -68,13 +68,16 @@ func (c *UpdateStatusCommand) Execute(flags interface{}) error {
 	var verbose bool
 	var forceCheck bool
 
-	if flagsMap, ok := flags.(map[string]interface{}); ok {
-		verbose = flagsMap["verbose"] == true
-		forceCheck = flagsMap["force-check"] == true
-	} else if f, ok := flags.(*Flags); ok {
-		verbose = f.Debug
-		forceCheck = f.ForceSelfUpdate
-	} else if flags != nil {
+	switch v := flags.(type) {
+	case map[string]interface{}:
+		verbose = v["verbose"] == true
+		forceCheck = v["force-check"] == true
+	case *Flags:
+		verbose = v.Debug
+		forceCheck = v.ForceSelfUpdate
+	case nil:
+		// defaults are already set
+	default:
 		return fmt.Errorf("invalid flags type: expected *Flags or map[string]interface{}, got %T", flags)
 	}
 

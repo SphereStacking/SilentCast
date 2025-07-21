@@ -32,10 +32,8 @@ func TestManager_GetAvailableNotifiers(t *testing.T) {
 		wantNotContain []string
 	}{
 		{
-			name: "default manager with console",
-			setupManager: func() *Manager {
-				return NewManager()
-			},
+			name:         "default manager with console",
+			setupManager: NewManager,
 			wantContains: []string{"console"},
 		},
 		{

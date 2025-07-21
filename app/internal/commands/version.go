@@ -63,7 +63,7 @@ func (c *VersionCommand) Execute(flags interface{}) error {
 	case "compact":
 		output = buildInfo.FormatCompact()
 	case "human":
-		fallthrough
+		output = buildInfo.FormatHuman()
 	default:
 		output = buildInfo.FormatHuman()
 	}

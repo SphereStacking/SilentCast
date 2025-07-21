@@ -72,7 +72,7 @@ func TestNotificationErrorHandling(t *testing.T) {
 				}
 
 				// Check context is included
-				if spellErr.Context == nil || len(spellErr.Context) == 0 {
+				if len(spellErr.Context) == 0 {
 					t.Error("error should include context information")
 				}
 

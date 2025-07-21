@@ -159,7 +159,6 @@ func TestUpdateActions(t *testing.T) {
 	// NewManager is in the action package, which would create circular import
 	// Skip this test as it's testing functionality in another package
 	t.Skip("Skipping test that requires action.NewManager to avoid circular import")
-	return
 
 	/*
 		manager := action.NewManager(map[string]config.ActionConfig{

@@ -474,7 +474,7 @@ func (u *Updater) ForceCheck(ctx context.Context) (*UpdateInfo, error) {
 	// Cache clearing failure shouldn't prevent update check
 	if err := u.cacheManager.ClearCache(); err != nil {
 		// Log error but continue with check anyway
-		// Error is intentionally ignored as we want to proceed with the check
+		logger.Warn("Failed to clear cache before force check: %v", err)
 	}
 	return u.CheckForUpdate(ctx)
 }

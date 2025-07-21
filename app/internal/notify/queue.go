@@ -146,7 +146,7 @@ func (q *NotificationQueue) Enqueue(notification interface{}, priority int) erro
 }
 
 // EnqueueWithRetries adds a notification with custom retry count
-func (q *NotificationQueue) EnqueueWithRetries(notification interface{}, priority int, maxRetries int) error {
+func (q *NotificationQueue) EnqueueWithRetries(notification interface{}, priority, maxRetries int) error {
 	item := &QueueItem{
 		Notification: notification,
 		Priority:     priority,

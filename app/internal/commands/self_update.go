@@ -57,12 +57,15 @@ func (c *SelfUpdateCommand) Execute(flags interface{}) error {
 	var checkOnly bool
 	var forceUpdate bool
 
-	if flagsMap, ok := flags.(map[string]interface{}); ok {
-		checkOnly = flagsMap["check-only"] == true
-		forceUpdate = flagsMap["force"] == true
-	} else if f, ok := flags.(*Flags); ok {
-		forceUpdate = f.ForceSelfUpdate
-	} else if flags != nil {
+	switch v := flags.(type) {
+	case map[string]interface{}:
+		checkOnly = v["check-only"] == true
+		forceUpdate = v["force"] == true
+	case *Flags:
+		forceUpdate = v.ForceSelfUpdate
+	case nil:
+		// defaults are already set
+	default:
 		return fmt.Errorf("invalid flags type: expected *Flags or map[string]interface{}, got %T", flags)
 	}
 

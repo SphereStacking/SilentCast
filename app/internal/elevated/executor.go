@@ -168,21 +168,22 @@ func (e *ElevatedExecutor) executeElevatedLinux(ctx context.Context) error {
 	}
 
 	for _, tool := range elevationTools {
-		if _, err := exec.LookPath(tool.name); err == nil {
-			args := tool.args(cmdStr)
-			//nolint:gosec // tool.name is from predefined trusted list
-			cmd := exec.CommandContext(ctx, tool.name, args...)
-
-			// Set SUDO_ASKPASS for graphical password prompt
-			if tool.name == "sudo" {
-				cmd.Env = append(os.Environ(), "SUDO_ASKPASS=/usr/bin/ssh-askpass")
-			}
-
-			if err := cmd.Run(); err == nil {
-				return nil
-			}
-			logger.Debug("Elevation with %s failed, trying next method", tool.name)
+		if _, err := exec.LookPath(tool.name); err != nil {
+			continue
 		}
+		args := tool.args(cmdStr)
+		//nolint:gosec // tool.name is from predefined trusted list
+		cmd := exec.CommandContext(ctx, tool.name, args...)
+
+		// Set SUDO_ASKPASS for graphical password prompt
+		if tool.name == "sudo" {
+			cmd.Env = append(os.Environ(), "SUDO_ASKPASS=/usr/bin/ssh-askpass")
+		}
+
+		if err := cmd.Run(); err == nil {
+			return nil
+		}
+		logger.Debug("Elevation with %s failed, trying next method", tool.name)
 	}
 
 	return fmt.Errorf("no suitable elevation tool found")
