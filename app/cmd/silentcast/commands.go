@@ -49,7 +49,6 @@ func ParseFlags() *CommandFlags {
 	flag.StringVar(&flags.SpellName, "spell", "", "Spell to execute in once mode")
 	flag.BoolVar(&flags.TestSpell, "test-spell", false, "Test a spell with detailed debug information")
 	flag.BoolVar(&flags.DryRun, "dry-run", false, "Show what would be executed without actually running it")
-	flag.BoolVar(&flags.Benchmark, "benchmark", false, "Run performance benchmarks and exit")
 	
 	// Export/Import commands
 	flag.StringVar(&flags.ExportConfig, "export-config", "", "Export configuration to file (or stdout if empty)")

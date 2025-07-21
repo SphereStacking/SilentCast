@@ -3,6 +3,7 @@
 package e2e
 
 import (
+	"os"
 	"runtime"
 	"testing"
 	"time"
@@ -373,7 +374,7 @@ func skipTrayTest() bool {
 	switch runtime.GOOS {
 	case "linux":
 		// Skip if no DISPLAY environment variable (headless)
-		display := runtime.Getenv("DISPLAY")
+		display := os.Getenv("DISPLAY")
 		if display == "" {
 			return true
 		}

@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/SphereStacking/silentcast/internal/action"
-	"github.com/SphereStacking/silentcast/internal/benchmark"
 	"github.com/SphereStacking/silentcast/internal/config"
 	"github.com/SphereStacking/silentcast/internal/errors"
 	"github.com/SphereStacking/silentcast/internal/hotkey"
@@ -141,17 +140,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	// Check for benchmark mode
-	if flags.Benchmark {
-		if err := runBenchmark(flags.Debug); err != nil {
-			// Print user-friendly error message
-			fmt.Fprintf(os.Stderr, "❌ %s\n", errors.GetUserMessage(err))
-			// Log detailed error for debugging
-			log.Printf("Error: %+v", err)
-			os.Exit(1)
-		}
-		os.Exit(0)
-	}
 
 	// No command specified, run the main application
 	if err := run(flags.NoTray, flags.Debug); err != nil {
@@ -1165,11 +1153,3 @@ func dryRunURLAction(action config.ActionConfig) error {
 	return nil
 }
 
-// runBenchmark runs performance benchmarks
-func runBenchmark(debug bool) error {
-	// Get configuration path
-	configPath := getConfigPath()
-	
-	// Run benchmarks
-	return benchmark.RunBenchmark(configPath)
-}
