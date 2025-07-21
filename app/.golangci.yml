@@ -18,6 +18,7 @@ linters:
     - nakedret # checks for naked returns in long functions
     # - paralleltest # checks for tests without t.Parallel() - TODO: enable after adding t.Parallel() to tests
     - rowserrcheck # checks if database/sql Rows errors are properly handled
+    - shadow # checks for variable shadowing
     - sqlclosecheck # checks if sql.Rows and sql.Stmt are properly closed
     - staticcheck # [default] linter with many check items
     - unconvert # checks for unnecessary type conversions
@@ -45,7 +46,8 @@ linters-settings:
   goimports:
     local-prefixes: github.com/SphereStacking/silentcast
   govet:
-    check-shadowing: true
+    # check-shadowing removed in v1.64.8, use 'shadow' linter instead
+    enable-all: false
   errcheck:
     check-type-assertions: true
     check-blank: true
