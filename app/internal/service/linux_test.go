@@ -313,10 +313,8 @@ func TestLinuxManager_SystemdService(t *testing.T) {
 	err = manager.uninstallSystemdService()
 	if err == nil {
 		t.Log("uninstallSystemdService succeeded (service was installed)")
-	} else {
-		if !strings.Contains(err.Error(), "not installed") {
-			t.Errorf("Error should mention 'not installed', got: %v", err)
-		}
+	} else if !strings.Contains(err.Error(), "not installed") {
+		t.Errorf("Error should mention 'not installed', got: %v", err)
 	}
 }
 
